@@ -330,14 +330,14 @@ def build_summary_cards(
             "level": "warn" if busiest_count >= 2 else "normal",
         },
         {
-            "title": "目录配置完整度稳定" if configured_roots == len(projects) else "仍有项目待补目录配置",
+            "title": "目录配置完整度稳定" if configured_roots == len(projects) and len(projects) > 0 else "仍有项目待补目录配置",
             "detail": (
                 f"{ready_to_pack} 个项目已具备打包条件，"
                 "标准目录和交付整理流程可以继续复用。"
-                if configured_roots == len(projects)
+                if configured_roots == len(projects) and len(projects) > 0
                 else "部分项目还缺少根目录配置，建议补齐后再进入交付打包流程。"
             ),
-            "level": "normal" if configured_roots == len(projects) else "warn",
+            "level": "normal" if configured_roots == len(projects) and len(projects) > 0 else "warn",
         },
     ]
 

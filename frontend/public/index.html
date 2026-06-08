@@ -58,36 +58,9 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "DM Sans", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, Arial, sans-serif;
       color: var(--text-main);
-      background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.1), transparent 24%),
-        radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 20%),
-        linear-gradient(180deg, var(--bg-canvas) 0%, #07111f 48%, var(--bg-canvas) 100%);
-    }
-
-    body::before,
-    body::after {
-      content: "";
-      position: fixed;
-      width: 320px;
-      height: 320px;
-      border-radius: 999px;
-      filter: blur(110px);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    body::before {
-      top: 64px;
-      left: -110px;
-      background: rgba(56, 189, 248, 0.12);
-    }
-
-    body::after {
-      right: -110px;
-      top: 240px;
-      background: rgba(37, 99, 235, 0.08);
+      background: var(--bg-canvas);
     }
 
     button,
@@ -153,7 +126,7 @@
       padding: var(--space-5);
       display: flex;
       flex-direction: column;
-      gap: var(--space-4);
+      gap: 32px;
     }
 
     .brand {
@@ -192,7 +165,15 @@
       color: var(--muted);
     }
 
-    .nav-title,
+    .nav-title {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
     .note-title,
     .section-title span {
       font-size: 11px;
@@ -213,15 +194,19 @@
       padding: 14px 16px;
       border-radius: 16px;
       color: #cbd5e1;
-      background: rgba(15, 23, 42, 0.18);
+      background: transparent;
       border: 1px solid transparent;
       text-align: left;
     }
 
+    .nav-item:hover {
+      background: rgba(15, 23, 42, 0.4);
+    }
+
     .nav-item.active {
       color: #ffffff;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(59, 130, 246, 0.1));
-      border-color: rgba(56, 189, 248, 0.18);
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.2);
     }
 
     .nav-dot {
@@ -308,8 +293,14 @@
       opacity: 0.9;
     }
 
-    .page-title h1,
     .section-title h2,
+    .section-head h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+
     .page-card h2,
     .detail-card h3 {
       margin: 0;
@@ -317,9 +308,10 @@
 
     .page-title h1 {
       margin-top: 12px;
-      font-size: 34px;
-      line-height: 1.08;
-      letter-spacing: -0.04em;
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
     }
 
     .page-title p {
@@ -402,9 +394,21 @@
     }
 
     .metric-value {
-      font-size: 32px;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .metric-num {
+      font-size: 28px;
       font-weight: 700;
       letter-spacing: -0.04em;
+    }
+
+    .metric-unit {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
     }
 
     .metric-meta {
@@ -416,113 +420,6 @@
     .dashboard-stack {
       display: grid;
       gap: 16px;
-    }
-
-    .dashboard-hero {
-      display: grid;
-      grid-template-columns: 1.2fr 0.88fr;
-      gap: 22px;
-      padding: 28px;
-      border-radius: var(--radius-xl);
-      background:
-        radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 24%),
-        linear-gradient(140deg, rgba(8, 15, 28, 0.96), rgba(15, 23, 42, 0.72));
-      border: 1px solid rgba(148, 163, 184, 0.14);
-      box-shadow: var(--shadow);
-    }
-
-    .hero-copy {
-      display: grid;
-      gap: 14px;
-      align-content: start;
-    }
-
-    .hero-decision {
-      display: inline-flex;
-      align-items: center;
-      width: fit-content;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(103, 232, 249, 0.2);
-      color: #dff8ff;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-    }
-
-    .hero-copy h2 {
-      margin: 0;
-      font-size: 34px;
-      line-height: 1.08;
-      letter-spacing: -0.04em;
-    }
-
-    .hero-copy p {
-      margin: 0;
-      color: var(--muted);
-      max-width: 680px;
-      line-height: 1.75;
-    }
-
-    .hero-points {
-      display: grid;
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    .hero-point {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #dbeafe;
-      font-size: 13px;
-    }
-
-    .hero-point::before {
-      content: "";
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: rgba(103, 232, 249, 0.9);
-      box-shadow: 0 0 0 5px rgba(103, 232, 249, 0.08);
-    }
-
-    .hero-signal-grid {
-      display: grid;
-      gap: 12px;
-      align-content: start;
-      padding: 18px;
-      border-radius: 24px;
-      background: rgba(7, 14, 26, 0.42);
-      border: 1px solid rgba(148, 163, 184, 0.1);
-    }
-
-    .brief-item {
-      display: grid;
-      gap: 6px;
-      padding: 16px 18px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(148, 163, 184, 0.08);
-    }
-
-    .brief-label {
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .brief-item strong {
-      font-size: 30px;
-      letter-spacing: -0.04em;
-    }
-
-    .brief-item span {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
     }
 
     .metrics-grid {
@@ -561,17 +458,15 @@
     }
 
     .metric-card-primary {
-      background:
-        radial-gradient(circle at top right, rgba(103, 232, 249, 0.16), transparent 34%),
-        linear-gradient(160deg, rgba(13, 24, 41, 0.96), rgba(18, 33, 56, 0.82));
-      border: 1px solid rgba(103, 232, 249, 0.16);
+      background: var(--panel);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.05);
     }
 
     .metric-card-strong {
-      background:
-        radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 36%),
-        linear-gradient(160deg, rgba(22, 16, 8, 0.96), rgba(41, 27, 15, 0.82));
-      border: 1px solid rgba(245, 158, 11, 0.16);
+      background: var(--panel);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.05);
     }
 
     .metric-card-secondary {
@@ -579,17 +474,17 @@
       border: 1px solid var(--line);
     }
 
-    .metric-value-primary {
-      font-size: 38px;
+    .metric-value-primary .metric-num {
+      font-size: 32px;
     }
 
-    .metric-value-strong {
-      font-size: 34px;
+    .metric-value-strong .metric-num {
+      font-size: 30px;
     }
 
     .dashboard-main-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.24fr) minmax(320px, 0.82fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
     }
 
@@ -607,9 +502,6 @@
 
     .chart-card-featured {
       padding: 22px;
-      background:
-        radial-gradient(circle at top right, rgba(56, 189, 248, 0.1), transparent 26%),
-        rgba(15, 23, 42, 0.76);
     }
 
     .dashboard-left-rail,
@@ -802,9 +694,8 @@
       gap: 16px;
       padding: 22px 24px;
       border-radius: var(--radius-xl);
-      background:
-        linear-gradient(180deg, rgba(22, 30, 48, 0.9), rgba(11, 18, 32, 0.82));
-      border: 1px solid rgba(148, 163, 184, 0.14);
+      background: var(--panel);
+      border: 1px solid var(--line);
       box-shadow: var(--shadow);
     }
 
@@ -978,7 +869,6 @@
     .record-item,
     .check-item,
     .detail-card,
-    .table-row,
     .empty-state {
       padding: 14px 16px;
       border-radius: 16px;
@@ -1027,7 +917,8 @@
 
     .field-group label {
       font-size: 13px;
-      color: #cbd5e1;
+      font-weight: 500;
+      color: #94a3b8;
     }
 
     .field-group input,
@@ -1108,7 +999,11 @@
 
     .table {
       display: grid;
-      gap: 10px;
+      gap: 0;
+      border-radius: var(--radius-lg);
+      background: var(--bg-panel-soft);
+      border: 1px solid var(--line);
+      overflow: hidden;
     }
 
     .table-header,
@@ -1120,19 +1015,27 @@
     }
 
     .table-header {
-      padding: 0 6px;
+      padding: 16px;
       font-size: 12px;
       color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.08em;
+      background: rgba(15, 23, 42, 0.4);
+      border-bottom: 1px solid var(--line-strong);
     }
 
     .table-row {
+      padding: 14px 16px;
       cursor: pointer;
+      border-bottom: 1px solid var(--line-soft);
+      transition: background 160ms ease;
+    }
+
+    .table-row:last-child {
+      border-bottom: none;
     }
 
     .table-row:hover {
-      border-color: rgba(56, 189, 248, 0.2);
       background: rgba(15, 23, 42, 0.62);
     }
 
@@ -1293,12 +1196,13 @@
     body[data-density="compact"] .page-card,
     body[data-density="compact"] .detail-card,
     body[data-density="compact"] .table-row,
+    body[data-density="compact"] .table-header,
     body[data-density="compact"] .metric-card,
     body[data-density="compact"] .chart-card,
     body[data-density="compact"] .summary-card,
     body[data-density="compact"] .reminder-card,
     body[data-density="compact"] .action-strip {
-      padding: 14px;
+      padding: 12px;
     }
 
     @media (max-width: 1180px) {
@@ -1922,7 +1826,7 @@
       });
     }
 
-    function renderPageHeader(title, description) {
+    function renderPageHeader(title, description, actionsHtml = "") {
       const statusClass = state.apiOnline ? "online" : "offline";
       const statusText = state.apiOnline ? `后端已连接 · ${apiBaseUrl}` : "当前显示本地示例数据";
 
@@ -1932,14 +1836,17 @@
             <div class="page-title">
               <div class="eyebrow">运营工作台</div>
               <h1>${escapeHtml(title)}</h1>
-              <p>${escapeHtml(description)}</p>
+              ${description ? `<p>${escapeHtml(description)}</p>` : ""}
             </div>
           </div>
           <div class="page-header-side">
             <div class="status-group">
               <div class="status-pill ${statusClass}">${escapeHtml(statusText)}</div>
             </div>
-            <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
+            <div class="page-toolbar" style="margin-bottom: 0;">
+              ${actionsHtml}
+              <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
+            </div>
           </div>
         </section>
       `;
@@ -1970,32 +1877,16 @@
         return `
         <article class="${cardClass}">
           <div class="metric-label">${escapeHtml(item.label)}</div>
-          <div class="${valueClass}">${escapeHtml(String(item.value))}</div>
+          <div class="${valueClass}">
+            ${item.prefix ? `<span class="metric-unit">${escapeHtml(item.prefix)}</span>` : ""}
+            <span class="metric-num">${escapeHtml(String(item.value))}</span>
+            ${item.suffix ? `<span class="metric-unit">${escapeHtml(item.suffix)}</span>` : ""}
+          </div>
           <div class="metric-sub">${escapeHtml(item.sub)}</div>
           <div class="metric-foot">${escapeHtml(item.foot)}</div>
         </article>
       `;
       }).join("");
-    }
-
-    function renderHeroBrief(dashboard) {
-      return `
-        <div class="brief-item">
-          <div class="brief-label">在管项目</div>
-          <strong>${dashboard.projectCount}</strong>
-          <span>当前在管项目总数</span>
-        </div>
-        <div class="brief-item">
-          <div class="brief-label">本周压力</div>
-          <strong>${dashboard.nearDelivery}</strong>
-          <span>本周需优先处理的临近交付项目</span>
-        </div>
-        <div class="brief-item">
-          <div class="brief-label">交付准备</div>
-          <strong>${dashboard.readyToPack}</strong>
-          <span>已具备打包条件的项目数量</span>
-        </div>
-      `;
     }
 
     function renderStageChart(items) {
@@ -2136,112 +2027,80 @@
     function renderDashboard() {
       const dashboard = state.dashboard;
       const metrics = [
-        { label: "总项目金额", value: `￥${dashboard.totalAmountWan} 万`, sub: "用于观察业务规模", foot: "优先关注高价值项目" },
+        { label: "总项目金额", prefix: "￥", value: dashboard.totalAmountWan, suffix: "万", sub: "用于观察业务规模", foot: "优先关注高价值项目" },
         { label: "临近交付", value: dashboard.nearDelivery, sub: "需要本周重点跟进", foot: "优先处理延期风险" },
         { label: "项目总数", value: dashboard.projectCount, sub: "覆盖当前在管项目", foot: "聚焦整体项目盘子" },
         { label: "可打包项目", value: dashboard.readyToPack, sub: "具备交付整理条件", foot: "适合进入交付流程" }
       ];
-      const heroDecision = dashboard.nearDelivery
-        ? `本周有 ${dashboard.nearDelivery} 个项目进入临近交付窗口`
-        : "本周交付压力可控，适合推进存量项目整理";
+      const headerActions = `
+        <button class="button-secondary" type="button" onclick="navigateTo('projects')">查看项目列表</button>
+        <button class="button-primary" type="button" onclick="navigateTo('create')">新建项目</button>
+      `;
 
       mainContentEl.innerHTML = `
-        ${renderPageHeader("项目仪表盘", "聚焦项目进度、交付风险和金额分布，优先处理本周最影响交付的事项。")}
-        <div class="page-toolbar">
-          <button class="button-secondary" type="button" onclick="navigateTo('projects')">查看项目列表</button>
-          <button class="button-primary" type="button" onclick="navigateTo('create')">新建项目</button>
-        </div>
+        ${renderPageHeader("项目仪表盘", "", headerActions)}
         <section class="dashboard-shell">
-          <section class="dashboard-hero">
-            <div class="hero-copy">
-              <div class="eyebrow">综合仪表盘</div>
-              <div class="hero-decision">${escapeHtml(heroDecision)}</div>
-              <h2>交付总览</h2>
-            </div>
-            <div class="hero-signal-grid" id="heroBrief"></div>
-          </section>
-
           <section class="metrics-grid metrics-grid--priority" id="metricsGrid"></section>
 
           <section class="dashboard-main-grid">
-            <div class="dashboard-left-rail">
-              <article class="chart-card chart-card-featured">
-                <div class="section-head">
-                  <div>
-                    <h3>月度交付趋势</h3>
-                    <div class="section-note">优先观察最近 6 个月交付压力是否持续抬升</div>
-                  </div>
-                  <div class="section-note">单位：项目数</div>
+            <article class="chart-card">
+              <div class="section-head">
+                <div>
+                  <h3>月度交付趋势</h3>
                 </div>
-                <div class="line-chart">
-                  <svg viewBox="0 0 420 190" aria-label="月度交付趋势图" role="img">
-                    <g class="line-grid" id="trendGrid"></g>
-                    <path class="line-axis" d="M24 156 H396"></path>
-                    <path class="area-fill" id="areaFill"></path>
-                    <path class="trend-line" id="trendLine"></path>
-                    <g id="trendPoints"></g>
-                  </svg>
-                  <div class="axis-labels" id="trendLabels"></div>
-                </div>
-              </article>
-
-              <div class="dashboard-split-grid">
-                <article class="chart-card">
-                  <div class="section-head">
-                    <div>
-                      <h3>项目阶段分布</h3>
-                      <div class="section-note">快速定位项目是否主要堆积在建模、计算或结果分析阶段</div>
-                    </div>
-                    <button class="button-link" type="button" onclick="navigateTo('projects')">查看项目列表</button>
-                  </div>
-                  <div class="stage-chart" id="stageChart"></div>
-                </article>
-
-                <article class="summary-card">
-                  <div class="section-head">
-                    <div>
-                      <h3>经营摘要</h3>
-                      <div class="section-note">把首页关键结论收成短句，适合快速扫读</div>
-                    </div>
-                  </div>
-                  <div class="dashboard-summary-list" id="summaryList"></div>
-                </article>
+                <div class="section-note">单位：项目数</div>
               </div>
-            </div>
+              <div class="line-chart">
+                <svg viewBox="0 0 420 190" aria-label="月度交付趋势图" role="img">
+                  <g class="line-grid" id="trendGrid"></g>
+                  <path class="line-axis" d="M24 156 H396"></path>
+                  <path class="area-fill" id="areaFill"></path>
+                  <path class="trend-line" id="trendLine"></path>
+                  <g id="trendPoints"></g>
+                </svg>
+                <div class="axis-labels" id="trendLabels"></div>
+              </div>
+            </article>
 
-            <div class="dashboard-side-rail">
-              <article class="chart-card">
-                <div class="section-head">
-                  <div>
-                    <h3>金额 Top 项目</h3>
-                    <div class="section-note">辅助判断高价值项目集中在哪些交付任务上</div>
-                  </div>
-                  <div class="section-note">单位：万元</div>
+            <article class="chart-card">
+              <div class="section-head">
+                <div>
+                  <h3>项目阶段分布</h3>
                 </div>
-                <div class="ranking" id="amountChart"></div>
-              </article>
+                <button class="button-link" type="button" onclick="navigateTo('projects')">查看项目</button>
+              </div>
+              <div class="stage-chart" id="stageChart"></div>
+            </article>
 
-              <article class="summary-card">
-                <div class="section-head">
-                  <div>
-                    <h3>交付准备摘要</h3>
-                    <div class="section-note">适合结合可打包项目和阶段分布一起看</div>
-                  </div>
+            <article class="chart-card">
+              <div class="section-head">
+                <div>
+                  <h3>金额 Top 项目</h3>
                 </div>
-                <div class="dashboard-summary-list">${renderSummaryCards((dashboard.summaryCards || []).slice(0, 2))}</div>
-              </article>
-            </div>
+                <div class="section-note">单位：万元</div>
+              </div>
+              <div class="ranking" id="amountChart"></div>
+            </article>
+          </section>
+
+          <section class="dashboard-main-grid" style="margin-top: 16px;">
+            <article class="summary-card" style="grid-column: span 3;">
+              <div class="section-head">
+                <div>
+                  <h3>经营摘要</h3>
+                </div>
+              </div>
+              <div class="dashboard-summary-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;" id="summaryList"></div>
+            </article>
           </section>
 
           <section class="action-strip">
             <div class="action-strip-head">
               <div class="action-strip-copy">
                 <h3>本周行动项</h3>
-                <p>看完整体盘子后，把最值得先处理的风险和交付动作收口在这里。</p>
               </div>
               <div class="action-strip-actions">
-                <button class="button-secondary" type="button" onclick="navigateTo('projects')">处理项目列表</button>
-                <button class="button-primary" type="button" onclick="navigateTo('create')">新建项目</button>
+                <button class="button-secondary" type="button" onclick="navigateTo('projects')">处理项目</button>
               </div>
             </div>
             <div class="action-strip-list" id="actionList">
@@ -2251,7 +2110,6 @@
         </section>
       `;
 
-      document.getElementById("heroBrief").innerHTML = renderHeroBrief(dashboard);
       document.getElementById("metricsGrid").innerHTML = renderMetrics(metrics);
       document.getElementById("stageChart").innerHTML = renderStageChart(dashboard.stageDistribution);
       document.getElementById("amountChart").innerHTML = renderAmountChart(dashboard.topAmounts);
@@ -2262,11 +2120,10 @@
 
     function renderCreatePage() {
       mainContentEl.innerHTML = `
-        ${renderPageHeader("新建项目", "填写项目基础信息并建立新的项目记录。")}
-        <section class="page-card">
+        ${renderPageHeader("新建项目", "")}
+        <section class="page-card" style="max-width: 800px; margin: 0 auto;">
           <h2>项目基础信息</h2>
-          <p class="helper-text">保存后会立即写入系统，并跳转到项目详情页继续维护。</p>
-          <form id="projectForm">
+          <form id="projectForm" style="margin-top: 20px;">
             <div class="form-grid">
               <div class="field-group">
                 <label for="name">项目名称</label>
@@ -2304,7 +2161,7 @@
             </div>
             <div class="actions">
               <button class="button-primary" type="submit">保存项目草稿</button>
-              <button class="button-secondary" type="button" onclick="navigateTo('projects')">查看项目列表</button>
+              <button class="button-link" type="button" onclick="navigateTo('projects')">取消</button>
             </div>
           </form>
         </section>
@@ -2362,32 +2219,48 @@
       const optionsPackage = [...new Set(state.projects.map((project) => project.packageStatus))];
 
       mainContentEl.innerHTML = `
-        ${renderPageHeader("项目列表", "按项目、客户、阶段和交付时间快速筛选，定位当前需要处理的项目。")}
+        ${renderPageHeader("项目列表", "")}
         <section class="page-card">
-          <h2>项目检索</h2>
-          <p class="helper-text">支持按阶段、状态、打包情况和关键字段快速筛选，并按优先维度排序。</p>
-          <div class="page-toolbar">
-            <button class="button-secondary" type="button" id="resetFiltersButton">重置筛选</button>
+          <div class="section-head" style="margin-bottom: 20px;">
+            <div>
+              <h2 style="margin: 0; font-size: 20px;">项目检索</h2>
+            </div>
+            <button class="button-secondary button-small" type="button" id="resetFiltersButton">重置筛选</button>
           </div>
-          <div class="toolbar">
-            <input id="searchInput" type="search" aria-label="搜索项目">
-            <select id="stageFilter" aria-label="阶段筛选">
-              <option value="">全部阶段</option>
-              ${optionsStage.map((stage) => `<option value="${escapeHtml(stage)}">${escapeHtml(stage)}</option>`).join("")}
-            </select>
-            <select id="statusFilter" aria-label="状态筛选">
-              <option value="">全部状态</option>
-              ${optionsStatus.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}
-            </select>
-            <select id="packageFilter" aria-label="打包状态筛选">
-              <option value="">全部打包状态</option>
-              ${optionsPackage.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}
-            </select>
-            <select id="sortFilter" aria-label="排序方式">
-              <option value="deliveryAsc">按交付日期升序</option>
-              <option value="amountDesc">按金额降序</option>
-              <option value="progressDesc">按进度降序</option>
-            </select>
+          <div class="toolbar" style="margin-top: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;">
+            <div class="field-group" style="gap: 4px;">
+              <label for="searchInput" style="font-size: 12px; margin-bottom: 4px;">搜索项目/客户</label>
+              <input id="searchInput" type="search" aria-label="搜索项目" placeholder="输入关键字...">
+            </div>
+            <div class="field-group" style="gap: 4px;">
+              <label for="stageFilter" style="font-size: 12px; margin-bottom: 4px;">项目阶段</label>
+              <select id="stageFilter" aria-label="阶段筛选">
+                <option value="">全部阶段</option>
+                ${optionsStage.map((stage) => `<option value="${escapeHtml(stage)}">${escapeHtml(stage)}</option>`).join("")}
+              </select>
+            </div>
+            <div class="field-group" style="gap: 4px;">
+              <label for="statusFilter" style="font-size: 12px; margin-bottom: 4px;">项目状态</label>
+              <select id="statusFilter" aria-label="状态筛选">
+                <option value="">全部状态</option>
+                ${optionsStatus.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}
+              </select>
+            </div>
+            <div class="field-group" style="gap: 4px;">
+              <label for="packageFilter" style="font-size: 12px; margin-bottom: 4px;">打包状态</label>
+              <select id="packageFilter" aria-label="打包状态筛选">
+                <option value="">全部打包状态</option>
+                ${optionsPackage.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}
+              </select>
+            </div>
+            <div class="field-group" style="gap: 4px;">
+              <label for="sortFilter" style="font-size: 12px; margin-bottom: 4px;">排序方式</label>
+              <select id="sortFilter" aria-label="排序方式">
+                <option value="deliveryAsc">按交付日期升序</option>
+                <option value="amountDesc">按金额降序</option>
+                <option value="progressDesc">按进度降序</option>
+              </select>
+            </div>
           </div>
           <div class="table">
             <div class="table-header">
@@ -2501,10 +2374,9 @@
       }
 
       mainContentEl.innerHTML = `
-        ${renderPageHeader(project.name, project.description || "查看并维护项目状态、交付清单和打包记录。")}
+        ${renderPageHeader(project.name, "")}
         <section class="page-card">
-          <h2>项目总览</h2>
-          <p class="helper-text">可以直接在本页更新项目状态、维护交付清单，并登记新的打包记录。</p>
+          <h2 style="margin-bottom: 20px;">项目总览</h2>
           <div class="detail-grid">
             <div class="detail-stack">
               <div class="detail-card">

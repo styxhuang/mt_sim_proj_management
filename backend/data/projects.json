@@ -175,5 +175,419 @@
       }
     ],
     "packageRecords": []
+  },
+  {
+    "id": "p-004",
+    "name": "固态电解质离子迁移评估",
+    "customer": "北方储能",
+    "amount": 67,
+    "currentStage": "报告交付",
+    "progress": 100,
+    "plannedDeliveryDate": "2026-01-18",
+    "status": "已完成",
+    "packageStatus": "已打包",
+    "rootDirectory": "/data/projects/p-004",
+    "template": "固态电解质模板",
+    "description": "评估不同掺杂方案对固态电解质离子迁移路径与势垒的影响。",
+    "stageTimeline": [
+      {
+        "name": "立项",
+        "status": "已完成"
+      },
+      {
+        "name": "建模",
+        "status": "已完成"
+      },
+      {
+        "name": "模拟计算",
+        "status": "已完成"
+      },
+      {
+        "name": "结果分析",
+        "status": "已完成"
+      },
+      {
+        "name": "报告交付",
+        "status": "已完成"
+      }
+    ],
+    "deliveryChecklist": [
+      {
+        "name": "分析报告",
+        "status": "已完成"
+      },
+      {
+        "name": "结果图表",
+        "status": "已完成"
+      },
+      {
+        "name": "原始数据",
+        "status": "已完成"
+      },
+      {
+        "name": "说明文档",
+        "status": "已完成"
+      }
+    ],
+    "packageRecords": [
+      {
+        "version": "v1.0",
+        "date": "2026-01-17",
+        "type": "客户交付包"
+      },
+      {
+        "version": "v1.0-archive",
+        "date": "2026-01-20",
+        "type": "归档包"
+      }
+    ]
+  },
+  {
+    "id": "p-005",
+    "name": "钠离子正极缺陷能计算",
+    "customer": "中原电池",
+    "amount": 29,
+    "currentStage": "结果分析",
+    "progress": 78,
+    "plannedDeliveryDate": "2026-02-26",
+    "status": "进行中",
+    "packageStatus": "待打包",
+    "rootDirectory": "/data/projects/p-005",
+    "template": "缺陷分析模板",
+    "description": "比较不同缺陷类型对钠离子正极结构稳定性与扩散性能的影响。",
+    "stageTimeline": [
+      {
+        "name": "立项",
+        "status": "已完成"
+      },
+      {
+        "name": "建模",
+        "status": "已完成"
+      },
+      {
+        "name": "模拟计算",
+        "status": "已完成"
+      },
+      {
+        "name": "结果分析",
+        "status": "进行中"
+      },
+      {
+        "name": "报告交付",
+        "status": "未开始"
+      }
+    ],
+    "deliveryChecklist": [
+      {
+        "name": "分析报告",
+        "status": "待完成"
+      },
+      {
+        "name": "结果图表",
+        "status": "已完成"
+      },
+      {
+        "name": "原始数据",
+        "status": "已完成"
+      },
+      {
+        "name": "说明文档",
+        "status": "待整理"
+      }
+    ],
+    "packageRecords": [
+      {
+        "version": "v0.8",
+        "date": "2026-02-18",
+        "type": "内部预审包"
+      }
+    ]
+  },
+  {
+    "id": "p-006",
+    "name": "多孔介质渗流热耦合分析",
+    "customer": "华南热控",
+    "amount": 51,
+    "currentStage": "模拟计算",
+    "progress": 57,
+    "plannedDeliveryDate": "2026-03-15",
+    "status": "进行中",
+    "packageStatus": "待打包",
+    "rootDirectory": "/data/projects/p-006",
+    "template": "热流耦合模板",
+    "description": "研究多孔介质在高热流工况下的渗流与温度场耦合行为。",
+    "stageTimeline": [
+      {
+        "name": "立项",
+        "status": "已完成"
+      },
+      {
+        "name": "建模",
+        "status": "已完成"
+      },
+      {
+        "name": "模拟计算",
+        "status": "进行中"
+      },
+      {
+        "name": "结果分析",
+        "status": "未开始"
+      },
+      {
+        "name": "报告交付",
+        "status": "未开始"
+      }
+    ],
+    "deliveryChecklist": [
+      {
+        "name": "分析报告",
+        "status": "未开始"
+      },
+      {
+        "name": "结果图表",
+        "status": "待完成"
+      },
+      {
+        "name": "原始数据",
+        "status": "待整理"
+      },
+      {
+        "name": "说明文档",
+        "status": "未开始"
+      }
+    ],
+    "packageRecords": []
+  },
+  {
+    "id": "p-007",
+    "name": "催化剂表面重构动力学模拟",
+    "customer": "东海催化",
+    "amount": 74,
+    "currentStage": "结果分析",
+    "progress": 88,
+    "plannedDeliveryDate": "2026-04-11",
+    "status": "临近交付",
+    "packageStatus": "可打包",
+    "rootDirectory": "/data/projects/p-007",
+    "template": "表面重构模板",
+    "description": "分析催化剂表面在反应条件下的重构路径以及关键中间态演化。",
+    "stageTimeline": [
+      {
+        "name": "立项",
+        "status": "已完成"
+      },
+      {
+        "name": "建模",
+        "status": "已完成"
+      },
+      {
+        "name": "模拟计算",
+        "status": "已完成"
+      },
+      {
+        "name": "结果分析",
+        "status": "进行中"
+      },
+      {
+        "name": "报告交付",
+        "status": "未开始"
+      }
+    ],
+    "deliveryChecklist": [
+      {
+        "name": "分析报告",
+        "status": "待确认"
+      },
+      {
+        "name": "结果图表",
+        "status": "已完成"
+      },
+      {
+        "name": "原始数据",
+        "status": "已完成"
+      },
+      {
+        "name": "说明文档",
+        "status": "待确认"
+      }
+    ],
+    "packageRecords": [
+      {
+        "version": "v0.95",
+        "date": "2026-04-09",
+        "type": "内部预审包"
+      }
+    ]
+  },
+  {
+    "id": "p-008",
+    "name": "聚合物链段运动松弛计算",
+    "customer": "启明高材",
+    "amount": 38,
+    "currentStage": "建模",
+    "progress": 24,
+    "plannedDeliveryDate": "2026-05-20",
+    "status": "进行中",
+    "packageStatus": "未开始",
+    "rootDirectory": "/data/projects/p-008",
+    "template": "高分子动力学模板",
+    "description": "评估不同温度与链长条件下聚合物链段运动与松弛时间分布。",
+    "stageTimeline": [
+      {
+        "name": "立项",
+        "status": "已完成"
+      },
+      {
+        "name": "建模",
+        "status": "进行中"
+      },
+      {
+        "name": "模拟计算",
+        "status": "未开始"
+      },
+      {
+        "name": "结果分析",
+        "status": "未开始"
+      },
+      {
+        "name": "报告交付",
+        "status": "未开始"
+      }
+    ],
+    "deliveryChecklist": [
+      {
+        "name": "分析报告",
+        "status": "未开始"
+      },
+      {
+        "name": "结果图表",
+        "status": "未开始"
+      },
+      {
+        "name": "原始数据",
+        "status": "未开始"
+      },
+      {
+        "name": "说明文档",
+        "status": "未开始"
+      }
+    ],
+    "packageRecords": []
+  },
+  {
+    "id": "p-009",
+    "name": "电极孔隙结构导电网络重建",
+    "customer": "远景储能",
+    "amount": 46,
+    "currentStage": "报告交付",
+    "progress": 93,
+    "plannedDeliveryDate": "2026-06-27",
+    "status": "临近交付",
+    "packageStatus": "可打包",
+    "rootDirectory": "/data/projects/p-009",
+    "template": "结构重建模板",
+    "description": "根据电极孔隙形貌重建导电网络并分析局部传输瓶颈区域。",
+    "stageTimeline": [
+      {
+        "name": "立项",
+        "status": "已完成"
+      },
+      {
+        "name": "建模",
+        "status": "已完成"
+      },
+      {
+        "name": "模拟计算",
+        "status": "已完成"
+      },
+      {
+        "name": "结果分析",
+        "status": "已完成"
+      },
+      {
+        "name": "报告交付",
+        "status": "进行中"
+      }
+    ],
+    "deliveryChecklist": [
+      {
+        "name": "分析报告",
+        "status": "已完成"
+      },
+      {
+        "name": "结果图表",
+        "status": "已完成"
+      },
+      {
+        "name": "原始数据",
+        "status": "已完成"
+      },
+      {
+        "name": "说明文档",
+        "status": "待确认"
+      }
+    ],
+    "packageRecords": [
+      {
+        "version": "v1.0-rc2",
+        "date": "2026-06-24",
+        "type": "客户交付包"
+      }
+    ]
+  },
+  {
+    "id": "p-010",
+    "name": "电解槽流场压降优化计算",
+    "customer": "海岳氢能",
+    "amount": 61,
+    "currentStage": "立项",
+    "progress": 12,
+    "plannedDeliveryDate": "2026-06-30",
+    "status": "进行中",
+    "packageStatus": "未开始",
+    "rootDirectory": "/data/projects/p-010",
+    "template": "流场优化模板",
+    "description": "面向电解槽流道方案开展压降与流量均匀性联合优化分析。",
+    "stageTimeline": [
+      {
+        "name": "立项",
+        "status": "进行中"
+      },
+      {
+        "name": "建模",
+        "status": "未开始"
+      },
+      {
+        "name": "模拟计算",
+        "status": "未开始"
+      },
+      {
+        "name": "结果分析",
+        "status": "未开始"
+      },
+      {
+        "name": "报告交付",
+        "status": "未开始"
+      }
+    ],
+    "deliveryChecklist": [
+      {
+        "name": "分析报告",
+        "status": "未开始"
+      },
+      {
+        "name": "结果图表",
+        "status": "未开始"
+      },
+      {
+        "name": "原始数据",
+        "status": "未开始"
+      },
+      {
+        "name": "说明文档",
+        "status": "未开始"
+      }
+    ],
+    "packageRecords": []
   }
 ]
