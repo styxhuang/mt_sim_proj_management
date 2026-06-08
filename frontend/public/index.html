@@ -1,0 +1,2722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>项目管理系统</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
+
+    :root {
+      --bg-canvas: #020617;
+      --bg-shell: rgba(8, 15, 28, 0.92);
+      --bg-panel: rgba(15, 23, 42, 0.78);
+      --bg-panel-strong: rgba(15, 23, 42, 0.94);
+      --bg-panel-soft: rgba(15, 23, 42, 0.58);
+      --line-soft: rgba(148, 163, 184, 0.12);
+      --line-strong: rgba(148, 163, 184, 0.22);
+      --text-strong: #f8fafc;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+      --brand: #38bdf8;
+      --brand-strong: #2563eb;
+      --brand-soft: rgba(56, 189, 248, 0.12);
+      --accent: #22c55e;
+      --warn: #f59e0b;
+      --danger: #f97316;
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --space-1: 8px;
+      --space-2: 12px;
+      --space-3: 16px;
+      --space-4: 20px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --shadow-panel: 0 18px 40px rgba(2, 6, 23, 0.28);
+      --shadow-raised: 0 12px 24px rgba(2, 6, 23, 0.22);
+      --control-height: 44px;
+      --control-height-sm: 36px;
+      --page-max-width: 1680px;
+      --panel: var(--bg-panel);
+      --line: var(--line-soft);
+      --text: var(--text-strong);
+      --muted: var(--text-muted);
+      --shadow: var(--shadow-panel);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+      color: var(--text-main);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.1), transparent 24%),
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 20%),
+        linear-gradient(180deg, var(--bg-canvas) 0%, #07111f 48%, var(--bg-canvas) 100%);
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 320px;
+      height: 320px;
+      border-radius: 999px;
+      filter: blur(110px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      top: 64px;
+      left: -110px;
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    body::after {
+      right: -110px;
+      top: 240px;
+      background: rgba(37, 99, 235, 0.08);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+
+    button:hover {
+      box-shadow: var(--shadow-raised);
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid rgba(56, 189, 248, 0.95);
+      outline-offset: 2px;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: var(--page-max-width);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: var(--space-4);
+      min-height: calc(100vh - 48px);
+    }
+
+    .sidebar,
+    .main,
+    .metric-card,
+    .panel-card,
+    .page-card,
+    .detail-card,
+    .table-row,
+    .summary-item,
+    .reminder-item,
+    .record-item,
+    .check-item,
+    .empty-state {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .sidebar {
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(37, 99, 235, 0.05));
+      border: 1px solid rgba(56, 189, 248, 0.12);
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      color: #04111f;
+      background: linear-gradient(135deg, #67e8f9, #38bdf8);
+      box-shadow: 0 14px 26px rgba(56, 189, 248, 0.18);
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .brand-sub,
+    .muted,
+    .helper-text,
+    .table-sub,
+    .empty-state p {
+      color: var(--muted);
+    }
+
+    .nav-title,
+    .note-title,
+    .section-title span {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .nav-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      color: #cbd5e1;
+      background: rgba(15, 23, 42, 0.18);
+      border: 1px solid transparent;
+      text-align: left;
+    }
+
+    .nav-item.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(59, 130, 246, 0.1));
+      border-color: rgba(56, 189, 248, 0.18);
+    }
+
+    .nav-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #67e8f9, #38bdf8);
+      box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.08);
+    }
+
+    .side-note {
+      margin-top: auto;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.44);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .side-note p {
+      margin: 8px 0 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .main {
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      min-height: 100%;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .page-header--split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .page-header-main,
+    .page-header-side {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .page-header-side {
+      justify-items: end;
+      align-content: start;
+    }
+
+    .eyebrow,
+    .status-pill,
+    .tag,
+    .stage-chip,
+    .record-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid transparent;
+    }
+
+    .eyebrow {
+      padding: 7px 12px;
+      background: var(--brand-soft);
+      color: #bae6fd;
+      border-color: rgba(56, 189, 248, 0.16);
+    }
+
+    .eyebrow::before,
+    .status-pill::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.9;
+    }
+
+    .page-title h1,
+    .section-title h2,
+    .page-card h2,
+    .detail-card h3 {
+      margin: 0;
+    }
+
+    .page-title h1 {
+      margin-top: 12px;
+      font-size: 34px;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .page-title p {
+      margin: 8px 0 0;
+      max-width: 720px;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .status-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .page-toolbar {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-4);
+    }
+
+    .status-pill {
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.4);
+      border-color: rgba(148, 163, 184, 0.14);
+      color: #cbd5e1;
+    }
+
+    .status-pill.online {
+      color: #d1fae5;
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.18);
+    }
+
+    .status-pill.offline {
+      color: #fde68a;
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .grid-metrics,
+    .grid-charts,
+    .dashboard-bottom,
+    .form-grid,
+    .detail-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-metrics {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 16px;
+    }
+
+    .grid-charts,
+    .dashboard-bottom,
+    .detail-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-bottom: 16px;
+    }
+
+    .metric-card,
+    .panel-card,
+    .page-card {
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+
+    .metric-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .metric-label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .metric-value {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .metric-meta {
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+
+    .dashboard-shell,
+    .dashboard-stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .dashboard-hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.88fr;
+      gap: 22px;
+      padding: 28px;
+      border-radius: var(--radius-xl);
+      background:
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 24%),
+        linear-gradient(140deg, rgba(8, 15, 28, 0.96), rgba(15, 23, 42, 0.72));
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .hero-decision {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(103, 232, 249, 0.2);
+      color: #dff8ff;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 680px;
+      line-height: 1.75;
+    }
+
+    .hero-points {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .hero-point {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #dbeafe;
+      font-size: 13px;
+    }
+
+    .hero-point::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(103, 232, 249, 0.9);
+      box-shadow: 0 0 0 5px rgba(103, 232, 249, 0.08);
+    }
+
+    .hero-signal-grid {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(7, 14, 26, 0.42);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .brief-item {
+      display: grid;
+      gap: 6px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(148, 163, 184, 0.08);
+    }
+
+    .brief-label {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .brief-item strong {
+      font-size: 30px;
+      letter-spacing: -0.04em;
+    }
+
+    .brief-item span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .metrics-grid--priority {
+      grid-template-columns: 1.24fr 1fr 0.86fr 0.86fr;
+    }
+
+    .metric-sub {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .metric-foot {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: auto;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #dbeafe;
+      font-size: 12px;
+    }
+
+    .metric-card-primary,
+    .metric-card-strong,
+    .metric-card-secondary {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card-primary {
+      background:
+        radial-gradient(circle at top right, rgba(103, 232, 249, 0.16), transparent 34%),
+        linear-gradient(160deg, rgba(13, 24, 41, 0.96), rgba(18, 33, 56, 0.82));
+      border: 1px solid rgba(103, 232, 249, 0.16);
+    }
+
+    .metric-card-strong {
+      background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 36%),
+        linear-gradient(160deg, rgba(22, 16, 8, 0.96), rgba(41, 27, 15, 0.82));
+      border: 1px solid rgba(245, 158, 11, 0.16);
+    }
+
+    .metric-card-secondary {
+      background: var(--panel);
+      border: 1px solid var(--line);
+    }
+
+    .metric-value-primary {
+      font-size: 38px;
+    }
+
+    .metric-value-strong {
+      font-size: 34px;
+    }
+
+    .dashboard-main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.24fr) minmax(320px, 0.82fr);
+      gap: 16px;
+    }
+
+    .chart-card,
+    .summary-card,
+    .reminder-card {
+      border-radius: 24px;
+      padding: 20px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .chart-card-featured {
+      padding: 22px;
+      background:
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.1), transparent 26%),
+        rgba(15, 23, 42, 0.76);
+    }
+
+    .dashboard-left-rail,
+    .dashboard-side-rail {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .dashboard-split-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 0.9fr);
+      gap: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stage-chart {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stage-row {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr) 40px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stage-label,
+    .stage-value,
+    .rank-name,
+    .rank-value,
+    .axis-labels span {
+      font-size: 13px;
+    }
+
+    .stage-value,
+    .rank-value {
+      color: #e2e8f0;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .line-chart {
+      display: grid;
+      gap: 8px;
+      padding-top: 6px;
+    }
+
+    .line-chart svg {
+      width: 100%;
+      height: 190px;
+      display: block;
+    }
+
+    .line-grid line {
+      stroke: rgba(148, 163, 184, 0.16);
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+    }
+
+    .line-axis {
+      fill: none;
+      stroke: rgba(148, 163, 184, 0.22);
+      stroke-width: 1.2;
+    }
+
+    .area-fill {
+      fill: rgba(56, 189, 248, 0.12);
+    }
+
+    .trend-line {
+      fill: none;
+      stroke: #67e8f9;
+      stroke-width: 3;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
+    .trend-point {
+      fill: #67e8f9;
+      stroke: #04111f;
+      stroke-width: 3;
+    }
+
+    .axis-labels {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+    }
+
+    .ranking {
+      display: grid;
+      gap: 14px;
+    }
+
+    .rank-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 56px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .rank-bar {
+      display: grid;
+      gap: 8px;
+    }
+
+    .rank-track {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.14);
+      overflow: hidden;
+    }
+
+    .rank-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(103, 232, 249, 0.92), rgba(56, 189, 248, 0.7));
+    }
+
+    .dashboard-summary-list,
+    .dashboard-reminder-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .dashboard-summary-list {
+      gap: 10px;
+    }
+
+    .dashboard-summary-item,
+    .dashboard-reminder-item {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(148, 163, 184, 0.08);
+    }
+
+    .summary-head,
+    .reminder-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .summary-title,
+    .reminder-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .summary-text,
+    .reminder-text {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .summary-card {
+      background: rgba(13, 20, 35, 0.7);
+    }
+
+    .action-strip {
+      display: grid;
+      gap: 16px;
+      padding: 22px 24px;
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(180deg, rgba(22, 30, 48, 0.9), rgba(11, 18, 32, 0.82));
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      box-shadow: var(--shadow);
+    }
+
+    .action-strip-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .action-strip-copy h3 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .action-strip-copy p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .action-strip-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-strip-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .action-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(148, 163, 184, 0.08);
+    }
+
+    .action-item-copy {
+      display: grid;
+      gap: 8px;
+    }
+
+    .action-item-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .action-item-text {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+
+    .dot-ok {
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.08);
+    }
+
+    .dot-warn {
+      background: var(--warn);
+      box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.08);
+    }
+
+    .dot-danger {
+      background: #ef4444;
+      box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.08);
+    }
+
+    .status-badge {
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .badge-ok {
+      color: #d1fae5;
+      border-color: rgba(34, 197, 94, 0.18);
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    .badge-warn {
+      color: #fde68a;
+      border-color: rgba(245, 158, 11, 0.18);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .badge-danger {
+      color: #fecaca;
+      border-color: rgba(239, 68, 68, 0.18);
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-title h2 {
+      font-size: 18px;
+    }
+
+    .bar-row,
+    .reminder-item,
+    .summary-item,
+    .record-item,
+    .check-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .bar-track,
+    .trend-track,
+    .progress-track {
+      position: relative;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.12);
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .bar-track {
+      height: 10px;
+    }
+
+    .trend-track,
+    .progress-track {
+      height: 8px;
+    }
+
+    .bar-fill,
+    .trend-fill,
+    .progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #38bdf8, #60a5fa);
+    }
+
+    .bar-meta,
+    .trend-meta {
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+
+    .reminder-item,
+    .summary-item,
+    .record-item,
+    .check-item,
+    .detail-card,
+    .table-row,
+    .empty-state {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.44);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .reminder-item strong,
+    .summary-item strong,
+    .check-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .page-card {
+      margin-bottom: 16px;
+    }
+
+    .page-card h2 {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    .helper-text {
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    body.helpers-hidden .helper-text {
+      display: none;
+    }
+
+    .form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 18px;
+    }
+
+    .field-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field-group.wide {
+      grid-column: 1 / -1;
+    }
+
+    .field-group label {
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+
+    .field-group input,
+    .field-group select,
+    .field-group textarea,
+    .toolbar input,
+    .toolbar select {
+      width: 100%;
+      min-height: var(--control-height);
+      padding: 12px 15px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: var(--bg-panel-soft);
+      color: var(--text);
+    }
+
+    .field-group textarea {
+      min-height: 128px;
+      resize: vertical;
+    }
+
+    .actions,
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .actions {
+      margin-top: 18px;
+    }
+
+    .toolbar {
+      margin: 18px 0;
+    }
+
+    .button-primary,
+    .button-secondary,
+    .button-link {
+      min-height: var(--control-height);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+    }
+
+    .button-small {
+      min-height: var(--control-height-sm);
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: var(--bg-panel-soft);
+      color: #e2e8f0;
+    }
+
+    .button-small.active {
+      border-color: rgba(56, 189, 248, 0.2);
+      background: rgba(56, 189, 248, 0.12);
+      color: #e0f2fe;
+    }
+
+    .button-primary {
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    }
+
+    .button-secondary {
+      background: var(--bg-panel-soft);
+      color: #e2e8f0;
+      border-color: rgba(148, 163, 184, 0.16);
+    }
+
+    .button-link {
+      background: transparent;
+      color: #bae6fd;
+      border-color: rgba(56, 189, 248, 0.18);
+    }
+
+    .table {
+      display: grid;
+      gap: 10px;
+    }
+
+    .table-header,
+    .table-row {
+      display: grid;
+      grid-template-columns: 1.6fr 1.1fr 1fr 0.7fr 0.9fr 1fr 0.8fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .table-header {
+      padding: 0 6px;
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .table-row {
+      cursor: pointer;
+    }
+
+    .table-row:hover {
+      border-color: rgba(56, 189, 248, 0.2);
+      background: rgba(15, 23, 42, 0.62);
+    }
+
+    .progress-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tag,
+    .stage-chip,
+    .record-badge {
+      padding: 7px 10px;
+      background: rgba(15, 23, 42, 0.56);
+      border-color: rgba(148, 163, 184, 0.14);
+      color: #e2e8f0;
+    }
+
+    .tag.ready,
+    .stage-chip.done {
+      color: #d1fae5;
+      border-color: rgba(34, 197, 94, 0.18);
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    .tag.warn,
+    .stage-chip.current {
+      color: #fde68a;
+      border-color: rgba(245, 158, 11, 0.18);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .record-badge {
+      color: #bfdbfe;
+      background: rgba(37, 99, 235, 0.12);
+      border-color: rgba(96, 165, 250, 0.16);
+    }
+
+    .detail-card h3 {
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .detail-stack,
+    .stage-list,
+    .record-list,
+    .checklist,
+    .summary-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-edit-form,
+    .package-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .detail-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .detail-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .detail-card-head h3 {
+      margin: 0;
+    }
+
+    .check-item,
+    .record-item {
+      align-items: flex-start;
+    }
+
+    .check-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .empty-state {
+      text-align: center;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 6px;
+    }
+
+    .toast-region {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      display: grid;
+      gap: 12px;
+      z-index: 20;
+    }
+
+    .toast {
+      min-width: 260px;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: var(--bg-panel-strong);
+      border: 1px solid var(--line-strong);
+      color: var(--text-strong);
+      box-shadow: var(--shadow-raised);
+    }
+
+    .toast.success {
+      border-color: rgba(34, 197, 94, 0.26);
+    }
+
+    .toast.warning {
+      border-color: rgba(245, 158, 11, 0.28);
+    }
+
+    .toast.error {
+      border-color: rgba(249, 115, 22, 0.28);
+    }
+
+    .settings-panel {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      width: min(360px, calc(100vw - 32px));
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: var(--bg-panel-strong);
+      border: 1px solid var(--line-strong);
+      box-shadow: var(--shadow-panel);
+      z-index: 25;
+    }
+
+    .toggle-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-main);
+    }
+
+    .toggle-field input {
+      width: 16px;
+      height: 16px;
+      min-height: 16px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    body[data-density="compact"] .page-card,
+    body[data-density="compact"] .detail-card,
+    body[data-density="compact"] .table-row,
+    body[data-density="compact"] .metric-card,
+    body[data-density="compact"] .chart-card,
+    body[data-density="compact"] .summary-card,
+    body[data-density="compact"] .reminder-card,
+    body[data-density="compact"] .action-strip {
+      padding: 14px;
+    }
+
+    @media (max-width: 1180px) {
+      .grid-metrics,
+      .grid-charts,
+      .dashboard-bottom,
+      .detail-grid,
+      .form-grid,
+      .detail-form-grid,
+      .metrics-grid,
+      .dashboard-main-grid,
+      .dashboard-split-grid,
+      .dashboard-hero {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .table-header,
+      .table-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        order: 2;
+      }
+
+      .main {
+        order: 1;
+      }
+
+      .grid-metrics,
+      .grid-charts,
+      .dashboard-bottom,
+      .detail-grid,
+      .form-grid,
+      .detail-form-grid,
+      .metrics-grid,
+      .dashboard-main-grid,
+      .dashboard-split-grid,
+      .dashboard-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .page-header {
+        flex-direction: column;
+      }
+
+      .page-header--split {
+        grid-template-columns: 1fr;
+      }
+
+      .action-strip-head,
+      .action-item {
+        grid-template-columns: 1fr;
+      }
+
+      .status-group {
+        justify-content: flex-start;
+      }
+
+      .page-header-side {
+        justify-items: start;
+      }
+
+      .table-header {
+        display: none;
+      }
+
+      .table-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">SF</div>
+          <div>
+            <h1 class="brand-title">SimFlow</h1>
+            <div class="brand-sub">计算模拟项目管理系统</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="nav-title">主导航</div>
+          <div class="nav-group" id="navGroup"></div>
+        </div>
+
+        <div class="side-note">
+          <div class="note-title">当前目标</div>
+          <p>围绕项目进度、金额、交付和目录信息建立可持续扩展的内部管理骨架。</p>
+        </div>
+      </aside>
+
+      <main class="main" id="mainContent"></main>
+    </div>
+  </div>
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+  <aside class="settings-panel hidden" id="settingsPanel" aria-labelledby="settingsTitle">
+    <div class="detail-card-head">
+      <h3 id="settingsTitle">全局设置</h3>
+      <button class="button-link" id="closeSettingsButton" type="button">关闭</button>
+    </div>
+    <form class="detail-edit-form" id="settingsForm">
+      <div class="field-group">
+        <label for="defaultPageSelect">默认首页</label>
+        <select id="defaultPageSelect" name="defaultPage">
+          <option value="dashboard">项目仪表盘</option>
+          <option value="projects">项目列表</option>
+          <option value="create">新建项目</option>
+          <option value="detail">项目详情</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="defaultSortSelect">项目列表默认排序</label>
+        <select id="defaultSortSelect" name="projectsSort">
+          <option value="deliveryAsc">按交付日期升序</option>
+          <option value="amountDesc">按金额降序</option>
+          <option value="progressDesc">按进度降序</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="densitySelect">页面密度</label>
+        <select id="densitySelect" name="density">
+          <option value="comfortable">舒适</option>
+          <option value="compact">紧凑</option>
+        </select>
+      </div>
+      <label class="toggle-field" for="helperTextToggle">
+        <input id="helperTextToggle" name="showHelperText" type="checkbox">
+        <span>显示辅助说明</span>
+      </label>
+      <div class="actions">
+        <button class="button-primary" type="submit">保存设置</button>
+      </div>
+    </form>
+  </aside>
+
+  <script>
+    const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:8000`;
+    const urlParams = new URLSearchParams(window.location.search);
+    const preferencesStorageKey = "simflow.preferences";
+    const defaultPreferences = {
+      defaultPage: "dashboard",
+      projectsSort: "deliveryAsc",
+      density: "comfortable",
+      showHelperText: true
+    };
+    const initialPreferences = loadPreferences();
+    const currentPage = urlParams.get("page") || initialPreferences.defaultPage;
+    const currentProjectId = urlParams.get("id") || "p-001";
+
+    const navItems = [
+      { page: "dashboard", label: "项目仪表盘" },
+      { page: "create", label: "新建项目" },
+      { page: "projects", label: "项目列表" },
+      { page: "detail", label: "项目详情", id: currentProjectId }
+    ];
+
+    const fallbackProjects = [
+      {
+        id: "p-001",
+        name: "锂电电解液扩散模拟",
+        customer: "华东新能源",
+        amount: 42,
+        currentStage: "模拟计算",
+        progress: 64,
+        plannedDeliveryDate: "2026-06-14",
+        status: "进行中",
+        packageStatus: "待打包",
+        rootDirectory: "/data/projects/p-001",
+        template: "标准扩散模板",
+        description: "评估不同温度条件下电解液扩散速率和迁移趋势。",
+        stageTimeline: [
+          { name: "立项", status: "已完成" },
+          { name: "建模", status: "已完成" },
+          { name: "模拟计算", status: "进行中" },
+          { name: "结果分析", status: "未开始" },
+          { name: "报告交付", status: "未开始" }
+        ],
+        deliveryChecklist: [
+          { name: "分析报告", status: "待完成" },
+          { name: "结果图表", status: "已完成" },
+          { name: "原始数据", status: "待整理" },
+          { name: "说明文档", status: "待完成" }
+        ],
+        packageRecords: [
+          { version: "v0.9", date: "2026-06-06", type: "内部预审包" }
+        ]
+      },
+      {
+        id: "p-002",
+        name: "高分子膜界面稳定性计算",
+        customer: "南方材料",
+        amount: 58,
+        currentStage: "结果分析",
+        progress: 82,
+        plannedDeliveryDate: "2026-06-09",
+        status: "临近交付",
+        packageStatus: "可打包",
+        rootDirectory: "/data/projects/p-002",
+        template: "界面分析模板",
+        description: "分析膜材料在不同电场条件下的界面稳定性表现。",
+        stageTimeline: [
+          { name: "立项", status: "已完成" },
+          { name: "建模", status: "已完成" },
+          { name: "模拟计算", status: "已完成" },
+          { name: "结果分析", status: "进行中" },
+          { name: "报告交付", status: "未开始" }
+        ],
+        deliveryChecklist: [
+          { name: "分析报告", status: "已完成" },
+          { name: "结果图表", status: "已完成" },
+          { name: "原始数据", status: "已完成" },
+          { name: "说明文档", status: "待确认" }
+        ],
+        packageRecords: [
+          { version: "v1.0-rc1", date: "2026-06-07", type: "客户交付包" }
+        ]
+      },
+      {
+        id: "p-003",
+        name: "催化位点吸附能扫描",
+        customer: "西部催化",
+        amount: 33,
+        currentStage: "建模",
+        progress: 35,
+        plannedDeliveryDate: "2026-06-21",
+        status: "进行中",
+        packageStatus: "未开始",
+        rootDirectory: "/data/projects/p-003",
+        template: "吸附能扫描模板",
+        description: "比较多种位点构型下关键中间体的吸附能分布。",
+        stageTimeline: [
+          { name: "立项", status: "已完成" },
+          { name: "建模", status: "进行中" },
+          { name: "模拟计算", status: "未开始" },
+          { name: "结果分析", status: "未开始" },
+          { name: "报告交付", status: "未开始" }
+        ],
+        deliveryChecklist: [
+          { name: "分析报告", status: "未开始" },
+          { name: "结果图表", status: "未开始" },
+          { name: "原始数据", status: "未开始" },
+          { name: "说明文档", status: "未开始" }
+        ],
+        packageRecords: []
+      }
+    ];
+
+    const fallbackDashboard = {
+      projectCount: 3,
+      totalAmountWan: 133,
+      nearDelivery: 1,
+      readyToPack: 1,
+      stageDistribution: [
+        { label: "立项", value: 0 },
+        { label: "建模", value: 1 },
+        { label: "模拟计算", value: 1 },
+        { label: "结果分析", value: 1 },
+        { label: "报告交付", value: 0 }
+      ],
+      deliveryTrend: [
+        { month: "1月", value: 2 },
+        { month: "2月", value: 3 },
+        { month: "3月", value: 2 },
+        { month: "4月", value: 4 },
+        { month: "5月", value: 3 },
+        { month: "6月", value: 5 }
+      ],
+      topAmounts: [
+        { label: "高分子膜界面稳定性计算", value: 58 },
+        { label: "锂电电解液扩散模拟", value: 42 },
+        { label: "催化位点吸附能扫描", value: 33 }
+      ],
+      summaryCards: [
+        {
+          title: "金额集中度较高",
+          detail: "前两大项目贡献了当前金额的大部分，建议优先跟进高价值项目的交付节奏。",
+          level: "warn"
+        },
+        {
+          title: "结果分析阶段已形成堆积",
+          detail: "多个项目正在向报告阶段收口，建议提前安排复核和说明文档整理。",
+          level: "warn"
+        },
+        {
+          title: "目录配置完整度稳定",
+          detail: "示例项目都已配置根目录，后续交付打包可以沿用标准结构。",
+          level: "normal"
+        }
+      ],
+      riskReminders: [
+        {
+          title: "优先推进临近交付项目",
+          detail: "高分子膜界面稳定性计算需在 2 天内完成说明文档确认。",
+          level: "high"
+        },
+        {
+          title: "模拟资源需提前排期",
+          detail: "锂电电解液扩散模拟仍在计算阶段，建议锁定本周算力窗口。",
+          level: "medium"
+        },
+        {
+          title: "新项目建模需尽快完成",
+          detail: "催化位点吸附能扫描尚未进入计算阶段，需确认输入参数。",
+          level: "low"
+        }
+      ]
+    };
+
+    const state = {
+      apiOnline: false,
+      dashboard: fallbackDashboard,
+      projects: fallbackProjects,
+      projectDetail: fallbackProjects.find((project) => project.id === currentProjectId) || fallbackProjects[0],
+      preferences: initialPreferences
+    };
+
+    const navGroupEl = document.getElementById("navGroup");
+    const mainContentEl = document.getElementById("mainContent");
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function navigateTo(page, id) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("page", page);
+      if (id) {
+        url.searchParams.set("id", id);
+      } else {
+        url.searchParams.delete("id");
+      }
+      window.location.href = url.toString();
+    }
+
+    function loadPreferences() {
+      try {
+        const raw = window.localStorage.getItem(preferencesStorageKey);
+        return raw ? { ...defaultPreferences, ...JSON.parse(raw) } : { ...defaultPreferences };
+      } catch (error) {
+        return { ...defaultPreferences };
+      }
+    }
+
+    function savePreferences(nextPreferences) {
+      state.preferences = { ...state.preferences, ...nextPreferences };
+      window.localStorage.setItem(preferencesStorageKey, JSON.stringify(state.preferences));
+    }
+
+    function applyPreferences() {
+      document.body.dataset.density = state.preferences.density;
+      document.body.classList.toggle("helpers-hidden", !state.preferences.showHelperText);
+    }
+
+    function openSettingsPanel() {
+      document.getElementById("settingsPanel")?.classList.remove("hidden");
+    }
+
+    function closeSettingsPanel() {
+      document.getElementById("settingsPanel")?.classList.add("hidden");
+    }
+
+    function syncSettingsForm() {
+      const defaultPageSelect = document.getElementById("defaultPageSelect");
+      const defaultSortSelect = document.getElementById("defaultSortSelect");
+      const densitySelect = document.getElementById("densitySelect");
+      const helperTextToggle = document.getElementById("helperTextToggle");
+      if (!defaultPageSelect || !defaultSortSelect || !densitySelect || !helperTextToggle) {
+        return;
+      }
+      defaultPageSelect.value = state.preferences.defaultPage;
+      defaultSortSelect.value = state.preferences.projectsSort;
+      densitySelect.value = state.preferences.density;
+      helperTextToggle.checked = Boolean(state.preferences.showHelperText);
+    }
+
+    function showToast(message, tone = "success") {
+      const region = document.getElementById("toastRegion");
+      if (!region) {
+        return;
+      }
+
+      const toast = document.createElement("div");
+      toast.className = `toast ${tone}`;
+      toast.textContent = message;
+      region.appendChild(toast);
+      window.setTimeout(() => {
+        toast.remove();
+      }, 2400);
+    }
+
+    function setActionLoading(button, isLoading, loadingText) {
+      if (!button) {
+        return;
+      }
+      if (!button.dataset.originalLabel) {
+        button.dataset.originalLabel = button.textContent;
+      }
+      button.disabled = isLoading;
+      button.textContent = isLoading ? loadingText : button.dataset.originalLabel;
+    }
+
+    async function fetchJson(path) {
+      const response = await fetch(`${apiBaseUrl}${path}`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return response.json();
+    }
+
+    async function postJson(path, payload) {
+      const response = await fetch(`${apiBaseUrl}${path}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        const message = data.error || `HTTP ${response.status}`;
+        throw new Error(message);
+      }
+      return data;
+    }
+
+    async function patchJson(path, payload) {
+      const response = await fetch(`${apiBaseUrl}${path}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        const message = data.error || `HTTP ${response.status}`;
+        throw new Error(message);
+      }
+      return data;
+    }
+
+    function slugifyProjectName(name) {
+      return String(name)
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9\-_\u4e00-\u9fa5]/g, "")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "") || "new-project";
+    }
+
+    function getTagClass(value) {
+      if (value === "可打包" || value === "已完成") {
+        return "tag ready";
+      }
+      if (value === "临近交付" || value === "待打包" || value === "待确认" || value === "待完成") {
+        return "tag warn";
+      }
+      return "tag";
+    }
+
+    const stageOptions = ["立项", "建模", "模拟计算", "结果分析", "报告交付"];
+    const projectStatusOptions = ["进行中", "临近交付", "已完成"];
+    const packageStatusOptions = ["未开始", "待打包", "可打包", "已打包"];
+    const checklistStatusOptions = ["未开始", "待完成", "待整理", "待确认", "已完成"];
+
+    function syncProjectInState(project) {
+      state.projects = state.projects.map((item) => item.id === project.id ? project : item);
+      if (!state.projects.find((item) => item.id === project.id)) {
+        state.projects = [project, ...state.projects];
+      }
+      if (state.projectDetail && state.projectDetail.id === project.id) {
+        state.projectDetail = project;
+      }
+    }
+
+    async function refreshState(projectId) {
+      await Promise.all([loadDashboardData(), loadProjectsData()]);
+      if (projectId) {
+        await loadProjectDetailData(projectId);
+      }
+    }
+
+    function renderSelectOptions(options, selectedValue) {
+      return options.map((option) => `
+        <option value="${escapeHtml(option)}" ${option === selectedValue ? "selected" : ""}>${escapeHtml(option)}</option>
+      `).join("");
+    }
+
+    function bindGlobalUi() {
+      syncSettingsForm();
+      document.getElementById("settingsButton")?.addEventListener("click", openSettingsPanel);
+      document.getElementById("closeSettingsButton")?.addEventListener("click", closeSettingsPanel);
+      document.getElementById("settingsForm")?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        savePreferences({
+          defaultPage: String(formData.get("defaultPage") || defaultPreferences.defaultPage),
+          projectsSort: String(formData.get("projectsSort") || defaultPreferences.projectsSort),
+          density: String(formData.get("density") || defaultPreferences.density),
+          showHelperText: formData.get("showHelperText") === "on"
+        });
+        applyPreferences();
+        syncSettingsForm();
+        closeSettingsPanel();
+        showToast("全局设置已保存", "success");
+        if (currentPage === "projects") {
+          renderCurrentPage();
+        }
+      }, { once: true });
+    }
+
+    async function saveProjectDetail(event) {
+      event.preventDefault();
+      const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+      setActionLoading(submitButton, true, "保存中...");
+      const formData = new FormData(event.currentTarget);
+      const payload = {
+        amount: Number(formData.get("amount")),
+        currentStage: formData.get("currentStage"),
+        progress: Number(formData.get("progress")),
+        plannedDeliveryDate: formData.get("plannedDeliveryDate"),
+        status: formData.get("status"),
+        packageStatus: formData.get("packageStatus"),
+        rootDirectory: formData.get("rootDirectory"),
+        customer: formData.get("customer"),
+        description: formData.get("description")
+      };
+
+      try {
+        const data = await patchJson(`/api/projects/${state.projectDetail.id}`, payload);
+        syncProjectInState(data.project);
+        await refreshState(data.project.id);
+        renderCurrentPage();
+        showToast("项目更新已保存", "success");
+      } catch (error) {
+        showToast(`项目更新失败：${error.message}`, "error");
+      } finally {
+        setActionLoading(submitButton, false, "保存中...");
+      }
+    }
+
+    async function updateChecklistStatus(itemName, nextStatus, triggerButton) {
+      setActionLoading(triggerButton, true, "保存中...");
+      const checklist = state.projectDetail.deliveryChecklist.map((item) => (
+        item.name === itemName ? { ...item, status: nextStatus } : item
+      ));
+
+      try {
+        const data = await patchJson(`/api/projects/${state.projectDetail.id}/checklist`, {
+          deliveryChecklist: checklist
+        });
+        syncProjectInState(data.project);
+        await refreshState(data.project.id);
+        renderCurrentPage();
+        showToast("交付清单已更新", "success");
+      } catch (error) {
+        showToast(`交付清单更新失败：${error.message}`, "error");
+      } finally {
+        setActionLoading(triggerButton, false, "保存中...");
+      }
+    }
+
+    async function savePackageRecord(event) {
+      event.preventDefault();
+      const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+      setActionLoading(submitButton, true, "保存中...");
+      const formData = new FormData(event.currentTarget);
+      const payload = {
+        version: formData.get("version"),
+        date: formData.get("date"),
+        type: formData.get("type")
+      };
+
+      try {
+        const data = await postJson(`/api/projects/${state.projectDetail.id}/package-records`, payload);
+        syncProjectInState(data.project);
+        await refreshState(data.project.id);
+        renderCurrentPage();
+        showToast("打包记录已新增", "success");
+      } catch (error) {
+        showToast(`打包记录新增失败：${error.message}`, "error");
+      } finally {
+        setActionLoading(submitButton, false, "保存中...");
+      }
+    }
+
+    function renderNav() {
+      navGroupEl.innerHTML = navItems.map((item) => {
+        const isActive = item.page === currentPage;
+        return `
+          <button class="nav-item ${isActive ? "active" : ""}" type="button" data-page="${item.page}" data-id="${item.id || ""}">
+            <span class="nav-dot"></span>
+            <span>${item.label}</span>
+          </button>
+        `;
+      }).join("");
+
+      navGroupEl.querySelectorAll(".nav-item").forEach((button) => {
+        button.addEventListener("click", () => {
+          navigateTo(button.dataset.page, button.dataset.id || undefined);
+        });
+      });
+    }
+
+    function renderPageHeader(title, description) {
+      const statusClass = state.apiOnline ? "online" : "offline";
+      const statusText = state.apiOnline ? `后端已连接 · ${apiBaseUrl}` : "当前显示本地示例数据";
+
+      return `
+        <section class="page-header page-header--split">
+          <div class="page-header-main">
+            <div class="page-title">
+              <div class="eyebrow">运营工作台</div>
+              <h1>${escapeHtml(title)}</h1>
+              <p>${escapeHtml(description)}</p>
+            </div>
+          </div>
+          <div class="page-header-side">
+            <div class="status-group">
+              <div class="status-pill ${statusClass}">${escapeHtml(statusText)}</div>
+            </div>
+            <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function getLevelMeta(level) {
+      if (level === "high") {
+        return { dotClass: "dot-danger", badgeClass: "badge-danger", label: "高优先级" };
+      }
+      if (level === "medium" || level === "warn") {
+        return { dotClass: "dot-warn", badgeClass: "badge-warn", label: "关注" };
+      }
+      return { dotClass: "dot-ok", badgeClass: "badge-ok", label: "跟进" };
+    }
+
+    function renderMetrics(metrics) {
+      return metrics.map((item, index) => {
+        const cardClass = index === 0
+          ? "metric-card metric-card-primary"
+          : index === 1
+            ? "metric-card metric-card-strong"
+            : "metric-card metric-card-secondary";
+        const valueClass = index === 0
+          ? "metric-value metric-value-primary"
+          : index === 1
+            ? "metric-value metric-value-strong"
+            : "metric-value";
+        return `
+        <article class="${cardClass}">
+          <div class="metric-label">${escapeHtml(item.label)}</div>
+          <div class="${valueClass}">${escapeHtml(String(item.value))}</div>
+          <div class="metric-sub">${escapeHtml(item.sub)}</div>
+          <div class="metric-foot">${escapeHtml(item.foot)}</div>
+        </article>
+      `;
+      }).join("");
+    }
+
+    function renderHeroBrief(dashboard) {
+      return `
+        <div class="brief-item">
+          <div class="brief-label">在管项目</div>
+          <strong>${dashboard.projectCount}</strong>
+          <span>当前在管项目总数</span>
+        </div>
+        <div class="brief-item">
+          <div class="brief-label">本周压力</div>
+          <strong>${dashboard.nearDelivery}</strong>
+          <span>本周需优先处理的临近交付项目</span>
+        </div>
+        <div class="brief-item">
+          <div class="brief-label">交付准备</div>
+          <strong>${dashboard.readyToPack}</strong>
+          <span>已具备打包条件的项目数量</span>
+        </div>
+      `;
+    }
+
+    function renderStageChart(items) {
+      if (!Array.isArray(items) || !items.length) {
+        return `
+          <div class="empty-state">
+            <h3>暂无阶段数据</h3>
+            <p>项目录入后会在这里展示阶段分布。</p>
+          </div>
+        `;
+      }
+
+      const maxValue = Math.max(...items.map((item) => item.value), 1);
+      return items.map((item) => `
+        <div class="stage-row">
+          <div class="stage-label">${escapeHtml(item.label)}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(item.value / maxValue) * 100}%"></div></div>
+          <div class="stage-value">${item.value}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderAmountChart(items) {
+      if (!Array.isArray(items) || !items.length) {
+        return `
+          <div class="empty-state">
+            <h3>暂无金额排行</h3>
+            <p>项目金额录入后会在这里展示 Top 项目。</p>
+          </div>
+        `;
+      }
+
+      const maxValue = Math.max(...items.map((item) => item.value), 1);
+      return items.map((item) => `
+        <div class="rank-row">
+          <div class="rank-bar">
+            <div class="rank-name">${escapeHtml(item.label)}</div>
+            <div class="rank-track">
+              <div class="rank-fill" style="width:${(item.value / maxValue) * 100}%"></div>
+            </div>
+          </div>
+          <div class="rank-value">${item.value}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderSummaryCards(items) {
+      return (items || []).map((item) => {
+        const meta = getLevelMeta(item.level);
+        return `
+          <div class="dashboard-summary-item">
+            <div class="summary-head">
+              <div class="summary-title">
+                <span class="status-dot ${meta.dotClass}"></span>
+                <span>${escapeHtml(item.title)}</span>
+              </div>
+            </div>
+            <div class="summary-text">${escapeHtml(item.detail)}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderReminderCards(items) {
+      return (items || []).map((item) => {
+        const meta = getLevelMeta(item.level);
+        return `
+          <div class="dashboard-reminder-item">
+            <div class="reminder-head">
+              <div class="reminder-title">
+                <span class="status-dot ${meta.dotClass}"></span>
+                <span>${escapeHtml(item.title)}</span>
+              </div>
+              <span class="status-badge ${meta.badgeClass}">${meta.label}</span>
+            </div>
+            <div class="reminder-text">${escapeHtml(item.detail)}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderActionItems(items) {
+      const safeItems = Array.isArray(items) && items.length
+        ? items.slice(0, 4)
+        : [{ title: "暂无高优先级动作", detail: "当前没有需要立刻处理的项目风险。", level: "low" }];
+
+      return safeItems.map((item) => {
+        const meta = getLevelMeta(item.level);
+        return `
+          <div class="action-item">
+            <div class="action-item-copy">
+              <div class="action-item-head">
+                <span class="status-dot ${meta.dotClass}"></span>
+                <span>${escapeHtml(item.title)}</span>
+              </div>
+              <div class="action-item-text">${escapeHtml(item.detail)}</div>
+            </div>
+            <span class="status-badge ${meta.badgeClass}">${meta.label}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderTrendChart(trend) {
+      const trendLineEl = document.getElementById("trendLine");
+      const areaFillEl = document.getElementById("areaFill");
+      const trendPointsEl = document.getElementById("trendPoints");
+      const trendLabelsEl = document.getElementById("trendLabels");
+      const trendGridEl = document.getElementById("trendGrid");
+      const safeTrend = Array.isArray(trend) && trend.length ? trend : [{ month: "本月", value: 0 }];
+      const values = safeTrend.map((item) => Number(item.value) || 0);
+      const maxValue = Math.max(...values, 1);
+      const stepX = 372 / Math.max(safeTrend.length - 1, 1);
+      const points = safeTrend.map((item, index) => {
+        const x = 24 + stepX * index;
+        const y = 156 - ((Number(item.value) || 0) / maxValue) * 120;
+        return { x, y, label: item.month };
+      });
+
+      const linePath = points
+        .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+        .join(" ");
+      const areaPath = `M ${points[0].x} 156 ${points.map((point) => `L ${point.x} ${point.y}`).join(" ")} L ${points[points.length - 1].x} 156 Z`;
+
+      trendGridEl.innerHTML = [24, 68, 112, 156]
+        .map((y) => `<line x1="24" y1="${y}" x2="396" y2="${y}"></line>`)
+        .join("");
+      trendLineEl.setAttribute("d", linePath);
+      areaFillEl.setAttribute("d", areaPath);
+      trendPointsEl.innerHTML = points
+        .map((point) => `<circle class="trend-point" cx="${point.x}" cy="${point.y}" r="5"></circle>`)
+        .join("");
+      trendLabelsEl.innerHTML = safeTrend
+        .map((item) => `<span>${escapeHtml(item.month)}</span>`)
+        .join("");
+    }
+
+    function renderDashboard() {
+      const dashboard = state.dashboard;
+      const metrics = [
+        { label: "总项目金额", value: `￥${dashboard.totalAmountWan} 万`, sub: "用于观察业务规模", foot: "优先关注高价值项目" },
+        { label: "临近交付", value: dashboard.nearDelivery, sub: "需要本周重点跟进", foot: "优先处理延期风险" },
+        { label: "项目总数", value: dashboard.projectCount, sub: "覆盖当前在管项目", foot: "聚焦整体项目盘子" },
+        { label: "可打包项目", value: dashboard.readyToPack, sub: "具备交付整理条件", foot: "适合进入交付流程" }
+      ];
+      const heroDecision = dashboard.nearDelivery
+        ? `本周有 ${dashboard.nearDelivery} 个项目进入临近交付窗口`
+        : "本周交付压力可控，适合推进存量项目整理";
+
+      mainContentEl.innerHTML = `
+        ${renderPageHeader("项目仪表盘", "聚焦项目进度、交付风险和金额分布，优先处理本周最影响交付的事项。")}
+        <div class="page-toolbar">
+          <button class="button-secondary" type="button" onclick="navigateTo('projects')">查看项目列表</button>
+          <button class="button-primary" type="button" onclick="navigateTo('create')">新建项目</button>
+        </div>
+        <section class="dashboard-shell">
+          <section class="dashboard-hero">
+            <div class="hero-copy">
+              <div class="eyebrow">综合仪表盘</div>
+              <div class="hero-decision">${escapeHtml(heroDecision)}</div>
+              <h2>交付总览</h2>
+            </div>
+            <div class="hero-signal-grid" id="heroBrief"></div>
+          </section>
+
+          <section class="metrics-grid metrics-grid--priority" id="metricsGrid"></section>
+
+          <section class="dashboard-main-grid">
+            <div class="dashboard-left-rail">
+              <article class="chart-card chart-card-featured">
+                <div class="section-head">
+                  <div>
+                    <h3>月度交付趋势</h3>
+                    <div class="section-note">优先观察最近 6 个月交付压力是否持续抬升</div>
+                  </div>
+                  <div class="section-note">单位：项目数</div>
+                </div>
+                <div class="line-chart">
+                  <svg viewBox="0 0 420 190" aria-label="月度交付趋势图" role="img">
+                    <g class="line-grid" id="trendGrid"></g>
+                    <path class="line-axis" d="M24 156 H396"></path>
+                    <path class="area-fill" id="areaFill"></path>
+                    <path class="trend-line" id="trendLine"></path>
+                    <g id="trendPoints"></g>
+                  </svg>
+                  <div class="axis-labels" id="trendLabels"></div>
+                </div>
+              </article>
+
+              <div class="dashboard-split-grid">
+                <article class="chart-card">
+                  <div class="section-head">
+                    <div>
+                      <h3>项目阶段分布</h3>
+                      <div class="section-note">快速定位项目是否主要堆积在建模、计算或结果分析阶段</div>
+                    </div>
+                    <button class="button-link" type="button" onclick="navigateTo('projects')">查看项目列表</button>
+                  </div>
+                  <div class="stage-chart" id="stageChart"></div>
+                </article>
+
+                <article class="summary-card">
+                  <div class="section-head">
+                    <div>
+                      <h3>经营摘要</h3>
+                      <div class="section-note">把首页关键结论收成短句，适合快速扫读</div>
+                    </div>
+                  </div>
+                  <div class="dashboard-summary-list" id="summaryList"></div>
+                </article>
+              </div>
+            </div>
+
+            <div class="dashboard-side-rail">
+              <article class="chart-card">
+                <div class="section-head">
+                  <div>
+                    <h3>金额 Top 项目</h3>
+                    <div class="section-note">辅助判断高价值项目集中在哪些交付任务上</div>
+                  </div>
+                  <div class="section-note">单位：万元</div>
+                </div>
+                <div class="ranking" id="amountChart"></div>
+              </article>
+
+              <article class="summary-card">
+                <div class="section-head">
+                  <div>
+                    <h3>交付准备摘要</h3>
+                    <div class="section-note">适合结合可打包项目和阶段分布一起看</div>
+                  </div>
+                </div>
+                <div class="dashboard-summary-list">${renderSummaryCards((dashboard.summaryCards || []).slice(0, 2))}</div>
+              </article>
+            </div>
+          </section>
+
+          <section class="action-strip">
+            <div class="action-strip-head">
+              <div class="action-strip-copy">
+                <h3>本周行动项</h3>
+                <p>看完整体盘子后，把最值得先处理的风险和交付动作收口在这里。</p>
+              </div>
+              <div class="action-strip-actions">
+                <button class="button-secondary" type="button" onclick="navigateTo('projects')">处理项目列表</button>
+                <button class="button-primary" type="button" onclick="navigateTo('create')">新建项目</button>
+              </div>
+            </div>
+            <div class="action-strip-list" id="actionList">
+              <div class="dashboard-reminder-list" id="reminderList"></div>
+            </div>
+          </section>
+        </section>
+      `;
+
+      document.getElementById("heroBrief").innerHTML = renderHeroBrief(dashboard);
+      document.getElementById("metricsGrid").innerHTML = renderMetrics(metrics);
+      document.getElementById("stageChart").innerHTML = renderStageChart(dashboard.stageDistribution);
+      document.getElementById("amountChart").innerHTML = renderAmountChart(dashboard.topAmounts);
+      document.getElementById("summaryList").innerHTML = renderSummaryCards(dashboard.summaryCards);
+      document.getElementById("reminderList").innerHTML = renderActionItems(dashboard.riskReminders);
+      renderTrendChart(dashboard.deliveryTrend);
+    }
+
+    function renderCreatePage() {
+      mainContentEl.innerHTML = `
+        ${renderPageHeader("新建项目", "填写项目基础信息并建立新的项目记录。")}
+        <section class="page-card">
+          <h2>项目基础信息</h2>
+          <p class="helper-text">保存后会立即写入系统，并跳转到项目详情页继续维护。</p>
+          <form id="projectForm">
+            <div class="form-grid">
+              <div class="field-group">
+                <label for="name">项目名称</label>
+                <input id="name" name="name" required>
+              </div>
+              <div class="field-group">
+                <label for="customer">客户名称</label>
+                <input id="customer" name="customer" required>
+              </div>
+              <div class="field-group">
+                <label for="amount">项目金额</label>
+                <input id="amount" name="amount" type="number" min="0" required>
+              </div>
+              <div class="field-group">
+                <label for="plannedDeliveryDate">计划交付日期</label>
+                <input id="plannedDeliveryDate" name="plannedDeliveryDate" type="date" required>
+              </div>
+              <div class="field-group">
+                <label for="template">项目模板</label>
+                <select id="template" name="template">
+                  <option>标准计算项目</option>
+                  <option>扩散模拟模板</option>
+                  <option>界面分析模板</option>
+                  <option>吸附能扫描模板</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="rootDirectory">根目录路径</label>
+                <input id="rootDirectory" name="rootDirectory" value="/data/projects/new-project">
+              </div>
+              <div class="field-group wide">
+                <label for="description">项目简介</label>
+                <textarea id="description" name="description"></textarea>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="button-primary" type="submit">保存项目草稿</button>
+              <button class="button-secondary" type="button" onclick="navigateTo('projects')">查看项目列表</button>
+            </div>
+          </form>
+        </section>
+      `;
+
+      document.getElementById("projectForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+      });
+
+      const formEl = document.getElementById("projectForm");
+      const nameInput = document.getElementById("name");
+      const rootDirectoryInput = document.getElementById("rootDirectory");
+
+      nameInput.addEventListener("input", () => {
+        if (!rootDirectoryInput.dataset.locked) {
+          rootDirectoryInput.value = `/data/projects/${slugifyProjectName(nameInput.value)}`;
+        }
+      });
+
+      rootDirectoryInput.addEventListener("input", () => {
+        rootDirectoryInput.dataset.locked = rootDirectoryInput.value.trim() ? "true" : "";
+      });
+
+      formEl.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const submitButton = formEl.querySelector('button[type="submit"]');
+        setActionLoading(submitButton, true, "保存中...");
+
+        const formData = new FormData(formEl);
+        const payload = {
+          name: formData.get("name"),
+          customer: formData.get("customer"),
+          amount: Number(formData.get("amount")),
+          plannedDeliveryDate: formData.get("plannedDeliveryDate"),
+          template: formData.get("template"),
+          rootDirectory: formData.get("rootDirectory"),
+          description: formData.get("description")
+        };
+
+        try {
+          const data = await postJson("/api/projects", payload);
+          showToast("项目创建成功，正在进入详情页", "success");
+          navigateTo("detail", data.project.id);
+        } catch (error) {
+          showToast(`项目创建失败：${error.message}`, "error");
+        } finally {
+          setActionLoading(submitButton, false, "保存中...");
+        }
+      });
+    }
+
+    function renderProjectsPage() {
+      const optionsStage = [...new Set(state.projects.map((project) => project.currentStage))];
+      const optionsStatus = [...new Set(state.projects.map((project) => project.status))];
+      const optionsPackage = [...new Set(state.projects.map((project) => project.packageStatus))];
+
+      mainContentEl.innerHTML = `
+        ${renderPageHeader("项目列表", "按项目、客户、阶段和交付时间快速筛选，定位当前需要处理的项目。")}
+        <section class="page-card">
+          <h2>项目检索</h2>
+          <p class="helper-text">支持按阶段、状态、打包情况和关键字段快速筛选，并按优先维度排序。</p>
+          <div class="page-toolbar">
+            <button class="button-secondary" type="button" id="resetFiltersButton">重置筛选</button>
+          </div>
+          <div class="toolbar">
+            <input id="searchInput" type="search" aria-label="搜索项目">
+            <select id="stageFilter" aria-label="阶段筛选">
+              <option value="">全部阶段</option>
+              ${optionsStage.map((stage) => `<option value="${escapeHtml(stage)}">${escapeHtml(stage)}</option>`).join("")}
+            </select>
+            <select id="statusFilter" aria-label="状态筛选">
+              <option value="">全部状态</option>
+              ${optionsStatus.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}
+            </select>
+            <select id="packageFilter" aria-label="打包状态筛选">
+              <option value="">全部打包状态</option>
+              ${optionsPackage.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}
+            </select>
+            <select id="sortFilter" aria-label="排序方式">
+              <option value="deliveryAsc">按交付日期升序</option>
+              <option value="amountDesc">按金额降序</option>
+              <option value="progressDesc">按进度降序</option>
+            </select>
+          </div>
+          <div class="table">
+            <div class="table-header">
+              <div>项目名称</div>
+              <div>客户</div>
+              <div>阶段</div>
+              <div>进度</div>
+              <div>金额</div>
+              <div>交付日期</div>
+              <div>打包状态</div>
+            </div>
+            <div id="projectRows"></div>
+          </div>
+        </section>
+      `;
+
+      const searchInput = document.getElementById("searchInput");
+      const stageFilter = document.getElementById("stageFilter");
+      const statusFilter = document.getElementById("statusFilter");
+      const packageFilter = document.getElementById("packageFilter");
+      const sortFilter = document.getElementById("sortFilter");
+      const resetFiltersButton = document.getElementById("resetFiltersButton");
+      const rowsEl = document.getElementById("projectRows");
+      sortFilter.value = state.preferences.projectsSort;
+
+      function renderRows() {
+        const searchValue = searchInput.value.trim().toLowerCase();
+        const stageValue = stageFilter.value;
+        const statusValue = statusFilter.value;
+        const packageValue = packageFilter.value;
+        const sortValue = sortFilter.value;
+        const filtered = state.projects.filter((project) => {
+          const matchSearch = !searchValue || project.name.toLowerCase().includes(searchValue) || project.customer.toLowerCase().includes(searchValue);
+          const matchStage = !stageValue || project.currentStage === stageValue;
+          const matchStatus = !statusValue || project.status === statusValue;
+          const matchPackage = !packageValue || project.packageStatus === packageValue;
+          return matchSearch && matchStage && matchStatus && matchPackage;
+        }).slice();
+
+        filtered.sort((left, right) => {
+          if (sortValue === "amountDesc") {
+            return right.amount - left.amount;
+          }
+          if (sortValue === "progressDesc") {
+            return right.progress - left.progress;
+          }
+          return String(left.plannedDeliveryDate).localeCompare(String(right.plannedDeliveryDate));
+        });
+
+        if (!filtered.length) {
+          rowsEl.innerHTML = `
+            <div class="empty-state">
+              <h3>没有匹配项目</h3>
+              <p>请调整检索条件，或先创建新的项目记录。</p>
+            </div>
+          `;
+          return;
+        }
+
+        rowsEl.innerHTML = filtered.map((project) => `
+          <div class="table-row" data-id="${project.id}">
+            <div>
+              <strong>${escapeHtml(project.name)}</strong>
+              <div class="table-sub">${escapeHtml(project.id)}</div>
+            </div>
+            <div>${escapeHtml(project.customer)}</div>
+            <div>${escapeHtml(project.currentStage)}</div>
+            <div class="progress-cell">
+              <div class="progress-track"><div class="progress-fill" style="width:${project.progress}%"></div></div>
+              <span>${project.progress}%</span>
+            </div>
+            <div>￥${project.amount} 万</div>
+            <div>${escapeHtml(project.plannedDeliveryDate)}</div>
+            <div><span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span></div>
+          </div>
+        `).join("");
+
+        rowsEl.querySelectorAll(".table-row").forEach((row) => {
+          row.addEventListener("click", () => navigateTo("detail", row.dataset.id));
+        });
+      }
+
+      [searchInput, stageFilter, statusFilter, packageFilter, sortFilter].forEach((element) => {
+        element.addEventListener("input", renderRows);
+        element.addEventListener("change", renderRows);
+      });
+
+      resetFiltersButton.addEventListener("click", () => {
+        searchInput.value = "";
+        stageFilter.value = "";
+        statusFilter.value = "";
+        packageFilter.value = "";
+        sortFilter.value = state.preferences.projectsSort;
+        renderRows();
+      });
+
+      renderRows();
+    }
+
+    function renderProjectDetailPage() {
+      const project = state.projectDetail;
+      if (!project) {
+        mainContentEl.innerHTML = `
+          ${renderPageHeader("项目详情", "当前未找到项目，请先从项目列表进入有效项目。")}
+          <div class="empty-state">
+            <h3>项目不存在</h3>
+            <p>请返回项目列表重新选择项目。</p>
+          </div>
+        `;
+        return;
+      }
+
+      mainContentEl.innerHTML = `
+        ${renderPageHeader(project.name, project.description || "查看并维护项目状态、交付清单和打包记录。")}
+        <section class="page-card">
+          <h2>项目总览</h2>
+          <p class="helper-text">可以直接在本页更新项目状态、维护交付清单，并登记新的打包记录。</p>
+          <div class="detail-grid">
+            <div class="detail-stack">
+              <div class="detail-card">
+                <div class="detail-card-head">
+                  <h3>项目维护</h3>
+                  <span class="${getTagClass(project.status)}">${escapeHtml(project.status)}</span>
+                </div>
+                <form class="detail-edit-form" id="detailEditForm">
+                  <div class="detail-form-grid">
+                    <div class="field-group">
+                      <label for="detailCustomer">客户名称</label>
+                      <input id="detailCustomer" name="customer" value="${escapeHtml(project.customer)}" required>
+                    </div>
+                    <div class="field-group">
+                      <label for="detailAmount">项目金额</label>
+                      <input id="detailAmount" name="amount" type="number" min="0" value="${project.amount}" required>
+                    </div>
+                    <div class="field-group">
+                      <label for="detailStage">当前阶段</label>
+                      <select id="detailStage" name="currentStage">${renderSelectOptions(stageOptions, project.currentStage)}</select>
+                    </div>
+                    <div class="field-group">
+                      <label for="detailProgress">进度</label>
+                      <input id="detailProgress" name="progress" type="number" min="0" max="100" value="${project.progress}" required>
+                    </div>
+                    <div class="field-group">
+                      <label for="detailStatus">项目状态</label>
+                      <select id="detailStatus" name="status">${renderSelectOptions(projectStatusOptions, project.status)}</select>
+                    </div>
+                    <div class="field-group">
+                      <label for="detailPackageStatus">打包状态</label>
+                      <select id="detailPackageStatus" name="packageStatus">${renderSelectOptions(packageStatusOptions, project.packageStatus)}</select>
+                    </div>
+                    <div class="field-group">
+                      <label for="detailDeliveryDate">计划交付</label>
+                      <input id="detailDeliveryDate" name="plannedDeliveryDate" type="date" value="${escapeHtml(project.plannedDeliveryDate)}" required>
+                    </div>
+                    <div class="field-group">
+                      <label for="detailRootDirectory">目录路径</label>
+                      <input id="detailRootDirectory" name="rootDirectory" value="${escapeHtml(project.rootDirectory)}" required>
+                    </div>
+                    <div class="field-group wide">
+                      <label for="detailDescription">项目说明</label>
+                      <textarea id="detailDescription" name="description">${escapeHtml(project.description || "")}</textarea>
+                    </div>
+                  </div>
+                  <div class="actions">
+                    <button class="button-primary" type="submit">保存项目更新</button>
+                  </div>
+                </form>
+              </div>
+              <div class="detail-card">
+                <h3>阶段进度</h3>
+                <div class="stage-list">
+                  ${project.stageTimeline.map((stage) => {
+                    const stageClass = stage.status === "已完成" ? "stage-chip done" : stage.status === "进行中" ? "stage-chip current" : "stage-chip";
+                    return `<div class="${stageClass}"><span>${escapeHtml(stage.name)}</span><span>${escapeHtml(stage.status)}</span></div>`;
+                  }).join("")}
+                </div>
+              </div>
+            </div>
+            <div class="detail-stack">
+              <div class="detail-card">
+                <div class="detail-card-head">
+                  <h3>交付清单</h3>
+                  <span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span>
+                </div>
+                <div class="checklist">
+                  ${project.deliveryChecklist.map((item) => `
+                    <div class="check-item">
+                      <div>
+                        <strong>${escapeHtml(item.name)}</strong>
+                        <div class="muted">${escapeHtml(item.status)}</div>
+                      </div>
+                      <div class="check-actions">
+                        ${checklistStatusOptions.map((status) => `
+                          <button
+                            class="button-small ${item.status === status ? "active" : ""}"
+                            type="button"
+                            data-check-name="${escapeHtml(item.name)}"
+                            data-check-status="${escapeHtml(status)}"
+                          >${escapeHtml(status)}</button>
+                        `).join("")}
+                      </div>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
+              <div class="detail-card">
+                <div class="detail-card-head">
+                  <h3>打包记录</h3>
+                  <span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span>
+                </div>
+                <form class="package-form" id="packageRecordForm">
+                  <div class="detail-form-grid">
+                    <div class="field-group">
+                      <label for="packageVersion">版本号</label>
+                      <input id="packageVersion" name="version" required>
+                    </div>
+                    <div class="field-group">
+                      <label for="packageDate">打包日期</label>
+                      <input id="packageDate" name="date" type="date" value="${escapeHtml(project.plannedDeliveryDate)}" required>
+                    </div>
+                    <div class="field-group wide">
+                      <label for="packageType">记录类型</label>
+                      <select id="packageType" name="type">
+                        <option>客户交付包</option>
+                        <option>内部预审包</option>
+                        <option>归档包</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="actions">
+                    <button class="button-secondary" type="submit">新增打包记录</button>
+                  </div>
+                </form>
+                <div class="record-list">
+                  ${project.packageRecords.length ? project.packageRecords.map((record) => `
+                    <div class="record-item">
+                      <div>
+                        <strong>${escapeHtml(record.version)}</strong>
+                        <div class="muted">${escapeHtml(record.date)}</div>
+                      </div>
+                      <span class="record-badge">${escapeHtml(record.type)}</span>
+                    </div>
+                  `).join("") : `
+                    <div class="empty-state">
+                      <h3>暂无打包记录</h3>
+                      <p>当前项目还没有登记打包记录。</p>
+                    </div>
+                  `}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+
+      document.getElementById("detailEditForm").addEventListener("submit", saveProjectDetail);
+      document.getElementById("packageRecordForm").addEventListener("submit", savePackageRecord);
+      document.querySelectorAll("[data-check-name]").forEach((button) => {
+        button.addEventListener("click", () => {
+          updateChecklistStatus(button.dataset.checkName, button.dataset.checkStatus, button);
+        });
+      });
+    }
+
+    async function loadDashboardData() {
+      try {
+        const data = await fetchJson("/api/dashboard");
+        state.dashboard = data;
+        state.apiOnline = true;
+      } catch (error) {
+        state.dashboard = fallbackDashboard;
+      }
+    }
+
+    async function loadProjectsData() {
+      try {
+        const data = await fetchJson("/api/projects");
+        if (Array.isArray(data.projects) && data.projects.length) {
+          state.projects = data.projects;
+          state.apiOnline = true;
+        }
+      } catch (error) {
+        state.projects = fallbackProjects;
+      }
+    }
+
+    async function loadProjectDetailData(projectId) {
+      try {
+        const data = await fetchJson(`/api/projects/${projectId}`);
+        if (data.project) {
+          state.projectDetail = data.project;
+          state.apiOnline = true;
+          return;
+        }
+      } catch (error) {
+      }
+
+      state.projectDetail = state.projects.find((project) => project.id === projectId) || fallbackProjects[0] || null;
+    }
+
+    function renderCurrentPage() {
+      applyPreferences();
+      renderNav();
+      if (currentPage === "create") {
+        renderCreatePage();
+      } else if (currentPage === "projects") {
+        renderProjectsPage();
+      } else if (currentPage === "detail") {
+        renderProjectDetailPage();
+      } else {
+        renderDashboard();
+      }
+      bindGlobalUi();
+    }
+
+    async function init() {
+      syncSettingsForm();
+      applyPreferences();
+      await loadDashboardData();
+      await loadProjectsData();
+      if (currentPage === "detail") {
+        await loadProjectDetailData(currentProjectId);
+      }
+      renderCurrentPage();
+    }
+
+    window.navigateTo = navigateTo;
+    window.updateChecklistStatus = updateChecklistStatus;
+    init();
+  </script>
+</body>
+</html>

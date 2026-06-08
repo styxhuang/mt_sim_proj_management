@@ -1,0 +1,179 @@
+[
+  {
+    "id": "p-001",
+    "name": "锂电电解液扩散模拟",
+    "customer": "华东新能源",
+    "amount": 42,
+    "currentStage": "模拟计算",
+    "progress": 64,
+    "plannedDeliveryDate": "2026-06-14",
+    "status": "进行中",
+    "packageStatus": "待打包",
+    "rootDirectory": "/data/projects/p-001",
+    "template": "标准扩散模板",
+    "description": "评估不同温度条件下电解液扩散速率和迁移趋势。",
+    "stageTimeline": [
+      {
+        "name": "立项",
+        "status": "已完成"
+      },
+      {
+        "name": "建模",
+        "status": "已完成"
+      },
+      {
+        "name": "模拟计算",
+        "status": "进行中"
+      },
+      {
+        "name": "结果分析",
+        "status": "未开始"
+      },
+      {
+        "name": "报告交付",
+        "status": "未开始"
+      }
+    ],
+    "deliveryChecklist": [
+      {
+        "name": "分析报告",
+        "status": "待完成"
+      },
+      {
+        "name": "结果图表",
+        "status": "已完成"
+      },
+      {
+        "name": "原始数据",
+        "status": "待整理"
+      },
+      {
+        "name": "说明文档",
+        "status": "待完成"
+      }
+    ],
+    "packageRecords": [
+      {
+        "version": "v0.9",
+        "date": "2026-06-06",
+        "type": "内部预审包"
+      }
+    ]
+  },
+  {
+    "id": "p-002",
+    "name": "高分子膜界面稳定性计算",
+    "customer": "南方材料",
+    "amount": 58,
+    "currentStage": "结果分析",
+    "progress": 82,
+    "plannedDeliveryDate": "2026-06-09",
+    "status": "临近交付",
+    "packageStatus": "可打包",
+    "rootDirectory": "/data/projects/p-002",
+    "template": "界面分析模板",
+    "description": "分析膜材料在不同电场条件下的界面稳定性表现。",
+    "stageTimeline": [
+      {
+        "name": "立项",
+        "status": "已完成"
+      },
+      {
+        "name": "建模",
+        "status": "已完成"
+      },
+      {
+        "name": "模拟计算",
+        "status": "已完成"
+      },
+      {
+        "name": "结果分析",
+        "status": "进行中"
+      },
+      {
+        "name": "报告交付",
+        "status": "未开始"
+      }
+    ],
+    "deliveryChecklist": [
+      {
+        "name": "分析报告",
+        "status": "已完成"
+      },
+      {
+        "name": "结果图表",
+        "status": "已完成"
+      },
+      {
+        "name": "原始数据",
+        "status": "已完成"
+      },
+      {
+        "name": "说明文档",
+        "status": "待确认"
+      }
+    ],
+    "packageRecords": [
+      {
+        "version": "v1.0-rc1",
+        "date": "2026-06-07",
+        "type": "客户交付包"
+      }
+    ]
+  },
+  {
+    "id": "p-003",
+    "name": "催化位点吸附能扫描",
+    "customer": "西部催化",
+    "amount": 33,
+    "currentStage": "建模",
+    "progress": 35,
+    "plannedDeliveryDate": "2026-06-21",
+    "status": "进行中",
+    "packageStatus": "未开始",
+    "rootDirectory": "/data/projects/p-003",
+    "template": "吸附能扫描模板",
+    "description": "比较多种位点构型下关键中间体的吸附能分布。",
+    "stageTimeline": [
+      {
+        "name": "立项",
+        "status": "已完成"
+      },
+      {
+        "name": "建模",
+        "status": "进行中"
+      },
+      {
+        "name": "模拟计算",
+        "status": "未开始"
+      },
+      {
+        "name": "结果分析",
+        "status": "未开始"
+      },
+      {
+        "name": "报告交付",
+        "status": "未开始"
+      }
+    ],
+    "deliveryChecklist": [
+      {
+        "name": "分析报告",
+        "status": "未开始"
+      },
+      {
+        "name": "结果图表",
+        "status": "未开始"
+      },
+      {
+        "name": "原始数据",
+        "status": "未开始"
+      },
+      {
+        "name": "说明文档",
+        "status": "未开始"
+      }
+    ],
+    "packageRecords": []
+  }
+]

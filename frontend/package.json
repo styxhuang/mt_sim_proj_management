@@ -1,0 +1,9 @@
+{
+  "name": "sim-delivery-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node src/dev-server.js",
+    "start": "node src/dev-server.js"
+  }
+}
