@@ -483,9 +483,16 @@ class ProjectWorkspaceMarkupTests(unittest.TestCase):
         self.assertIn("legacyRoutePage", INDEX_HTML)
 
     def test_create_and_list_enter_workspace(self) -> None:
-        # 新建项目落到工作台方案设计标签；项目列表点击进入工作台。
+        # 新建项目落到工作台方案设计标签；项目列表先预览，再从预览进入工作台。
         self.assertIn('navigateTo("workspace", data.project.id, { tab: "plan" })', INDEX_HTML)
-        self.assertIn('navigateTo("workspace", row.dataset.id)', INDEX_HTML)
+        self.assertIn("openProjectPreview(row.dataset.id)", INDEX_HTML)
+        self.assertIn('navigateTo("workspace", project.id, { tab: "overview" })', INDEX_HTML)
+
+    def test_deleting_active_workspace_project_redirects_to_valid_destination(self) -> None:
+        self.assertIn("function syncWorkspaceAfterProjectDeletion(deletedIds)", INDEX_HTML)
+        self.assertIn("syncWorkspaceAfterProjectDeletion(deletedIds)", INDEX_HTML)
+        self.assertIn('navigateTo("workspace", state.projectDetail.id, { tab: "overview" })', INDEX_HTML)
+        self.assertIn('navigateTo("projects")', INDEX_HTML)
 
     def test_requirement_upload_carries_project_id(self) -> None:
         self.assertIn("projectId: state.inWorkspace", INDEX_HTML)

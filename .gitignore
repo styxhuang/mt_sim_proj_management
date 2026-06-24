@@ -16,6 +16,7 @@ backend/data/*.db-wal
 
 .superpowers/
 superpowers/
+.worktrees/
 nohup.out
 
 .DS_Store

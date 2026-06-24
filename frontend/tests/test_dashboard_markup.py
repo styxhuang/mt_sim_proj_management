@@ -22,8 +22,8 @@ class DashboardMarkupTests(unittest.TestCase):
         self.assertIn('class="page-header page-header--split"', INDEX_HTML)
         self.assertIn('class="page-toolbar"', INDEX_HTML)
         self.assertIn('class="dashboard-shell"', INDEX_HTML)
-        self.assertIn('id="summaryList"', INDEX_HTML)
-        self.assertIn('id="reminderList"', INDEX_HTML)
+        self.assertIn('id="dashboardSummaryList"', INDEX_HTML)
+        self.assertIn('id="dashboardActionList"', INDEX_HTML)
 
     def test_dashboard_contains_rebalanced_hero_kpi_and_action_regions(self) -> None:
         self.assertIn('class="hero-decision"', INDEX_HTML)
@@ -31,18 +31,29 @@ class DashboardMarkupTests(unittest.TestCase):
         self.assertIn('class="metrics-grid metrics-grid--priority"', INDEX_HTML)
         self.assertIn('metric-card metric-card-primary', INDEX_HTML)
         self.assertIn('metric-card metric-card-strong', INDEX_HTML)
-        self.assertIn('class="dashboard-main-grid"', INDEX_HTML)
+        self.assertIn('class="dashboard-focus-grid"', INDEX_HTML)
+        self.assertIn('class="dashboard-support-grid"', INDEX_HTML)
         self.assertIn('chart-card chart-card-featured', INDEX_HTML)
-        self.assertIn('class="dashboard-side-rail"', INDEX_HTML)
+        self.assertIn('class="chart-card dashboard-action-panel"', INDEX_HTML)
         self.assertIn('class="action-strip"', INDEX_HTML)
-        self.assertIn('id="actionList"', INDEX_HTML)
+        self.assertIn('id="dashboardActionList"', INDEX_HTML)
 
     def test_dashboard_hero_copy_is_shorter_and_page_width_is_wider(self) -> None:
         self.assertIn("--page-max-width: 1680px;", INDEX_HTML)
-        self.assertIn("<h2>交付总览</h2>", INDEX_HTML)
+        self.assertIn("<h2>${escapeHtml(heroDecision)}</h2>", INDEX_HTML)
         self.assertNotIn("首页先回答当前业务规模、本周需要优先推进的交付事项", INDEX_HTML)
         self.assertNotIn('class="hero-points"', INDEX_HTML)
         self.assertNotIn("优先盯临近交付项目", INDEX_HTML)
+
+    def test_dashboard_a1_decision_first_layout_contract(self) -> None:
+        self.assertIn("dashboard-focus-grid", INDEX_HTML)
+        self.assertIn("dashboard-support-grid", INDEX_HTML)
+        self.assertIn("交付决策", INDEX_HTML)
+        self.assertIn("优先处理延期风险", INDEX_HTML)
+        self.assertIn('id="dashboardActionList"', INDEX_HTML)
+        self.assertIn('id="dashboardSummaryList"', INDEX_HTML)
+        self.assertIn('class="hero-signal-grid" id="heroBrief"', INDEX_HTML)
+        self.assertNotIn("<div class=\"brief-label\">交付准备</div>", INDEX_HTML)
 
 
 if __name__ == "__main__":

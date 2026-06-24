@@ -604,6 +604,22 @@
       gap: 16px;
     }
 
+    .dashboard-focus-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.82fr);
+      gap: 16px;
+    }
+
+    .dashboard-support-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.85fr) minmax(260px, 0.85fr);
+      gap: 16px;
+    }
+
+    .dashboard-action-panel {
+      min-height: 100%;
+    }
+
     .chart-card,
     .summary-card,
     .reminder-card {
@@ -1153,6 +1169,162 @@
     .table-row:hover {
       border-color: rgba(56, 189, 248, 0.2);
       background: rgba(15, 23, 42, 0.62);
+    }
+
+    .project-list-shell {
+      display: grid;
+      gap: 16px;
+    }
+
+    .project-list-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .project-summary-item {
+      padding: 14px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.42);
+    }
+
+    .project-summary-item strong {
+      display: block;
+      margin-top: 4px;
+      color: #f8fafc;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .project-filter-panel {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.34);
+    }
+
+    .project-filter-panel .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.6fr) repeat(4, minmax(120px, 1fr)) auto;
+    }
+
+    .project-table-card-head,
+    .project-bulk-bar {
+      display: grid;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .project-table-card-head {
+      grid-template-columns: 1fr auto;
+      margin-bottom: 14px;
+    }
+
+    .project-bulk-bar {
+      grid-template-columns: auto auto auto;
+      align-items: center;
+      justify-content: end;
+    }
+
+    .button-danger {
+      background: rgba(127, 29, 29, 0.24);
+      color: #fecaca;
+      border-color: rgba(248, 113, 113, 0.38);
+    }
+
+    .button-danger:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .project-table .table-header,
+    .project-table .table-row {
+      grid-template-columns: 44px minmax(220px, 1.7fr) minmax(110px, 0.9fr) minmax(96px, 0.8fr) minmax(140px, 1fr) minmax(108px, 0.8fr) minmax(92px, 0.7fr) minmax(108px, 0.8fr) minmax(96px, 0.7fr);
+    }
+
+    .project-table .table-row {
+      cursor: default;
+    }
+
+    .project-table .table-row.project-row-preview-active {
+      border-color: rgba(56, 189, 248, 0.38);
+      background: rgba(14, 165, 233, 0.08);
+    }
+
+    .project-row-main {
+      min-width: 0;
+    }
+
+    .project-row-main strong {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .project-row-meta {
+      display: none;
+    }
+
+    .project-mobile-label {
+      display: none;
+    }
+
+    .open-project-button {
+      justify-self: start;
+      min-height: 32px;
+      padding: 6px 10px;
+    }
+
+    .project-preview-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .project-preview-head h3 {
+      margin: 0 0 6px;
+      color: #f8fafc;
+      font-size: 17px;
+    }
+
+    .project-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .project-preview-item {
+      padding: 10px 12px;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.38);
+    }
+
+    .project-preview-item span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .project-preview-empty {
+      color: var(--muted);
+    }
+
+    .project-preview-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .tabular-number {
+      font-variant-numeric: tabular-nums;
     }
 
     .project-select-cell {
@@ -2560,6 +2732,21 @@
       }
     }
 
+    @media (max-width: 1200px) {
+      .project-list-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .project-filter-panel .toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .project-table .table-header,
+      .project-table .table-row {
+        grid-template-columns: 44px minmax(200px, 1.4fr) minmax(110px, 0.9fr) minmax(96px, 0.8fr) minmax(140px, 1fr) minmax(96px, 0.7fr);
+      }
+    }
+
     @media (max-width: 1180px) {
       .requirement-workspace {
         grid-template-columns: 1fr;
@@ -2573,6 +2760,8 @@
       .detail-form-grid,
       .metrics-grid,
       .dashboard-main-grid,
+      .dashboard-focus-grid,
+      .dashboard-support-grid,
       .dashboard-split-grid,
       .dashboard-hero {
         grid-template-columns: 1fr 1fr;
@@ -2605,9 +2794,57 @@
       .detail-form-grid,
       .metrics-grid,
       .dashboard-main-grid,
+      .dashboard-focus-grid,
+      .dashboard-support-grid,
       .dashboard-split-grid,
       .dashboard-hero {
         grid-template-columns: 1fr;
+      }
+
+      .project-list-summary,
+      .project-filter-panel .toolbar,
+      .project-bulk-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .project-table .table-row {
+        grid-template-columns: 44px 1fr;
+        align-items: start;
+      }
+
+      .project-table .table-header {
+        display: none;
+      }
+
+      .project-table .table-row > div:not(.project-select-cell):not(.project-row-main) {
+        grid-column: 2;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .project-table .progress-track {
+        min-width: 0;
+      }
+
+      .project-row-main {
+        grid-column: 2;
+      }
+
+      .project-table .project-row-main .table-sub {
+        display: none;
+      }
+
+      .project-row-meta,
+      .project-mobile-label {
+        display: inline-flex;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .project-select {
+        width: 20px;
+        height: 20px;
       }
 
       .page-header {
@@ -2752,6 +2989,12 @@
           <button class="button-primary" type="submit">创建项目</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="projectPreviewModal" role="dialog" aria-modal="true" aria-labelledby="projectPreviewTitle">
+    <div class="modal-card">
+      <div id="projectPreviewContent"></div>
     </div>
   </div>
 
@@ -2979,6 +3222,7 @@
       workspaceTab: "overview",
       inWorkspace: false,
       selectedProjectIds: new Set(),
+      projectPreviewId: null,
       preferences: initialPreferences
     };
 
@@ -3321,6 +3565,79 @@
     const packageStatusOptions = ["未开始", "待打包", "可打包", "已打包"];
     const checklistStatusOptions = ["未开始", "待完成", "待整理", "待确认", "已完成"];
 
+    function getProjectListSummary(projects) {
+      const items = Array.isArray(projects) ? projects : [];
+      const total = items.length;
+      const urgent = items.filter((project) => project.status === "临近交付").length;
+      const packageReady = items.filter((project) => project.packageStatus === "可打包").length;
+      const averageProgress = total
+        ? Math.round(items.reduce((sum, project) => sum + Number(project.progress || 0), 0) / total)
+        : 0;
+      return { total, urgent, packageReady, averageProgress };
+    }
+
+    function renderProjectPreview(project) {
+      if (!project) {
+        return `
+          <div class="project-preview-empty">
+            未找到项目。请关闭弹窗后重新选择。
+          </div>
+        `;
+      }
+
+      const progressValue = Math.max(0, Math.min(100, Number(project.progress) || 0));
+      const amountValue = Number(project.amount) || 0;
+      return `
+        <div class="project-preview-head">
+          <div>
+            <h3 id="projectPreviewTitle">${escapeHtml(project.name)}</h3>
+            <p class="helper-text">${escapeHtml(project.description || "暂无项目说明。")}</p>
+          </div>
+          <button class="button-link" id="closeProjectPreviewButton" type="button">关闭</button>
+        </div>
+        <span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span>
+        <div class="project-preview-grid">
+          <div class="project-preview-item"><span>客户</span>${escapeHtml(project.customer)}</div>
+          <div class="project-preview-item"><span>阶段</span>${escapeHtml(project.currentStage)}</div>
+          <div class="project-preview-item"><span>进度</span>${progressValue}%</div>
+          <div class="project-preview-item"><span>金额</span>￥${amountValue} 万</div>
+          <div class="project-preview-item"><span>交付日期</span>${escapeHtml(project.plannedDeliveryDate)}</div>
+          <div class="project-preview-item"><span>项目 ID</span>${escapeHtml(project.id)}</div>
+          <div class="project-preview-item"><span>客户目录</span>${escapeHtml(project.rootDirectory || "未配置")}</div>
+          <div class="project-preview-item"><span>项目状态</span>${escapeHtml(project.status)}</div>
+        </div>
+        <div class="project-preview-actions">
+          <button class="button-secondary" type="button" id="cancelProjectPreviewButton">关闭</button>
+          <button class="button-primary" type="button" id="openPreviewProjectButton" data-project-id="${escapeHtml(project.id)}">进入工作台</button>
+        </div>
+      `;
+    }
+
+    function closeProjectPreview() {
+      document.getElementById("projectPreviewModal")?.classList.add("hidden");
+    }
+
+    function openProjectPreview(projectId) {
+      const project = state.projects.find((item) => item.id === projectId);
+      if (!project) {
+        return;
+      }
+      state.projectPreviewId = project.id;
+      const content = document.getElementById("projectPreviewContent");
+      const modal = document.getElementById("projectPreviewModal");
+      if (!content || !modal) {
+        return;
+      }
+      content.innerHTML = renderProjectPreview(project);
+      content.querySelector("#closeProjectPreviewButton")?.addEventListener("click", closeProjectPreview);
+      content.querySelector("#cancelProjectPreviewButton")?.addEventListener("click", closeProjectPreview);
+      content.querySelector("#openPreviewProjectButton")?.addEventListener("click", () => {
+        navigateTo("workspace", project.id, { tab: "overview" });
+      });
+      modal.classList.remove("hidden");
+      content.querySelector("#closeProjectPreviewButton")?.focus();
+    }
+
     function syncProjectInState(project) {
       state.projects = state.projects.map((item) => item.id === project.id ? project : item);
       if (!state.projects.find((item) => item.id === project.id)) {
@@ -3348,6 +3665,24 @@
       state.selectedProjectIds = new Set(
         [...state.selectedProjectIds].filter((projectId) => !ids.has(projectId))
       );
+      if (state.projectPreviewId && ids.has(state.projectPreviewId)) {
+        state.projectPreviewId = null;
+        closeProjectPreview();
+      }
+    }
+
+    function syncWorkspaceAfterProjectDeletion(deletedIds) {
+      const ids = new Set(deletedIds);
+      const activeWorkspaceId = state.workspace?.project?.id || state.projectDetail?.id || currentProjectId;
+      if (!state.inWorkspace || !ids.has(activeWorkspaceId)) {
+        return false;
+      }
+      if (state.projectDetail) {
+        navigateTo("workspace", state.projectDetail.id, { tab: "overview" });
+      } else {
+        navigateTo("projects");
+      }
+      return true;
     }
 
     async function refreshState(projectId) {
@@ -4145,11 +4480,6 @@
           <strong>${dashboard.nearDelivery}</strong>
           <span>本周需优先处理的临近交付项目</span>
         </div>
-        <div class="brief-item">
-          <div class="brief-label">交付准备</div>
-          <strong>${dashboard.readyToPack}</strong>
-          <span>已具备打包条件的项目数量</span>
-        </div>
       `;
     }
 
@@ -4309,98 +4639,91 @@
         <section class="dashboard-shell">
           <section class="dashboard-hero">
             <div class="hero-copy">
-              <div class="eyebrow">综合仪表盘</div>
-              <div class="hero-decision">${escapeHtml(heroDecision)}</div>
-              <h2>交付总览</h2>
+              <div class="hero-decision">交付决策</div>
+              <h2>${escapeHtml(heroDecision)}</h2>
+              <p>优先处理延期风险，其次推进可打包项目进入交付整理。</p>
             </div>
             <div class="hero-signal-grid" id="heroBrief"></div>
           </section>
 
           <section class="metrics-grid metrics-grid--priority" id="metricsGrid"></section>
 
-          <section class="dashboard-main-grid">
-            <div class="dashboard-left-rail">
-              <article class="chart-card chart-card-featured">
-                <div class="section-head">
-                  <div>
-                    <h3>月度交付趋势</h3>
-                    <div class="section-note">优先观察最近 6 个月交付压力是否持续抬升</div>
-                  </div>
-                  <div class="section-note">单位：项目数</div>
+          <section class="dashboard-focus-grid">
+            <article class="chart-card chart-card-featured">
+              <div class="section-head">
+                <div>
+                  <h3>月度交付趋势</h3>
+                  <div class="section-note">作为交付压力判断的主要证据</div>
                 </div>
-                <div class="line-chart">
-                  <svg viewBox="0 0 420 190" aria-label="月度交付趋势图" role="img">
-                    <g class="line-grid" id="trendGrid"></g>
-                    <path class="line-axis" d="M24 156 H396"></path>
-                    <path class="area-fill" id="areaFill"></path>
-                    <path class="trend-line" id="trendLine"></path>
-                    <g id="trendPoints"></g>
-                  </svg>
-                  <div class="axis-labels" id="trendLabels"></div>
-                </div>
-              </article>
-
-              <div class="dashboard-split-grid">
-                <article class="chart-card">
-                  <div class="section-head">
-                    <div>
-                      <h3>项目阶段分布</h3>
-                      <div class="section-note">快速定位项目是否主要堆积在建模、计算或结果分析阶段</div>
-                    </div>
-                    <button class="button-link" type="button" onclick="navigateTo('projects')">查看项目列表</button>
-                  </div>
-                  <div class="stage-chart" id="stageChart"></div>
-                </article>
-
-                <article class="summary-card">
-                  <div class="section-head">
-                    <div>
-                      <h3>经营摘要</h3>
-                      <div class="section-note">把首页关键结论收成短句，适合快速扫读</div>
-                    </div>
-                  </div>
-                  <div class="dashboard-summary-list" id="summaryList"></div>
-                </article>
+                <div class="section-note">单位：项目数</div>
               </div>
-            </div>
+              <div class="line-chart">
+                <svg viewBox="0 0 420 190" aria-label="月度交付趋势图" role="img">
+                  <g class="line-grid" id="trendGrid"></g>
+                  <path class="line-axis" d="M24 156 H396"></path>
+                  <path class="area-fill" id="areaFill"></path>
+                  <path class="trend-line" id="trendLine"></path>
+                  <g id="trendPoints"></g>
+                </svg>
+                <div class="axis-labels" id="trendLabels"></div>
+              </div>
+            </article>
 
-            <div class="dashboard-side-rail">
-              <article class="chart-card">
-                <div class="section-head">
-                  <div>
-                    <h3>金额 Top 项目</h3>
-                    <div class="section-note">辅助判断高价值项目集中在哪些交付任务上</div>
-                  </div>
-                  <div class="section-note">单位：万元</div>
+            <article class="chart-card dashboard-action-panel">
+              <div class="section-head">
+                <div>
+                  <h3>本周行动项</h3>
+                  <div class="section-note">把最值得先处理的风险和交付动作收口在这里</div>
                 </div>
-                <div class="ranking" id="amountChart"></div>
-              </article>
-
-              <article class="summary-card">
-                <div class="section-head">
-                  <div>
-                    <h3>交付准备摘要</h3>
-                    <div class="section-note">适合结合可打包项目和阶段分布一起看</div>
-                  </div>
-                </div>
-                <div class="dashboard-summary-list">${renderSummaryCards((dashboard.summaryCards || []).slice(0, 2))}</div>
-              </article>
-            </div>
+              </div>
+              <div class="dashboard-reminder-list" id="dashboardActionList"></div>
+            </article>
           </section>
 
-          <section class="action-strip">
+          <section class="dashboard-support-grid">
+            <article class="chart-card">
+              <div class="section-head">
+                <div>
+                  <h3>项目阶段分布</h3>
+                  <div class="section-note">定位项目是否堆积在建模、计算或结果分析阶段</div>
+                </div>
+                <button class="button-link" type="button" onclick="navigateTo('projects')">查看项目列表</button>
+              </div>
+              <div class="stage-chart" id="stageChart"></div>
+            </article>
+
+            <article class="chart-card">
+              <div class="section-head">
+                <div>
+                  <h3>金额 Top 项目</h3>
+                  <div class="section-note">辅助判断高价值项目集中在哪些交付任务上</div>
+                </div>
+                <div class="section-note">单位：万元</div>
+              </div>
+              <div class="ranking" id="amountChart"></div>
+            </article>
+
+            <article class="summary-card">
+              <div class="section-head">
+                <div>
+                  <h3>经营摘要</h3>
+                  <div class="section-note">把首页关键结论收成短句，适合快速扫读</div>
+                </div>
+              </div>
+              <div class="dashboard-summary-list" id="dashboardSummaryList"></div>
+            </article>
+          </section>
+
+          <section class="action-strip" aria-label="仪表盘快捷操作">
             <div class="action-strip-head">
               <div class="action-strip-copy">
-                <h3>本周行动项</h3>
-                <p>看完整体盘子后，把最值得先处理的风险和交付动作收口在这里。</p>
+                <h3>快捷操作</h3>
+                <p>主要行动已经上移到第一屏，这里保留列表处理和新建项目入口。</p>
               </div>
               <div class="action-strip-actions">
                 <button class="button-secondary" type="button" onclick="navigateTo('projects')">处理项目列表</button>
                 <button class="button-primary" type="button" onclick="openCreateProjectModal()">新建项目</button>
               </div>
-            </div>
-            <div class="action-strip-list" id="actionList">
-              <div class="dashboard-reminder-list" id="reminderList"></div>
             </div>
           </section>
         </section>
@@ -4410,8 +4733,8 @@
       document.getElementById("metricsGrid").innerHTML = renderMetrics(metrics);
       document.getElementById("stageChart").innerHTML = renderStageChart(dashboard.stageDistribution);
       document.getElementById("amountChart").innerHTML = renderAmountChart(dashboard.topAmounts);
-      document.getElementById("summaryList").innerHTML = renderSummaryCards(dashboard.summaryCards);
-      document.getElementById("reminderList").innerHTML = renderActionItems(dashboard.riskReminders);
+      document.getElementById("dashboardSummaryList").innerHTML = renderSummaryCards(dashboard.summaryCards);
+      document.getElementById("dashboardActionList").innerHTML = renderActionItems(dashboard.riskReminders);
       renderTrendChart(dashboard.deliveryTrend);
     }
 
@@ -4447,6 +4770,11 @@
       document.getElementById("createProjectModal")?.addEventListener("click", (event) => {
         if (event.target.id === "createProjectModal") {
           closeCreateProjectModal();
+        }
+      });
+      document.getElementById("projectPreviewModal")?.addEventListener("click", (event) => {
+        if (event.target.id === "projectPreviewModal") {
+          closeProjectPreview();
         }
       });
 
@@ -4496,50 +4824,84 @@
       const optionsStage = [...new Set(state.projects.map((project) => project.currentStage))];
       const optionsStatus = [...new Set(state.projects.map((project) => project.status))];
       const optionsPackage = [...new Set(state.projects.map((project) => project.packageStatus))];
+      const summary = getProjectListSummary(state.projects);
 
       mainContentEl.innerHTML = `
-        ${renderPageHeader("项目列表", "按项目、客户、阶段和交付时间快速筛选，定位当前需要处理的项目。")}
-        <section class="page-card">
-          <h2>项目检索</h2>
-          <p class="helper-text">支持按阶段、状态、打包情况和关键字段快速筛选，并按优先维度排序。</p>
-          <div class="page-toolbar">
-            <button class="button-secondary" type="button" id="resetFiltersButton">重置筛选</button>
-            <button class="button-secondary" type="button" id="deleteSelectedProjectsButton" disabled>删除选中项目</button>
-            <span class="helper-text" id="selectedProjectsCount">已选择 0 个项目</span>
-          </div>
-          <div class="toolbar">
-            <input id="searchInput" type="search" aria-label="搜索项目">
-            <select id="stageFilter" aria-label="阶段筛选">
-              <option value="">全部阶段</option>
-              ${optionsStage.map((stage) => `<option value="${escapeHtml(stage)}">${escapeHtml(stage)}</option>`).join("")}
-            </select>
-            <select id="statusFilter" aria-label="状态筛选">
-              <option value="">全部状态</option>
-              ${optionsStatus.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}
-            </select>
-            <select id="packageFilter" aria-label="打包状态筛选">
-              <option value="">全部打包状态</option>
-              ${optionsPackage.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}
-            </select>
-            <select id="sortFilter" aria-label="排序方式">
-              <option value="deliveryAsc">按交付日期升序</option>
-              <option value="amountDesc">按金额降序</option>
-              <option value="progressDesc">按进度降序</option>
-            </select>
-          </div>
-          <div class="table">
-            <div class="table-header">
-              <div>选择</div>
-              <div>项目名称</div>
-              <div>客户</div>
-              <div>阶段</div>
-              <div>进度</div>
-              <div>金额</div>
-              <div>交付日期</div>
-              <div>打包状态</div>
+        ${renderPageHeader("项目列表", "按整体状态、筛选条件和交付优先级快速定位项目。")}
+        <section class="project-list-shell">
+          <div class="project-list-summary" aria-label="项目列表概览">
+            <div class="project-summary-item">
+              <span class="label">项目总数</span>
+              <strong>${summary.total}</strong>
             </div>
-            <div id="projectRows"></div>
+            <div class="project-summary-item">
+              <span class="label">临近交付</span>
+              <strong>${summary.urgent}</strong>
+            </div>
+            <div class="project-summary-item">
+              <span class="label">可打包</span>
+              <strong>${summary.packageReady}</strong>
+            </div>
+            <div class="project-summary-item">
+              <span class="label">平均进度</span>
+              <strong>${summary.averageProgress}%</strong>
+            </div>
           </div>
+
+          <section class="project-filter-panel" aria-labelledby="projectFilterTitle">
+            <div>
+              <h2 id="projectFilterTitle">项目检索</h2>
+              <p class="helper-text">搜索项目或客户，并按阶段、状态、打包情况和优先维度筛选。</p>
+            </div>
+            <div class="toolbar">
+              <input id="searchInput" type="search" aria-label="搜索项目或客户" placeholder="搜索项目或客户">
+              <select id="stageFilter" aria-label="阶段筛选">
+                <option value="">全部阶段</option>
+                ${optionsStage.map((stage) => `<option value="${escapeHtml(stage)}">${escapeHtml(stage)}</option>`).join("")}
+              </select>
+              <select id="statusFilter" aria-label="状态筛选">
+                <option value="">全部状态</option>
+                ${optionsStatus.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}
+              </select>
+              <select id="packageFilter" aria-label="打包状态筛选">
+                <option value="">全部打包状态</option>
+                ${optionsPackage.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}
+              </select>
+              <select id="sortFilter" aria-label="排序方式">
+                <option value="deliveryAsc">按交付日期升序</option>
+                <option value="amountDesc">按金额降序</option>
+                <option value="progressDesc">按进度降序</option>
+              </select>
+              <button class="button-secondary" type="button" id="resetFiltersButton">重置筛选</button>
+            </div>
+          </section>
+
+          <section class="page-card">
+            <div class="project-table-card-head">
+              <div>
+                <h2>项目台账</h2>
+                <p class="helper-text" id="selectedProjectsCount">勾选项目后可批量操作</p>
+              </div>
+              <div class="project-bulk-bar" aria-label="项目批量操作">
+                <button class="button-secondary" type="button" id="clearSelectedProjectsButton" disabled>取消选择</button>
+                <button class="button-danger" type="button" id="deleteSelectedProjectsButton" disabled>删除选中项目</button>
+              </div>
+            </div>
+            <div class="table project-table">
+              <div class="table-header">
+                <div>选择</div>
+                <div>项目</div>
+                <div>客户</div>
+                <div>阶段</div>
+                <div>进度</div>
+                <div>交付日期</div>
+                <div>金额</div>
+                <div>打包状态</div>
+                <div>操作</div>
+              </div>
+              <div id="projectRows"></div>
+            </div>
+          </section>
         </section>
       `;
 
@@ -4550,14 +4912,18 @@
       const sortFilter = document.getElementById("sortFilter");
       const resetFiltersButton = document.getElementById("resetFiltersButton");
       const deleteSelectedProjectsButton = document.getElementById("deleteSelectedProjectsButton");
+      const clearSelectedProjectsButton = document.getElementById("clearSelectedProjectsButton");
       const selectedProjectsCount = document.getElementById("selectedProjectsCount");
       const rowsEl = document.getElementById("projectRows");
       sortFilter.value = state.preferences.projectsSort;
 
       function updateSelectionControls() {
         const selectedCount = state.selectedProjectIds.size;
-        selectedProjectsCount.textContent = `已选择 ${selectedCount} 个项目`;
+        selectedProjectsCount.textContent = selectedCount
+          ? `已选择 ${selectedCount} 个项目`
+          : "勾选项目后可批量操作";
         deleteSelectedProjectsButton.disabled = selectedCount === 0;
+        clearSelectedProjectsButton.disabled = selectedCount === 0;
       }
 
       function renderRows() {
@@ -4600,35 +4966,83 @@
           return;
         }
 
-        rowsEl.innerHTML = filtered.map((project) => `
-          <div class="table-row" data-id="${project.id}">
-            <div class="project-select-cell">
-              <input
-                class="project-select"
-                type="checkbox"
-                aria-label="选择 ${escapeHtml(project.name)}"
-                data-project-select="${escapeHtml(project.id)}"
-                ${state.selectedProjectIds.has(project.id) ? "checked" : ""}
-              >
+        const filteredIds = new Set(filtered.map((project) => project.id));
+        if (state.projectPreviewId && !filteredIds.has(state.projectPreviewId)) {
+          state.projectPreviewId = null;
+        }
+
+        rowsEl.innerHTML = filtered.map((project) => {
+          const progressValue = Math.max(0, Math.min(100, Number(project.progress) || 0));
+          const amountValue = Number(project.amount) || 0;
+          return `
+            <div class="table-row ${state.projectPreviewId === project.id ? "project-row-preview-active" : ""}" data-id="${escapeHtml(project.id)}" tabindex="0">
+              <div class="project-select-cell">
+                <input
+                  class="project-select"
+                  type="checkbox"
+                  aria-label="选择 ${escapeHtml(project.name)}"
+                  data-project-select="${escapeHtml(project.id)}"
+                  ${state.selectedProjectIds.has(project.id) ? "checked" : ""}
+                >
+              </div>
+              <div class="project-row-main">
+                <strong>${escapeHtml(project.name)}</strong>
+                <div class="table-sub">${escapeHtml(project.id)}</div>
+                <div class="project-row-meta">${escapeHtml(project.id)}</div>
+              </div>
+              <div>
+                <span class="project-mobile-label">客户</span>
+                ${escapeHtml(project.customer)}
+              </div>
+              <div>
+                <span class="project-mobile-label">阶段</span>
+                <span class="stage-chip">${escapeHtml(project.currentStage)}</span>
+              </div>
+              <div class="progress-cell">
+                <span class="project-mobile-label">进度</span>
+                <div class="progress-track"><div class="progress-fill" style="width:${progressValue}%"></div></div>
+                <span>${progressValue}%</span>
+              </div>
+              <div>
+                <span class="project-mobile-label">交付</span>
+                ${escapeHtml(project.plannedDeliveryDate)}
+              </div>
+              <div>
+                <span class="project-mobile-label">金额</span>
+                <span class="tabular-number">￥${amountValue} 万</span>
+              </div>
+              <div>
+                <span class="project-mobile-label">打包</span>
+                <span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span>
+              </div>
+              <div>
+                <span class="project-mobile-label">操作</span>
+                <button class="button-link open-project-button" type="button" data-open-project="${escapeHtml(project.id)}">进入工作台</button>
+              </div>
             </div>
-            <div>
-              <strong>${escapeHtml(project.name)}</strong>
-              <div class="table-sub">${escapeHtml(project.id)}</div>
-            </div>
-            <div>${escapeHtml(project.customer)}</div>
-            <div>${escapeHtml(project.currentStage)}</div>
-            <div class="progress-cell">
-              <div class="progress-track"><div class="progress-fill" style="width:${project.progress}%"></div></div>
-              <span>${project.progress}%</span>
-            </div>
-            <div>￥${project.amount} 万</div>
-            <div>${escapeHtml(project.plannedDeliveryDate)}</div>
-            <div><span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span></div>
-          </div>
-        `).join("");
+          `;
+        }).join("");
 
         rowsEl.querySelectorAll(".table-row").forEach((row) => {
-          row.addEventListener("click", () => navigateTo("workspace", row.dataset.id));
+          row.addEventListener("click", () => {
+            openProjectPreview(row.dataset.id);
+            renderRows();
+          });
+          row.addEventListener("keydown", (event) => {
+            if (event.target?.closest?.(".project-select, .open-project-button")) {
+              return;
+            }
+            if (event.key === "Enter") {
+              openProjectPreview(row.dataset.id);
+              renderRows();
+            }
+          });
+        });
+        rowsEl.querySelectorAll(".open-project-button").forEach((button) => {
+          button.addEventListener("click", (event) => {
+            event.stopPropagation();
+            navigateTo("workspace", button.dataset.openProject);
+          });
         });
         rowsEl.querySelectorAll(".project-select").forEach((checkbox) => {
           checkbox.addEventListener("click", (event) => event.stopPropagation());
@@ -4658,6 +5072,11 @@
         renderRows();
       });
 
+      clearSelectedProjectsButton.addEventListener("click", () => {
+        state.selectedProjectIds = new Set();
+        renderRows();
+      });
+
       deleteSelectedProjectsButton.addEventListener("click", async () => {
         const selectedIds = [...state.selectedProjectIds];
         if (!selectedIds.length) {
@@ -4676,6 +5095,9 @@
             state.projects = data.projects;
           }
           removeProjectsFromState(deletedIds);
+          if (syncWorkspaceAfterProjectDeletion(deletedIds)) {
+            return;
+          }
           await loadDashboardData();
           showToast(`已删除 ${deletedIds.length} 个项目`, "success");
           renderProjectsPage();
