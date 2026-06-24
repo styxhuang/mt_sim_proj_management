@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUN_DIR="$SCRIPT_DIR/run"
 FRONTEND_PID_FILE="$RUN_DIR/frontend.pid"
 BACKEND_PID_FILE="$RUN_DIR/backend.pid"
-FRONTEND_PORT="${FRONTEND_PORT:-5173}"
+FRONTEND_PORT="${FRONTEND_PORT:-50001}"
 BACKEND_PORT="${BACKEND_PORT:-8000}"
 FRONTEND_PROXY_PID_FILE="$RUN_DIR/frontend-winproxy.pid"
 BACKEND_PROXY_PID_FILE="$RUN_DIR/backend-winproxy.pid"
@@ -33,14 +33,33 @@ print_service_status() {
     printf '  run : stopped\n'
   fi
 
-  if command -v ss >/dev/null 2>&1; then
-    printf '  net : '
-    if ss -ltn 2>/dev/null | awk -v pattern=":${port}" '$4 ~ pattern"$" { found=1 } END { exit found ? 0 : 1 }'; then
-      printf 'listening\n'
-    else
-      printf 'not listening\n'
-    fi
+  printf '  net : '
+  if is_port_in_use "$port"; then
+    printf 'listening\n'
+  else
+    printf 'not listening\n'
   fi
+}
+
+is_port_in_use() {
+  local port="$1"
+
+  if command -v ss >/dev/null 2>&1; then
+    ss -ltn 2>/dev/null | awk -v pattern=":${port}" '$4 ~ pattern"$" { found=1 } END { exit found ? 0 : 1 }'
+    return
+  fi
+
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1
+    return
+  fi
+
+  if command -v netstat >/dev/null 2>&1; then
+    netstat -tln 2>/dev/null | awk -v pattern=":${port}" '$4 ~ pattern"$" { found=1 } END { exit found ? 0 : 1 }'
+    return
+  fi
+
+  return 1
 }
 
 main() {

@@ -8,7 +8,7 @@ FRONTEND_DIR="$PROJECT_DIR/frontend"
 BACKEND_DIR="$PROJECT_DIR/backend"
 LOG_DIR="$PROJECT_DIR/logs"
 RUN_DIR="$PROJECT_DIR/run"
-FRONTEND_PORT="${FRONTEND_PORT:-5173}"
+FRONTEND_PORT="${FRONTEND_PORT:-50001}"
 BACKEND_PORT="${BACKEND_PORT:-8000}"
 
 FRONTEND_LOG="$LOG_DIR/frontend.log"
@@ -131,6 +131,11 @@ is_port_in_use() {
     return
   fi
 
+  if command -v netstat >/dev/null 2>&1; then
+    netstat -tln 2>/dev/null | awk -v pattern=":${port}" '$4 ~ pattern"$" { found=1 } END { exit found ? 0 : 1 }'
+    return
+  fi
+
   return 1
 }
 
@@ -144,26 +149,45 @@ print_port_owner() {
 
   if command -v lsof >/dev/null 2>&1; then
     lsof -iTCP:"$port" -sTCP:LISTEN 2>/dev/null | sed 's/^/  /'
+    return
+  fi
+
+  if command -v netstat >/dev/null 2>&1; then
+    netstat -tlnp 2>/dev/null | awk -v pattern=":${port}" '$4 ~ pattern"$" { print "  " $0 }'
   fi
 }
 
 find_port_pids() {
   local port="$1"
+  local pids=""
 
   if command -v ss >/dev/null 2>&1; then
-    ss -ltnp 2>/dev/null | awk -v pattern=":${port}" '
+    pids="$(ss -ltnp 2>/dev/null | awk -v pattern=":${port}" '
       $4 ~ pattern"$" {
         while (match($0, /pid=[0-9]+/)) {
           print substr($0, RSTART + 4, RLENGTH - 4)
           $0 = substr($0, RSTART + RLENGTH)
         }
       }
-    ' | sort -u
-    return
+    ' | sort -u)"
+    if [[ -n "${pids:-}" ]]; then
+      printf '%s\n' "$pids"
+      return
+    fi
   fi
 
   if command -v lsof >/dev/null 2>&1; then
     lsof -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null | sort -u
+    return
+  fi
+
+  if command -v netstat >/dev/null 2>&1; then
+    netstat -tlnp 2>/dev/null | awk -v pattern=":${port}" '
+      $4 ~ pattern"$" && $6 == "LISTEN" {
+        split($7, parts, "/")
+        if (parts[1] ~ /^[0-9]+$/) print parts[1]
+      }
+    ' | sort -u
   fi
 }
 

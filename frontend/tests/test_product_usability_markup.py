@@ -26,6 +26,10 @@ class ProductUsabilityMarkupTests(unittest.TestCase):
         self.assertIn('id="packageType"', INDEX_HTML)
         self.assertIn('id="packageFilter"', INDEX_HTML)
         self.assertIn('id="sortFilter"', INDEX_HTML)
+        self.assertIn("function deleteJson", INDEX_HTML)
+        self.assertIn('id="deleteSelectedProjectsButton"', INDEX_HTML)
+        self.assertIn('class="project-select"', INDEX_HTML)
+        self.assertIn("selectedProjectIds", INDEX_HTML)
 
     def test_feedback_and_settings_controls_exist(self) -> None:
         self.assertIn('id="settingsButton"', INDEX_HTML)

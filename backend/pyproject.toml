@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sim-backend"
+version = "0.1.0"
+description = "计算模拟项目交付管理系统后端"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+sim-backend = "sim_backend.server:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["sim_backend*"]

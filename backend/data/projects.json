@@ -4,7 +4,7 @@
     "name": "锂电电解液扩散模拟",
     "customer": "华东新能源",
     "amount": 42,
-    "currentStage": "模拟计算",
+    "currentStage": "建模执行",
     "progress": 64,
     "plannedDeliveryDate": "2026-06-14",
     "status": "进行中",
@@ -18,19 +18,19 @@
         "status": "已完成"
       },
       {
-        "name": "建模",
+        "name": "需求解析",
         "status": "已完成"
       },
       {
-        "name": "模拟计算",
+        "name": "方案确认",
+        "status": "已完成"
+      },
+      {
+        "name": "建模执行",
         "status": "进行中"
       },
       {
-        "name": "结果分析",
-        "status": "未开始"
-      },
-      {
-        "name": "报告交付",
+        "name": "交付",
         "status": "未开始"
       }
     ],
@@ -65,7 +65,7 @@
     "name": "高分子膜界面稳定性计算",
     "customer": "南方材料",
     "amount": 58,
-    "currentStage": "结果分析",
+    "currentStage": "交付",
     "progress": 82,
     "plannedDeliveryDate": "2026-06-09",
     "status": "临近交付",
@@ -79,20 +79,20 @@
         "status": "已完成"
       },
       {
-        "name": "建模",
+        "name": "需求解析",
         "status": "已完成"
       },
       {
-        "name": "模拟计算",
+        "name": "方案确认",
         "status": "已完成"
       },
       {
-        "name": "结果分析",
+        "name": "建模执行",
+        "status": "已完成"
+      },
+      {
+        "name": "交付",
         "status": "进行中"
-      },
-      {
-        "name": "报告交付",
-        "status": "未开始"
       }
     ],
     "deliveryChecklist": [
@@ -126,7 +126,7 @@
     "name": "催化位点吸附能扫描",
     "customer": "西部催化",
     "amount": 33,
-    "currentStage": "建模",
+    "currentStage": "方案确认",
     "progress": 35,
     "plannedDeliveryDate": "2026-06-21",
     "status": "进行中",
@@ -140,19 +140,19 @@
         "status": "已完成"
       },
       {
-        "name": "建模",
+        "name": "需求解析",
+        "status": "已完成"
+      },
+      {
+        "name": "方案确认",
         "status": "进行中"
       },
       {
-        "name": "模拟计算",
+        "name": "建模执行",
         "status": "未开始"
       },
       {
-        "name": "结果分析",
-        "status": "未开始"
-      },
-      {
-        "name": "报告交付",
+        "name": "交付",
         "status": "未开始"
       }
     ],

@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUN_DIR="$SCRIPT_DIR/run"
 FRONTEND_PID_FILE="$RUN_DIR/frontend.pid"
 BACKEND_PID_FILE="$RUN_DIR/backend.pid"
-FRONTEND_PORT="${FRONTEND_PORT:-5173}"
+FRONTEND_PORT="${FRONTEND_PORT:-50001}"
 BACKEND_PORT="${BACKEND_PORT:-8000}"
 FRONTEND_PROXY_PID_FILE="$RUN_DIR/frontend-winproxy.pid"
 BACKEND_PROXY_PID_FILE="$RUN_DIR/backend-winproxy.pid"
@@ -57,26 +57,45 @@ is_port_in_use() {
     return
   fi
 
+  if command -v netstat >/dev/null 2>&1; then
+    netstat -tln 2>/dev/null | awk -v pattern=":${port}" '$4 ~ pattern"$" { found=1 } END { exit found ? 0 : 1 }'
+    return
+  fi
+
   return 1
 }
 
 find_port_pids() {
   local port="$1"
+  local pids=""
 
   if command -v ss >/dev/null 2>&1; then
-    ss -ltnp 2>/dev/null | awk -v pattern=":${port}" '
+    pids="$(ss -ltnp 2>/dev/null | awk -v pattern=":${port}" '
       $4 ~ pattern"$" {
         while (match($0, /pid=[0-9]+/)) {
           print substr($0, RSTART + 4, RLENGTH - 4)
           $0 = substr($0, RSTART + RLENGTH)
         }
       }
-    ' | sort -u
-    return
+    ' | sort -u)"
+    if [[ -n "${pids:-}" ]]; then
+      printf '%s\n' "$pids"
+      return
+    fi
   fi
 
   if command -v lsof >/dev/null 2>&1; then
     lsof -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null | sort -u
+    return
+  fi
+
+  if command -v netstat >/dev/null 2>&1; then
+    netstat -tlnp 2>/dev/null | awk -v pattern=":${port}" '
+      $4 ~ pattern"$" && $6 == "LISTEN" {
+        split($7, parts, "/")
+        if (parts[1] ~ /^[0-9]+$/) print parts[1]
+      }
+    ' | sort -u
   fi
 }
 

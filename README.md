@@ -56,8 +56,8 @@ bash restart-dev.sh
 FRONTEND_PORT=5175 BACKEND_PORT=8011 bash start-dev.sh
 ```
 
-后端项目数据默认存放在 `backend/data/projects.json`。如需临时测试，也可以覆盖数据文件路径：
+后端项目数据默认存放在 SQLite 数据库 `backend/data/projects.db`。首次启动时后端会自动建表；如果数据库为空且存在旧的 `backend/data/projects.json`，会先导入旧 JSON 记录，否则写入默认示例项目。如需临时测试，也可以覆盖数据库文件路径：
 
 ```bash
-PROJECTS_DATA_FILE=/tmp/sim-projects.json PORT=8011 python backend/src/main.py
+PROJECTS_DB_FILE=/tmp/sim-projects.db PORT=8011 python backend/src/main.py
 ```

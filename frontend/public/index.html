@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2338bdf8'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-size='12' font-family='Arial,sans-serif' font-weight='700' fill='%2304111f'%3ESF%3C/text%3E%3C/svg%3E">
   <title>项目管理系统</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-docx-js/dist/html-docx.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js/dist/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/molstar@4/build/viewer/molstar.css">
+  <script src="https://cdn.jsdelivr.net/npm/molstar@4/build/viewer/molstar.js"></script>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
 
@@ -37,8 +44,8 @@
       --space-6: 32px;
       --shadow-panel: 0 18px 40px rgba(2, 6, 23, 0.28);
       --shadow-raised: 0 12px 24px rgba(2, 6, 23, 0.22);
-      --control-height: 44px;
-      --control-height-sm: 36px;
+      --control-height: 34px;
+      --control-height-sm: 28px;
       --page-max-width: 1680px;
       --panel: var(--bg-panel);
       --line: var(--line-soft);
@@ -59,6 +66,7 @@
       margin: 0;
       min-height: 100vh;
       font-family: "DM Sans", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+      font-size: 12px;
       color: var(--text-main);
       background:
         radial-gradient(circle at top left, rgba(56, 189, 248, 0.1), transparent 24%),
@@ -180,7 +188,7 @@
 
     .brand-title {
       margin: 0;
-      font-size: 20px;
+      font-size: 15px;
       font-weight: 700;
     }
 
@@ -195,7 +203,7 @@
     .nav-title,
     .note-title,
     .section-title span {
-      font-size: 11px;
+      font-size: 9px;
       color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.12em;
@@ -209,8 +217,8 @@
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
+      gap: 8px;
+      padding: 10px 12px;
       border-radius: 16px;
       color: #cbd5e1;
       background: rgba(15, 23, 42, 0.18);
@@ -242,13 +250,15 @@
 
     .side-note p {
       margin: 8px 0 0;
-      font-size: 13px;
+      font-size: 10px;
       line-height: 1.6;
     }
 
     .main {
       border-radius: var(--radius-xl);
       padding: var(--space-5);
+      min-width: 0;
+      width: 100%;
       min-height: 100%;
     }
 
@@ -287,7 +297,7 @@
       align-items: center;
       gap: 8px;
       border-radius: 999px;
-      font-size: 12px;
+      font-size: 9px;
       border: 1px solid transparent;
     }
 
@@ -316,15 +326,16 @@
     }
 
     .page-title h1 {
-      margin-top: 12px;
-      font-size: 34px;
+      margin-top: 9px;
+      font-size: 26px;
       line-height: 1.08;
       letter-spacing: -0.04em;
     }
 
     .page-title p {
-      margin: 8px 0 0;
+      margin: 6px 0 0;
       max-width: 720px;
+      font-size: 12px;
       line-height: 1.65;
       color: var(--muted);
     }
@@ -344,7 +355,7 @@
     }
 
     .status-pill {
-      padding: 10px 14px;
+      padding: 7px 11px;
       background: rgba(15, 23, 42, 0.4);
       border-color: rgba(148, 163, 184, 0.14);
       color: #cbd5e1;
@@ -397,18 +408,18 @@
     }
 
     .metric-label {
-      font-size: 13px;
+      font-size: 10px;
       color: var(--muted);
     }
 
     .metric-value {
-      font-size: 32px;
+      font-size: 24px;
       font-weight: 700;
       letter-spacing: -0.04em;
     }
 
     .metric-meta {
-      font-size: 12px;
+      font-size: 9px;
       color: #cbd5e1;
     }
 
@@ -446,14 +457,14 @@
       background: rgba(56, 189, 248, 0.12);
       border: 1px solid rgba(103, 232, 249, 0.2);
       color: #dff8ff;
-      font-size: 13px;
+      font-size: 10px;
       font-weight: 600;
       letter-spacing: 0.01em;
     }
 
     .hero-copy h2 {
       margin: 0;
-      font-size: 34px;
+      font-size: 26px;
       line-height: 1.08;
       letter-spacing: -0.04em;
     }
@@ -476,7 +487,7 @@
       align-items: center;
       gap: 10px;
       color: #dbeafe;
-      font-size: 13px;
+      font-size: 10px;
     }
 
     .hero-point::before {
@@ -509,19 +520,19 @@
 
     .brief-label {
       color: var(--muted);
-      font-size: 12px;
+      font-size: 9px;
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
 
     .brief-item strong {
-      font-size: 30px;
+      font-size: 23px;
       letter-spacing: -0.04em;
     }
 
     .brief-item span {
       color: var(--muted);
-      font-size: 13px;
+      font-size: 10px;
       line-height: 1.5;
     }
 
@@ -537,7 +548,7 @@
 
     .metric-sub {
       color: var(--muted);
-      font-size: 13px;
+      font-size: 10px;
       line-height: 1.55;
     }
 
@@ -550,7 +561,7 @@
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.04);
       color: #dbeafe;
-      font-size: 12px;
+      font-size: 9px;
     }
 
     .metric-card-primary,
@@ -580,11 +591,11 @@
     }
 
     .metric-value-primary {
-      font-size: 38px;
+      font-size: 29px;
     }
 
     .metric-value-strong {
-      font-size: 34px;
+      font-size: 26px;
     }
 
     .dashboard-main-grid {
@@ -635,13 +646,13 @@
 
     .section-head h3 {
       margin: 0;
-      font-size: 18px;
+      font-size: 14px;
       letter-spacing: -0.02em;
     }
 
     .section-note {
       color: var(--muted);
-      font-size: 12px;
+      font-size: 9px;
     }
 
     .stage-chart {
@@ -661,7 +672,7 @@
     .rank-name,
     .rank-value,
     .axis-labels span {
-      font-size: 13px;
+      font-size: 10px;
     }
 
     .stage-value,
@@ -781,7 +792,7 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      font-size: 13px;
+      font-size: 10px;
       font-weight: 700;
     }
 
@@ -789,7 +800,7 @@
     .reminder-text {
       margin-top: 8px;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 10px;
       line-height: 1.6;
     }
 
@@ -817,7 +828,7 @@
 
     .action-strip-copy h3 {
       margin: 0;
-      font-size: 20px;
+      font-size: 15px;
       letter-spacing: -0.02em;
     }
 
@@ -858,13 +869,13 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 14px;
+      font-size: 11px;
       font-weight: 700;
     }
 
     .action-item-text {
       color: var(--muted);
-      font-size: 13px;
+      font-size: 10px;
       line-height: 1.6;
     }
 
@@ -893,7 +904,7 @@
     .status-badge {
       padding: 7px 10px;
       border-radius: 999px;
-      font-size: 12px;
+      font-size: 9px;
       border: 1px solid transparent;
       white-space: nowrap;
     }
@@ -925,7 +936,7 @@
     }
 
     .section-title h2 {
-      font-size: 18px;
+      font-size: 14px;
     }
 
     .bar-row,
@@ -937,6 +948,12 @@
       align-items: center;
       justify-content: space-between;
       gap: 14px;
+    }
+
+    .check-status-select {
+      height: 30px;
+      min-width: 110px;
+      flex: 0 0 auto;
     }
 
     .bar-track,
@@ -969,7 +986,7 @@
 
     .bar-meta,
     .trend-meta {
-      font-size: 13px;
+      font-size: 10px;
       color: #cbd5e1;
     }
 
@@ -998,7 +1015,7 @@
     }
 
     .page-card h2 {
-      font-size: 24px;
+      font-size: 18px;
       margin-bottom: 6px;
     }
 
@@ -1026,7 +1043,7 @@
     }
 
     .field-group label {
-      font-size: 13px;
+      font-size: 10px;
       color: #cbd5e1;
     }
 
@@ -1037,15 +1054,16 @@
     .toolbar select {
       width: 100%;
       min-height: var(--control-height);
-      padding: 12px 15px;
+      padding: 8px 11px;
       border-radius: var(--radius-md);
       border: 1px solid rgba(148, 163, 184, 0.16);
       background: var(--bg-panel-soft);
       color: var(--text);
+      font-size: 12px;
     }
 
     .field-group textarea {
-      min-height: 128px;
+      min-height: 96px;
       resize: vertical;
     }
 
@@ -1057,25 +1075,26 @@
     }
 
     .actions {
-      margin-top: 18px;
+      margin-top: 14px;
     }
 
     .toolbar {
-      margin: 18px 0;
+      margin: 14px 0;
     }
 
     .button-primary,
     .button-secondary,
     .button-link {
       min-height: var(--control-height);
-      padding: 10px 18px;
+      padding: 7px 13px;
       border-radius: var(--radius-md);
       border: 1px solid transparent;
+      font-size: 12px;
     }
 
     .button-small {
       min-height: var(--control-height-sm);
-      padding: 8px 12px;
+      padding: 6px 9px;
       border-radius: 12px;
       border: 1px solid rgba(148, 163, 184, 0.16);
       background: var(--bg-panel-soft);
@@ -1114,14 +1133,14 @@
     .table-header,
     .table-row {
       display: grid;
-      grid-template-columns: 1.6fr 1.1fr 1fr 0.7fr 0.9fr 1fr 0.8fr;
+      grid-template-columns: 40px 1.6fr 1.1fr 1fr 0.7fr 0.9fr 1fr 0.8fr;
       gap: 12px;
       align-items: center;
     }
 
     .table-header {
       padding: 0 6px;
-      font-size: 12px;
+      font-size: 9px;
       color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -1134,6 +1153,17 @@
     .table-row:hover {
       border-color: rgba(56, 189, 248, 0.2);
       background: rgba(15, 23, 42, 0.62);
+    }
+
+    .project-select-cell {
+      display: flex;
+      justify-content: center;
+    }
+
+    .project-select {
+      width: 16px;
+      height: 16px;
+      accent-color: #38bdf8;
     }
 
     .progress-cell {
@@ -1172,8 +1202,8 @@
     }
 
     .detail-card h3 {
-      margin-bottom: 12px;
-      font-size: 16px;
+      margin-bottom: 9px;
+      font-size: 12px;
     }
 
     .detail-stack,
@@ -1290,6 +1320,28 @@
       display: none !important;
     }
 
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 16px;
+      background: rgba(2, 6, 23, 0.62);
+      backdrop-filter: blur(2px);
+      z-index: 40;
+      overflow-y: auto;
+    }
+
+    .modal-card {
+      width: min(680px, 100%);
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: var(--bg-panel-strong);
+      border: 1px solid var(--line-strong);
+      box-shadow: var(--shadow-panel);
+    }
+
     body[data-density="compact"] .page-card,
     body[data-density="compact"] .detail-card,
     body[data-density="compact"] .table-row,
@@ -1301,7 +1353,1218 @@
       padding: 14px;
     }
 
+    .requirement-workspace {
+      display: grid;
+      grid-template-columns: minmax(280px, 320px) minmax(420px, 1fr);
+      gap: 12px;
+      align-items: stretch;
+      width: 100%;
+      max-width: 100%;
+      height: calc(100vh - 96px);
+      min-height: min(620px, calc(100vh - 128px));
+      overflow: hidden;
+    }
+
+    .execution-workspace {
+      display: grid;
+      grid-template-columns: minmax(280px, 340px) minmax(420px, 1fr);
+      gap: 12px;
+      align-items: stretch;
+      width: 100%;
+      max-width: 100%;
+      height: calc(100vh - 96px);
+      min-height: min(620px, calc(100vh - 128px));
+      overflow: hidden;
+    }
+
+    .execution-results {
+      grid-template-rows: auto auto minmax(0, 1fr);
+    }
+
+    .execution-structure-pane {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 8px;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .execution-computation-pane {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 0;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .execution-structure-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .execution-structure-bar .version-select {
+      flex: 1;
+    }
+
+    .execution-stage-toggle {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .auto-modeling-card {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(167, 139, 250, 0.1));
+      display: grid;
+      gap: 6px;
+    }
+
+    .auto-modeling-card .button-primary {
+      width: 100%;
+    }
+
+    .auto-modeling-card .helper-text {
+      margin: 0;
+    }
+
+    .chat-step-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #7dd3fc;
+      margin-bottom: 4px;
+    }
+
+    .execution-spec-chips {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin: 0 0 8px;
+    }
+
+    .spec-chip {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(56, 189, 248, 0.1);
+      color: #e0f2fe;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .spec-chip.target {
+      border-color: rgba(167, 139, 250, 0.45);
+      background: rgba(167, 139, 250, 0.14);
+      color: #ede9fe;
+    }
+
+    .spec-chip:hover {
+      filter: brightness(1.12);
+    }
+
+    .modeling-spec-block {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      background: rgba(56, 189, 248, 0.06);
+    }
+
+    .modeling-spec-note {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px dashed rgba(148, 163, 184, 0.3);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stage-chip {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      background: rgba(15, 23, 42, 0.42);
+      color: #cbd5e1;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .stage-chip.active {
+      border-color: rgba(56, 189, 248, 0.55);
+      background: rgba(56, 189, 248, 0.14);
+      color: #e0f2fe;
+    }
+
+    .stage-chip:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .execution-stage-hint {
+      margin: 0 0 8px;
+    }
+
+    .execution-viewer {
+      position: relative;
+      min-height: 420px;
+      height: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: #04060d;
+    }
+
+    .execution-viewer #molstarViewer {
+      position: absolute;
+      inset: 0;
+    }
+
+    .execution-viewer-empty {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .execution-module-chip {
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: #cbd5e1;
+      font-size: 10px;
+      background: rgba(15, 23, 42, 0.42);
+    }
+
+    .execution-module-chip.completed {
+      border-color: rgba(34, 197, 94, 0.4);
+      color: #86efac;
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .execution-module-chip.in_progress {
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #7dd3fc;
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    .requirement-page-header {
+      margin-bottom: 12px;
+    }
+
+    .requirement-page-header .page-title h1 {
+      margin-top: 8px;
+      font-size: 24px;
+      line-height: 1.12;
+    }
+
+    .requirement-page-header .page-title p {
+      display: none;
+    }
+
+    .requirement-page-header .status-pill,
+    .requirement-page-header .button-secondary {
+      min-height: 32px;
+      padding: 7px 11px;
+      font-size: 10px;
+      border-radius: 11px;
+    }
+
+    .requirement-results {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 10px;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .requirement-workspace .page-card {
+      min-width: 0;
+      min-height: 0;
+      padding: 12px;
+    }
+
+    .requirement-chat-panel h2,
+    .requirement-results h2 {
+      font-size: 18px;
+      line-height: 1.15;
+    }
+
+    .requirement-chat-panel .helper-text,
+    .requirement-results .helper-text {
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .requirement-chat {
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .requirement-chat-panel {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      height: 100%;
+      min-height: 0;
+      padding: 12px;
+    }
+
+    .upload-drop {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px dashed rgba(56, 189, 248, 0.3);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .requirement-upload-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .upload-drop input {
+      max-width: 100%;
+      font-size: 10px;
+    }
+
+    .upload-drop strong {
+      font-size: 12px;
+    }
+
+    .requirement-chat-panel .button-primary,
+    .requirement-chat-panel .button-secondary,
+    .requirement-results .button-primary,
+    .requirement-results .button-secondary {
+      min-height: 32px;
+      padding: 7px 12px;
+      border-radius: 11px;
+      font-size: 11px;
+    }
+
+    .chat-stream {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      min-height: 0;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .chat-message {
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      color: #cbd5e1;
+      font-size: 10px;
+      line-height: 1.45;
+      background: rgba(15, 23, 42, 0.42);
+    }
+
+    .chat-message.assistant {
+      border-color: rgba(56, 189, 248, 0.22);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .chat-role {
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .chat-message.assistant .chat-role {
+      color: #67e8f9;
+    }
+
+    .chat-skill-badge {
+      border: 1px solid rgba(103, 232, 249, 0.35);
+      border-radius: 999px;
+      padding: 1px 6px;
+      color: #cffafe;
+      background: rgba(8, 145, 178, 0.18);
+      font-size: 9px;
+      line-height: 1.4;
+    }
+
+    .progress-list {
+      display: grid;
+      gap: 6px;
+      font-size: 10px;
+    }
+
+    .progress-list span {
+      margin-right: 8px;
+      color: #22c55e;
+    }
+
+    .progress-list span.pending {
+      color: #94a3b8;
+    }
+
+    .progress-list span.running {
+      color: #38bdf8;
+    }
+
+    .progress-list span.failed {
+      color: #fb7185;
+    }
+
+    .prompt-chips {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .prompt-chip {
+      padding: 4px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      color: var(--muted);
+      font-size: 10px;
+      background: transparent;
+    }
+
+    .model-select-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    #requirementChatForm {
+      display: grid;
+      gap: 8px;
+      padding-bottom: 2px;
+    }
+
+    .model-select-row label {
+      margin: 0;
+    }
+
+    .model-select-row select {
+      flex: 1;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .chat-input-row input {
+      flex: 1 1 auto;
+      width: 100%;
+      min-width: 0;
+      font-size: 10px;
+      min-height: 32px;
+      padding: 7px 10px;
+    }
+
+    .chat-input-row .button-secondary {
+      flex: 0 0 auto;
+    }
+
+    .requirement-result-tabs {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 28px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .requirement-tab {
+      height: 28px;
+      display: flex;
+      align-items: center;
+      padding: 0;
+      color: var(--muted);
+      font-size: 10px;
+      background: transparent;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+    }
+
+    .requirement-tab.active {
+      color: #e0f2fe;
+      border-bottom-color: var(--brand);
+      font-weight: 700;
+    }
+
+    .workspace-stepper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .workspace-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .workspace-step .step-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .workspace-step.done {
+      color: #bbf7d0;
+    }
+
+    .workspace-step.done .step-index {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: rgba(34, 197, 94, 0.5);
+      color: #bbf7d0;
+    }
+
+    .workspace-step.current {
+      color: #e0f2fe;
+      font-weight: 700;
+    }
+
+    .workspace-step.current .step-index {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #04263d;
+    }
+
+    .workspace-step .step-arrow {
+      color: rgba(148, 163, 184, 0.5);
+      font-size: 11px;
+    }
+
+    .workspace-tabs {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      height: 34px;
+      margin: 10px 0 4px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .workspace-tab {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      padding: 0;
+      color: var(--muted);
+      font-size: 12px;
+      background: transparent;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      cursor: pointer;
+    }
+
+    .workspace-tab.active {
+      color: #e0f2fe;
+      border-bottom-color: var(--brand);
+      font-weight: 700;
+    }
+
+    .workspace-tab:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .workspace-header {
+      align-items: flex-start;
+    }
+
+    .workspace-title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .workspace-project-select {
+      height: 30px;
+      max-width: 220px;
+    }
+
+    .workspace-progress {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      margin: 14px 0 4px;
+      padding: 14px 8px 6px;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.32);
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .wp-step {
+      flex: 1;
+      min-width: 72px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 0 4px;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .wp-step::before {
+      content: "";
+      position: absolute;
+      top: 15px;
+      right: 50%;
+      width: 100%;
+      height: 2px;
+      background: rgba(148, 163, 184, 0.25);
+      z-index: 0;
+    }
+
+    .wp-step:first-child::before {
+      display: none;
+    }
+
+    .wp-dot {
+      position: relative;
+      z-index: 1;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(148, 163, 184, 0.35);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .wp-label {
+      font-size: 11px;
+      color: #cbd5e1;
+      white-space: nowrap;
+    }
+
+    .plan-substeps {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .plan-substep {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, 0.35);
+      cursor: pointer;
+      text-align: center;
+      font: inherit;
+      color: var(--muted);
+    }
+
+    .plan-substep.active {
+      border-color: rgba(56, 189, 248, 0.35);
+      background: rgba(56, 189, 248, 0.08);
+      color: #fff;
+    }
+
+    .plan-substep .step-num {
+      display: inline-grid;
+      place-items: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(148, 163, 184, 0.3);
+      margin-right: 6px;
+    }
+
+    .plan-substep.done .step-num {
+      background: rgba(34, 197, 94, 0.5);
+    }
+
+    .computation-pane {
+      display: grid;
+      grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+      gap: 12px;
+      height: calc(100vh - 300px);
+      min-height: 420px;
+    }
+
+    .step-timeline { display: grid; gap: 6px; }
+
+    .step-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, 0.4);
+      cursor: pointer;
+      font-size: 11px;
+      display: grid;
+      gap: 2px;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+    }
+
+    .step-item.active {
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.22);
+    }
+
+    .step-item.done {
+      border-color: rgba(34, 197, 94, 0.45);
+      border-left: 3px solid rgba(34, 197, 94, 0.9);
+      background: rgba(34, 197, 94, 0.14);
+    }
+
+    .step-item.running {
+      border-color: rgba(234, 179, 8, 0.45);
+      border-left: 3px solid rgba(234, 179, 8, 0.9);
+      background: rgba(234, 179, 8, 0.14);
+    }
+
+    .step-item.failed {
+      border-color: rgba(239, 68, 68, 0.5);
+      border-left: 3px solid rgba(239, 68, 68, 0.9);
+      background: rgba(239, 68, 68, 0.14);
+    }
+
+    .step-item.done .step-name { color: #bbf7d0; }
+    .step-item.running .step-name { color: #fde68a; }
+    .step-item.failed .step-name { color: #fecaca; }
+
+    .step-item.done .step-meta { color: #86efac; }
+    .step-item.running .step-meta { color: #facc15; }
+    .step-item.failed .step-meta { color: #fca5a5; }
+
+    .step-name { font-weight: 600; color: #e2e8f0; }
+    .step-meta { color: #64748b; font-size: 10px; }
+
+    .used-skills-card {
+      margin: 10px 0 12px;
+      padding: 10px 12px;
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      border-radius: 10px;
+      background: rgba(14, 165, 233, 0.08);
+      display: grid;
+      gap: 8px;
+    }
+
+    .used-skills-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #bae6fd;
+      letter-spacing: 0.02em;
+    }
+
+    .used-skill-item {
+      display: grid;
+      gap: 4px;
+      font-size: 11px;
+      color: #cbd5e1;
+    }
+
+    .used-skill-name { font-weight: 700; color: #e0f2fe; }
+    .used-skill-script { color: #93c5fd; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    .computation-run-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+
+    .computation-run-card {
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 14px;
+      padding: 12px;
+      margin: 12px 0;
+      background: rgba(15, 23, 42, 0.5);
+      display: grid;
+      gap: 8px;
+    }
+
+    .computation-log {
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px;
+      color: #cbd5e1;
+      background: rgba(2, 6, 23, 0.45);
+      border-radius: 10px;
+      padding: 8px;
+      max-height: 180px;
+      overflow: auto;
+    }
+
+    .artifact-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .artifact-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 10px;
+      padding: 8px;
+      background: rgba(15, 23, 42, 0.35);
+      font-size: 11px;
+    }
+
+    .mol-progress { display: grid; gap: 6px; margin: 12px 0; }
+
+    .mol-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--line);
+      font-size: 11px;
+    }
+
+    .mol-item.done { border-color: rgba(34, 197, 94, 0.3); }
+    .mol-item.current { border-color: rgba(56, 189, 248, 0.4); }
+
+    .execution-chat-stream {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background: rgba(15, 23, 42, 0.2);
+    }
+
+    .wp-desc {
+      font-size: 10px;
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    .wp-step.done .wp-dot {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: rgba(34, 197, 94, 0.65);
+      color: #bbf7d0;
+    }
+
+    .wp-step.done::before {
+      background: rgba(34, 197, 94, 0.6);
+    }
+
+    .wp-step.current .wp-dot {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #04263d;
+    }
+
+    .wp-step.current .wp-label {
+      color: #e0f2fe;
+      font-weight: 700;
+    }
+
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .delivery-grid .detail-stack {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+
+    .info-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .overview-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 14px 0 4px;
+    }
+
+    .overview-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.08), rgba(15, 23, 42, 0.35));
+    }
+
+    .os-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .os-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .os-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .os-sub.warn {
+      color: #fcd34d;
+    }
+
+    .os-sub.danger {
+      color: #fca5a5;
+    }
+
+    .os-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.18);
+      overflow: hidden;
+    }
+
+    .os-bar span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--brand);
+    }
+
+    .overview-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px 14px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.32);
+    }
+
+    .info-item--full {
+      margin-top: 12px;
+    }
+
+    .info-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .info-value {
+      font-size: 14px;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .workflow-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.35);
+    }
+
+    .workflow-card.current {
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.2) inset;
+    }
+
+    .workflow-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .workflow-card-head h4 {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .wf-status {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .wf-done {
+      color: #bbf7d0;
+      background: rgba(34, 197, 94, 0.16);
+    }
+
+    .wf-current {
+      color: #bae6fd;
+      background: rgba(56, 189, 248, 0.16);
+    }
+
+    .wf-pending {
+      color: #cbd5e1;
+      background: rgba(148, 163, 184, 0.14);
+    }
+
+    .wf-desc {
+      flex: 1;
+      margin: 0;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .wf-enter {
+      align-self: flex-start;
+      height: 28px;
+      padding: 0 14px;
+      font-size: 12px;
+    }
+
+    .version-select {
+      height: 32px;
+      padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: #cbd5e1;
+      background: rgba(15, 23, 42, 0.42);
+    }
+
+    .markdown-preview {
+      min-height: 0;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: rgba(2, 6, 23, 0.28);
+      color: #cbd5e1;
+      font-size: 12px;
+      line-height: 1.72;
+      overflow: auto;
+    }
+
+    .markdown-editor {
+      min-height: 0;
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      background: rgba(2, 6, 23, 0.45);
+      color: #e2e8f0;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      resize: none;
+      overflow: auto;
+    }
+
+    .markdown-editor:focus {
+      outline: none;
+      border-color: var(--brand);
+    }
+
+    .markdown-preview > *:first-child {
+      margin-top: 0;
+    }
+
+    .markdown-preview > *:last-child {
+      margin-bottom: 0;
+    }
+
+    .markdown-preview h1,
+    .markdown-preview h2,
+    .markdown-preview h3 {
+      margin: 14px 0 8px;
+      color: #f8fafc;
+      line-height: 1.35;
+    }
+
+    .markdown-preview h1 {
+      font-size: 18px;
+    }
+
+    .markdown-preview h2 {
+      font-size: 15px;
+    }
+
+    .markdown-preview h3 {
+      font-size: 13px;
+    }
+
+    .markdown-preview p,
+    .markdown-preview ul,
+    .markdown-preview ol,
+    .markdown-preview blockquote,
+    .markdown-preview pre,
+    .markdown-preview table {
+      margin: 0 0 10px;
+    }
+
+    .markdown-preview ul,
+    .markdown-preview ol {
+      padding-left: 22px;
+    }
+
+    .markdown-preview li + li {
+      margin-top: 4px;
+    }
+
+    .markdown-preview strong {
+      color: #f8fafc;
+      font-weight: 700;
+    }
+
+    .markdown-preview code {
+      padding: 1px 5px;
+      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.86);
+      color: #bae6fd;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 11px;
+    }
+
+    .markdown-preview pre {
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.86);
+      overflow: auto;
+    }
+
+    .markdown-preview pre code {
+      padding: 0;
+      background: transparent;
+    }
+
+    .markdown-preview blockquote {
+      padding-left: 12px;
+      border-left: 3px solid rgba(56, 189, 248, 0.6);
+      color: #94a3b8;
+    }
+
+    .markdown-preview table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .markdown-preview th,
+    .markdown-preview td {
+      padding: 7px 8px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .markdown-preview th {
+      color: #f8fafc;
+      background: rgba(15, 23, 42, 0.74);
+    }
+
+    .markdown-diff {
+      display: grid;
+      gap: 6px;
+    }
+
+    .markdown-diff-line {
+      padding: 5px 8px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+    }
+
+    .markdown-diff-line > *:first-child {
+      margin-top: 0;
+    }
+
+    .markdown-diff-line > *:last-child {
+      margin-bottom: 0;
+    }
+
+    .markdown-diff-added {
+      border-color: rgba(34, 197, 94, 0.28);
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .markdown-diff-removed {
+      border-color: rgba(248, 113, 113, 0.3);
+      color: #fecaca;
+      background: rgba(248, 113, 113, 0.1);
+      text-decoration: line-through;
+      text-decoration-color: rgba(248, 113, 113, 0.8);
+    }
+
+    @media (max-width: 1360px) {
+      .requirement-workspace,
+      .execution-workspace {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(260px, 0.42fr) minmax(0, 1fr);
+        overflow: hidden;
+      }
+    }
+
     @media (max-width: 1180px) {
+      .requirement-workspace {
+        grid-template-columns: 1fr;
+      }
+
       .grid-metrics,
       .grid-charts,
       .dashboard-bottom,
@@ -1395,10 +2658,6 @@
           <div class="nav-group" id="navGroup"></div>
         </div>
 
-        <div class="side-note">
-          <div class="note-title">当前目标</div>
-          <p>围绕项目进度、金额、交付和目录信息建立可持续扩展的内部管理骨架。</p>
-        </div>
       </aside>
 
       <main class="main" id="mainContent"></main>
@@ -1416,8 +2675,8 @@
         <select id="defaultPageSelect" name="defaultPage">
           <option value="dashboard">项目仪表盘</option>
           <option value="projects">项目列表</option>
+          <option value="workspace">项目工作台</option>
           <option value="create">新建项目</option>
-          <option value="detail">项目详情</option>
         </select>
       </div>
       <div class="field-group">
@@ -1445,8 +2704,59 @@
     </form>
   </aside>
 
+  <div class="modal-overlay hidden" id="createProjectModal" role="dialog" aria-modal="true" aria-labelledby="createProjectTitle">
+    <div class="modal-card">
+      <div class="detail-card-head">
+        <h3 id="createProjectTitle">新建项目</h3>
+        <button class="button-link" id="closeCreateProjectButton" type="button">关闭</button>
+      </div>
+      <p class="helper-text">填写项目基础信息，保存后立即进入项目工作台继续维护。</p>
+      <form id="projectForm">
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="name">项目名称</label>
+            <input id="name" name="name" required>
+          </div>
+          <div class="field-group">
+            <label for="customer">客户名称</label>
+            <input id="customer" name="customer" required>
+          </div>
+          <div class="field-group">
+            <label for="amount">项目金额</label>
+            <input id="amount" name="amount" type="number" min="0" required>
+          </div>
+          <div class="field-group">
+            <label for="plannedDeliveryDate">计划交付日期</label>
+            <input id="plannedDeliveryDate" name="plannedDeliveryDate" type="date" required>
+          </div>
+          <div class="field-group">
+            <label for="template">项目模板</label>
+            <select id="template" name="template">
+              <option>标准计算项目</option>
+              <option>扩散模拟模板</option>
+              <option>界面分析模板</option>
+              <option>吸附能扫描模板</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="rootDirectory">根目录路径</label>
+            <input id="rootDirectory" name="rootDirectory" value="/data/projects/new-project">
+          </div>
+          <div class="field-group wide">
+            <label for="description">项目简介</label>
+            <textarea id="description" name="description"></textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="button-secondary" id="cancelCreateProjectButton" type="button">取消</button>
+          <button class="button-primary" type="submit">创建项目</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
-    const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:8000`;
+    const apiBaseUrl = window.location.origin;
     const urlParams = new URLSearchParams(window.location.search);
     const preferencesStorageKey = "simflow.preferences";
     const defaultPreferences = {
@@ -1456,14 +2766,22 @@
       showHelperText: true
     };
     const initialPreferences = loadPreferences();
-    const currentPage = urlParams.get("page") || initialPreferences.defaultPage;
+    const rawPage = urlParams.get("page") || initialPreferences.defaultPage;
+    const LEGACY_PAGE_REDIRECTS = {
+      detail: { page: "workspace", tab: "overview" },
+      requirements: { page: "workspace", tab: "plan" },
+      execution: { page: "workspace", tab: "modeling" }
+    };
+    const legacyRedirect = LEGACY_PAGE_REDIRECTS[rawPage] || null;
+    const legacyRoutePage = legacyRedirect ? rawPage : null;
+    const currentPage = legacyRedirect ? legacyRedirect.page : rawPage;
     const currentProjectId = urlParams.get("id") || "p-001";
+    const initialWorkspaceTab = urlParams.get("tab") || (legacyRedirect ? legacyRedirect.tab : null) || "overview";
 
     const navItems = [
       { page: "dashboard", label: "项目仪表盘" },
-      { page: "create", label: "新建项目" },
       { page: "projects", label: "项目列表" },
-      { page: "detail", label: "项目详情", id: currentProjectId }
+      { page: "workspace", label: "项目工作台", id: currentProjectId }
     ];
 
     const fallbackProjects = [
@@ -1482,10 +2800,11 @@
         description: "评估不同温度条件下电解液扩散速率和迁移趋势。",
         stageTimeline: [
           { name: "立项", status: "已完成" },
+          { name: "需求解析", status: "已完成" },
+          { name: "方案确认", status: "已完成" },
           { name: "建模", status: "已完成" },
           { name: "模拟计算", status: "进行中" },
-          { name: "结果分析", status: "未开始" },
-          { name: "报告交付", status: "未开始" }
+          { name: "交付", status: "未开始" }
         ],
         deliveryChecklist: [
           { name: "分析报告", status: "待完成" },
@@ -1502,7 +2821,7 @@
         name: "高分子膜界面稳定性计算",
         customer: "南方材料",
         amount: 58,
-        currentStage: "结果分析",
+        currentStage: "交付",
         progress: 82,
         plannedDeliveryDate: "2026-06-09",
         status: "临近交付",
@@ -1512,10 +2831,11 @@
         description: "分析膜材料在不同电场条件下的界面稳定性表现。",
         stageTimeline: [
           { name: "立项", status: "已完成" },
+          { name: "需求解析", status: "已完成" },
+          { name: "方案确认", status: "已完成" },
           { name: "建模", status: "已完成" },
           { name: "模拟计算", status: "已完成" },
-          { name: "结果分析", status: "进行中" },
-          { name: "报告交付", status: "未开始" }
+          { name: "交付", status: "进行中" }
         ],
         deliveryChecklist: [
           { name: "分析报告", status: "已完成" },
@@ -1532,7 +2852,7 @@
         name: "催化位点吸附能扫描",
         customer: "西部催化",
         amount: 33,
-        currentStage: "建模",
+        currentStage: "方案确认",
         progress: 35,
         plannedDeliveryDate: "2026-06-21",
         status: "进行中",
@@ -1542,10 +2862,11 @@
         description: "比较多种位点构型下关键中间体的吸附能分布。",
         stageTimeline: [
           { name: "立项", status: "已完成" },
-          { name: "建模", status: "进行中" },
+          { name: "需求解析", status: "已完成" },
+          { name: "方案确认", status: "进行中" },
+          { name: "建模", status: "未开始" },
           { name: "模拟计算", status: "未开始" },
-          { name: "结果分析", status: "未开始" },
-          { name: "报告交付", status: "未开始" }
+          { name: "交付", status: "未开始" }
         ],
         deliveryChecklist: [
           { name: "分析报告", status: "未开始" },
@@ -1564,10 +2885,11 @@
       readyToPack: 1,
       stageDistribution: [
         { label: "立项", value: 0 },
-        { label: "建模", value: 1 },
+        { label: "需求解析", value: 0 },
+        { label: "方案确认", value: 1 },
+        { label: "建模", value: 0 },
         { label: "模拟计算", value: 1 },
-        { label: "结果分析", value: 1 },
-        { label: "报告交付", value: 0 }
+        { label: "交付", value: 1 }
       ],
       deliveryTrend: [
         { month: "1月", value: 2 },
@@ -1623,11 +2945,50 @@
       dashboard: fallbackDashboard,
       projects: fallbackProjects,
       projectDetail: fallbackProjects.find((project) => project.id === currentProjectId) || fallbackProjects[0],
+      requirementTasks: [],
+      activeRequirementTask: null,
+      requirementActiveTab: "analysis",
+      requirementHighlightChanges: true,
+      requirementAbortRequested: false,
+      requirementStream: null,
+      requirementEditMode: false,
+      requirementSpecLoading: false,
+      requirementModel: "gpt-5.5-medium-fast",
+      activeExecution: null,
+      executionRequirement: null,
+      executionActiveTab: "structure",
+      executionStructureView: null,
+      executionAutoRunning: false,
+      executionComputationRunning: false,
+      computationPreparing: false,
+      executionSpecLoading: false,
+      executionSpecAttempted: null,
+      executionStream: null,
+      executionModel: "gpt-5.5-medium-fast",
+      planSubTab: "analysis",
+      computationActiveStep: null,
+      computationDefaultRunner: "local",
+      computationRunnerSelections: {},
+      computationPendingRuns: {},
+      computationRunningStepId: null,
+      computationTerminatingStepId: null,
+      computationRunAllRunning: false,
+      structureCache: {},
+      workspaceFlags: {},
+      workspace: null,
+      workspaceTab: "overview",
+      inWorkspace: false,
+      selectedProjectIds: new Set(),
       preferences: initialPreferences
     };
 
     const navGroupEl = document.getElementById("navGroup");
     const mainContentEl = document.getElementById("mainContent");
+
+    // 工作台模式下，各子页面渲染进入 #workspaceBody 容器；独立页面回退到主内容区。
+    function getRenderRoot() {
+      return document.getElementById("workspaceBody") || mainContentEl;
+    }
 
     function escapeHtml(value) {
       return String(value)
@@ -1638,7 +2999,87 @@
         .replace(/'/g, "&#39;");
     }
 
-    function navigateTo(page, id) {
+    function renderMarkdownPreview(markdown) {
+      const rawMarkdown = String(markdown || "");
+      if (!window.marked || !window.DOMPurify) {
+        return escapeHtml(rawMarkdown).replace(/\n/g, "<br>");
+      }
+      return DOMPurify.sanitize(marked.parse(rawMarkdown));
+    }
+
+    function buildLineDiff(previousMarkdown, currentMarkdown) {
+      const previousLines = String(previousMarkdown || "").split("\n");
+      const currentLines = String(currentMarkdown || "").split("\n");
+      const rows = previousLines.length + 1;
+      const cols = currentLines.length + 1;
+      const table = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+      for (let i = previousLines.length - 1; i >= 0; i -= 1) {
+        for (let j = currentLines.length - 1; j >= 0; j -= 1) {
+          table[i][j] = previousLines[i] === currentLines[j]
+            ? table[i + 1][j + 1] + 1
+            : Math.max(table[i + 1][j], table[i][j + 1]);
+        }
+      }
+
+      const changes = [];
+      let i = 0;
+      let j = 0;
+      while (i < previousLines.length && j < currentLines.length) {
+        if (previousLines[i] === currentLines[j]) {
+          changes.push({ type: "same", text: currentLines[j] });
+          i += 1;
+          j += 1;
+        } else if (table[i + 1][j] >= table[i][j + 1]) {
+          changes.push({ type: "removed", text: previousLines[i] });
+          i += 1;
+        } else {
+          changes.push({ type: "added", text: currentLines[j] });
+          j += 1;
+        }
+      }
+      while (i < previousLines.length) {
+        changes.push({ type: "removed", text: previousLines[i] });
+        i += 1;
+      }
+      while (j < currentLines.length) {
+        changes.push({ type: "added", text: currentLines[j] });
+        j += 1;
+      }
+      return changes;
+    }
+
+    function renderMarkdownDiffPreview(markdown, previousMarkdown) {
+      const changes = buildLineDiff(previousMarkdown, markdown);
+      return `
+        <div class="markdown-diff">
+          ${changes.map((change) => `
+            <div class="markdown-diff-line markdown-diff-${change.type}">
+              ${renderMarkdownPreview(change.text || " ")}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function replaceUrlWithWorkspace(projectId, tab) {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("page", "workspace");
+        url.searchParams.set("id", projectId);
+        if (tab) {
+          url.searchParams.set("tab", tab);
+        }
+        window.history.replaceState({}, "", url.toString());
+      } catch (error) {}
+    }
+
+    function navigateTo(page, id, extras) {
+      const legacy = LEGACY_PAGE_REDIRECTS[page];
+      if (legacy) {
+        page = legacy.page;
+        extras = { ...(extras || {}), tab: extras?.tab || legacy.tab };
+      }
       const url = new URL(window.location.href);
       url.searchParams.set("page", page);
       if (id) {
@@ -1646,16 +3087,35 @@
       } else {
         url.searchParams.delete("id");
       }
+      url.searchParams.delete("tab");
+      if (extras && typeof extras === "object") {
+        Object.entries(extras).forEach(([key, value]) => {
+          if (value === undefined || value === null || value === "") {
+            url.searchParams.delete(key);
+          } else {
+            url.searchParams.set(key, value);
+          }
+        });
+      }
       window.location.href = url.toString();
     }
 
     function loadPreferences() {
       try {
         const raw = window.localStorage.getItem(preferencesStorageKey);
-        return raw ? { ...defaultPreferences, ...JSON.parse(raw) } : { ...defaultPreferences };
+        const prefs = raw ? { ...defaultPreferences, ...JSON.parse(raw) } : { ...defaultPreferences };
+        prefs.defaultPage = normalizeDefaultPage(prefs.defaultPage);
+        return prefs;
       } catch (error) {
         return { ...defaultPreferences };
       }
+    }
+
+    function normalizeDefaultPage(page) {
+      if (page === "requirements" || page === "detail" || page === "execution") {
+        return "workspace";
+      }
+      return page;
     }
 
     function savePreferences(nextPreferences) {
@@ -1741,9 +3201,87 @@
       return data;
     }
 
+    async function streamRequirement(path, payload, onEvent) {
+      const response = await fetch(`${apiBaseUrl}${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok || !response.body) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        buffer += decoder.decode(value, { stream: true });
+        let separatorIndex;
+        while ((separatorIndex = buffer.indexOf("\n\n")) >= 0) {
+          const rawEvent = buffer.slice(0, separatorIndex);
+          buffer = buffer.slice(separatorIndex + 2);
+          const dataLine = rawEvent.split("\n").find((line) => line.startsWith("data:"));
+          if (!dataLine) {
+            continue;
+          }
+          const json = dataLine.slice(5).trim();
+          if (!json) {
+            continue;
+          }
+          let event;
+          try {
+            event = JSON.parse(json);
+          } catch (error) {
+            continue;
+          }
+          onEvent(event);
+        }
+      }
+    }
+
+    function updateRequirementStreamingView() {
+      const stream = state.requirementStream;
+      if (!stream) {
+        return;
+      }
+      const previewEl = document.getElementById("requirementMarkdownPreview");
+      if (!previewEl) {
+        return;
+      }
+      if (state.requirementActiveTab === "thinking") {
+        previewEl.innerHTML = renderMarkdownPreview(stream.reasoning || "_小P 正在思考..._");
+      } else if (state.requirementActiveTab === stream.target) {
+        previewEl.innerHTML = renderMarkdownPreview(stream.content || "_小P 正在生成..._");
+      } else {
+        // 当前查看的不是正在流式生成的文档，保持其已有内容，避免串台。
+        return;
+      }
+      previewEl.scrollTop = previewEl.scrollHeight;
+    }
+
     async function patchJson(path, payload) {
       const response = await fetch(`${apiBaseUrl}${path}`, {
         method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        const message = data.error || `HTTP ${response.status}`;
+        throw new Error(message);
+      }
+      return data;
+    }
+
+    async function deleteJson(path, payload) {
+      const response = await fetch(`${apiBaseUrl}${path}`, {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json"
         },
@@ -1778,7 +3316,7 @@
       return "tag";
     }
 
-    const stageOptions = ["立项", "建模", "模拟计算", "结果分析", "报告交付"];
+    const stageOptions = ["立项", "需求解析", "方案确认", "建模", "模拟计算", "交付"];
     const projectStatusOptions = ["进行中", "临近交付", "已完成"];
     const packageStatusOptions = ["未开始", "待打包", "可打包", "已打包"];
     const checklistStatusOptions = ["未开始", "待完成", "待整理", "待确认", "已完成"];
@@ -1791,6 +3329,25 @@
       if (state.projectDetail && state.projectDetail.id === project.id) {
         state.projectDetail = project;
       }
+      if (state.workspace?.project?.id === project.id) {
+        state.workspace = { ...state.workspace, project };
+      }
+    }
+
+    function removeProjectsFromState(projectIds) {
+      const ids = new Set(projectIds);
+      state.projects = state.projects.filter((project) => !ids.has(project.id));
+      if (state.projectDetail && ids.has(state.projectDetail.id)) {
+        state.projectDetail = state.projects[0] || null;
+      }
+      if (state.workspace?.project && ids.has(state.workspace.project.id)) {
+        state.workspace = null;
+        state.workspaceFlags = {};
+        state.inWorkspace = false;
+      }
+      state.selectedProjectIds = new Set(
+        [...state.selectedProjectIds].filter((projectId) => !ids.has(projectId))
+      );
     }
 
     async function refreshState(projectId) {
@@ -1804,6 +3361,592 @@
       return options.map((option) => `
         <option value="${escapeHtml(option)}" ${option === selectedValue ? "selected" : ""}>${escapeHtml(option)}</option>
       `).join("");
+    }
+
+    function renderRequirementVersionOptions(document) {
+      return (document?.versions || []).map((version) => `
+        <option value="${escapeHtml(version.id)}" ${version.id === document.currentVersionId ? "selected" : ""}>
+          ${escapeHtml(version.name)}
+        </option>
+      `).join("");
+    }
+
+    function getPreviousRequirementVersion(document) {
+      const versions = document?.versions || [];
+      const currentIndex = versions.findIndex((version) => version.id === document.currentVersionId);
+      if (currentIndex < 0) {
+        return versions[1] || null;
+      }
+      return versions[currentIndex + 1] || null;
+    }
+
+    function getRequirementDocument(task) {
+      if (!task || state.requirementActiveTab === "process" || state.requirementActiveTab === "thinking") {
+        return null;
+      }
+      if (state.requirementActiveTab === "analysis") {
+        return task.documents?.analysis || null;
+      }
+      if (state.requirementActiveTab === "plan") {
+        return task.documents?.plan || null;
+      }
+      return null;
+    }
+
+    function getRequirementMarkdown(task) {
+      if (!task) {
+        return "# 等待上传需求\n\n请先在左侧上传 PDF / Word / TXT / MD 需求文档。";
+      }
+      if (state.requirementActiveTab === "thinking") {
+        return renderRequirementThinkingMarkdown(task);
+      }
+      const activeDocument = getRequirementDocument(task);
+      if (activeDocument?.content) {
+        return activeDocument.content;
+      }
+      if (task.status === "processing") {
+        return "# 正在解析需求\n\n小P 正在读取文档、解析任务并生成实施方案，请稍候。";
+      }
+      if (task.status === "failed") {
+        return "# 需求解析失败\n\n请检查后端日志或稍后重试。";
+      }
+      return "# 暂无内容";
+    }
+
+    function getRequirementExportMarkdown(task) {
+      // 导出始终输出该文档的最终版本干净内容：忽略“高亮修改”对比视图与当前选中的历史版本，
+      // 不带任何中间修改痕迹（如被划掉的内容）。
+      if (!task || state.requirementActiveTab === "thinking") {
+        return getRequirementMarkdown(task);
+      }
+      const activeDocument = getRequirementDocument(task);
+      if (!activeDocument) {
+        return getRequirementMarkdown(task);
+      }
+      const latestVersion = (activeDocument.versions || [])[0];
+      return latestVersion?.content || activeDocument.content || "# 暂无内容";
+    }
+
+    // --- 建模规划（方案 → 建模 衔接） ---
+    function modelingTypeLabel(type) {
+      return ({ molecule: "分子", ion: "离子", surface: "表面", slab: "slab", polymer: "聚合物", cluster: "团簇" })[type] || type || "";
+    }
+
+    function modelingKindLabel(kind) {
+      return ({ molecule: "单分子", bulk: "体相体系", surface: "表面", interface: "界面", adsorption: "吸附", crystal: "晶体" })[kind] || kind || "体系";
+    }
+
+    function modelingSpecHasContent(spec) {
+      return Boolean(spec && ((spec.buildingBlocks || []).length || spec.targetSystem));
+    }
+
+    function modelingSpecMarkdown(spec) {
+      const blocks = spec.buildingBlocks || [];
+      const target = spec.targetSystem || {};
+      const lines = ["", "---", "", "## 建模规划", ""];
+      if (blocks.length) {
+        lines.push("**待构建对象**", "");
+        blocks.forEach((block) => {
+          const meta = [block.formula, modelingTypeLabel(block.type), block.role].filter(Boolean).join(" · ");
+          lines.push(`- **${block.name}**${meta ? `（${meta}）` : ""}${block.note ? ` — ${block.note}` : ""}`);
+        });
+        lines.push("");
+      }
+      const comps = (target.components || []).map((comp) => `${comp.block}×${comp.count || "适量"}`).join("、");
+      lines.push("**目标体系**", "");
+      lines.push(`- 类型：${modelingKindLabel(target.kind)}${target.summary ? `（${target.summary}）` : ""}`);
+      if (comps) lines.push(`- 组成：${comps}`);
+      if (target.box) lines.push(`- 盒子/晶胞：${target.box}`);
+      if (target.interface) {
+        const itf = target.interface;
+        const phases = [itf.phaseA, itf.phaseB].filter(Boolean).join(" / ");
+        lines.push(`- 界面：${phases}${itf.note ? `（${itf.note}）` : ""}`);
+      }
+      return lines.join("\n");
+    }
+
+    function renderRequirementSpecBlock(task) {
+      if (state.requirementSpecLoading) {
+        return `<div class="modeling-spec-note">正在从方案抽取建模规划…</div>`;
+      }
+      const spec = task?.documents?.modelingSpec;
+      if (!modelingSpecHasContent(spec)) {
+        return "";
+      }
+      return `<div class="modeling-spec-block">${renderMarkdownPreview(modelingSpecMarkdown(spec))}</div>`;
+    }
+
+    async function ensureRequirementModelingSpec(task) {
+      if (!task?.documents?.plan) {
+        return;
+      }
+      const spec = task.documents.modelingSpec;
+      const planVersion = task.documents.plan.currentVersionId;
+      if (spec && spec.planVersionId === planVersion) {
+        return;
+      }
+      state.requirementSpecLoading = true;
+      if (state.requirementActiveTab === "plan") {
+        renderRequirementAnalysis();
+      }
+      try {
+        const data = await postJson(`/api/requirement-tasks/${task.id}/modeling-spec`, { model: state.requirementModel });
+        if (data.task) {
+          state.activeRequirementTask = data.task;
+          state.requirementTasks = state.requirementTasks.map((item) => item.id === data.task.id ? data.task : item);
+        }
+      } catch (error) {
+        // 建模规划抽取失败不阻塞主流程
+      } finally {
+        state.requirementSpecLoading = false;
+        renderRequirementAnalysis();
+      }
+    }
+
+    function renderRequirementThinkingMarkdown(task) {
+      const steps = task?.steps || [];
+      const documents = task?.documents || {};
+      const analysisReasoning = String(documents.analysis?.reasoning || "").trim();
+      const planReasoning = String(documents.plan?.reasoning || "").trim();
+      const hasReasoning = Boolean(analysisReasoning || planReasoning);
+      return [
+        "# 小P思考过程",
+        "",
+        "> 这里展示模型内部的隐藏推理链路（reasoning），用于说明小P是如何一步步得到结论的。",
+        "",
+        "## 当前技能步骤",
+        "",
+        ...steps.map((step) => `- ${getRequirementStepIcon(step.status)} **${step.label}**：${step.detail}`),
+        "",
+        "## 解析任务 · 推理链路",
+        "",
+        analysisReasoning || "_等待小P解析任务后展示推理链路。_",
+        "",
+        "## 生成方案 · 推理链路",
+        "",
+        planReasoning || "_等待小P生成方案后展示推理链路。_",
+        ...(hasReasoning
+          ? []
+          : ["", "> 注：当前模型未返回隐藏推理内容，仅展示技能步骤进度。"])
+      ].join("\n");
+    }
+
+    function buildPendingRequirementTask(fileName, fileType) {
+      const now = new Date().toISOString();
+      return {
+        id: "pending-requirement-task",
+        fileName,
+        fileType: fileType || "text/markdown",
+        status: "processing",
+        sourceText: "",
+        steps: [
+          { label: "读取文档", status: "completed", detail: "已开始读取本地文件" },
+          { label: "解析任务", status: "in_progress", detail: "小P 正在识别目标、约束、交付物和风险" },
+          { label: "生成方案", status: "pending", detail: "等待解析结果后生成 Markdown 实施方案" }
+        ],
+        conversation: [
+          { role: "user", content: `已上传：${fileName}`, createdAt: now },
+          { role: "assistant", content: "正在解析需求文档，请稍候。", createdAt: now }
+        ],
+        documents: {},
+        exports: [],
+        createdAt: now,
+        updatedAt: now
+      };
+    }
+
+    function buildPendingRequirementMessageTask(task, message) {
+      const now = new Date().toISOString();
+      return {
+        ...task,
+        optimizationPending: true,
+        optimizationStage: "understand",
+        conversation: [
+          ...(task.conversation || []),
+          { role: "user", content: message, createdAt: now },
+          { role: "assistant", content: "正在理解修改要求...", transient: true, createdAt: now }
+        ],
+        updatedAt: now
+      };
+    }
+
+    function buildFailedRequirementMessageTask(task, message) {
+      return {
+        ...task,
+        optimizationPending: false,
+        conversation: [
+          ...((task && task.conversation) || []),
+          { role: "assistant", content: `方案优化失败：${message || "请稍后重试"}`, createdAt: new Date().toISOString() }
+        ],
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    function buildTerminatedRequirementTask(task) {
+      const baseTask = task || buildPendingRequirementTask("需求文档", "text/plain");
+      return {
+        ...baseTask,
+        status: "failed",
+        steps: (baseTask.steps || []).map((step) => step.status === "completed"
+          ? step
+          : { ...step, status: "failed", detail: "已被用户终止" }
+        ),
+        conversation: [
+          ...((baseTask.conversation || []).filter((message) => !message.transient)),
+          { role: "assistant", content: "已终止本次解析。你可以重新上传需求文档。", createdAt: new Date().toISOString() }
+        ],
+        optimizationPending: false,
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    function cancelRequirementProcessing() {
+      state.requirementAbortRequested = true;
+      state.activeRequirementTask = buildTerminatedRequirementTask(state.activeRequirementTask);
+      renderRequirementAnalysis();
+      showToast("已终止本次解析", "error");
+    }
+
+    function buildFailedRequirementTask(task, message) {
+      return {
+        ...(task || buildPendingRequirementTask("需求文档", "text/plain")),
+        status: "failed",
+        steps: [
+          { label: "读取文档", status: "completed", detail: "已读取本地文件" },
+          { label: "解析任务", status: "failed", detail: message || "模型解析失败，请稍后重试" },
+          { label: "生成方案", status: "pending", detail: "未生成实施方案" }
+        ],
+        conversation: [
+          ...((task && task.conversation) || []),
+          { role: "assistant", content: `解析失败：${message || "请稍后重试"}`, createdAt: new Date().toISOString() }
+        ],
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    function getRequirementStepIcon(status) {
+      if (status === "completed") {
+        return "✓";
+      }
+      if (status === "in_progress") {
+        return "…";
+      }
+      if (status === "failed") {
+        return "!";
+      }
+      return "○";
+    }
+
+    function getRequirementStepClass(status) {
+      if (status === "completed") {
+        return "completed";
+      }
+      if (status === "in_progress") {
+        return "running";
+      }
+      if (status === "failed") {
+        return "failed";
+      }
+      return "pending";
+    }
+
+    function isAutomaticRequirementMessage(message) {
+      if ((message?.usedSkills || []).length) return false;
+      const content = String(message?.content || "");
+      return content.startsWith("已上传：")
+        || content === "正在解析需求文档，请稍候。"
+        || content === "已完成读取文档、解析任务和生成方案。";
+    }
+
+    function renderRequirementConversation(task) {
+      if (!task) {
+        return `
+          <div class="chat-message assistant">
+            <div class="chat-role">小P</div>
+            等待上传需求文档。
+          </div>
+        `;
+      }
+
+      const progressMessage = `
+        <div class="chat-message assistant">
+          <div class="chat-role">小P 执行过程</div>
+          <div class="progress-list">
+            ${(task.steps || []).map((step) => `
+              <div><span class="${getRequirementStepClass(step.status)}">${getRequirementStepIcon(step.status)}</span>${escapeHtml(step.label)}：${escapeHtml(step.detail)}</div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+
+      const conversation = (task.conversation || [])
+        .filter((message) => !isAutomaticRequirementMessage(message))
+        .map((message) => `
+        <div class="chat-message ${message.role === "assistant" ? "assistant" : ""}">
+          <div class="chat-role">${message.role === "assistant" ? "小P" : "用户"}${message.role === "assistant" ? renderMessageUsedSkills(message) : ""}</div>
+          ${escapeHtml(message.content)}
+        </div>
+      `).join("");
+
+      return `${progressMessage}${conversation}`;
+    }
+
+    async function readRequirementFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error || new Error("file read failed"));
+        reader.readAsText(file);
+      });
+    }
+
+    async function runRequirementSkillSteps(task) {
+      let currentTask = task;
+      while (currentTask.status !== "completed") {
+        if (state.requirementAbortRequested) {
+          return null;
+        }
+        state.requirementStream = { active: true, reasoning: "", content: "", target: "analysis" };
+        await streamRequirement(`/api/requirement-tasks/${currentTask.id}/run-next-step`, { model: state.requirementModel }, (event) => {
+          if (event.type === "step") {
+            currentTask = event.task;
+            state.activeRequirementTask = currentTask;
+            state.requirementStream.target = event.skill === "generate_plan" ? "plan" : "analysis";
+            state.requirementActiveTab = state.requirementStream.target;
+            renderRequirementAnalysis();
+          } else if (event.type === "reasoning") {
+            state.requirementStream.reasoning += event.text;
+            updateRequirementStreamingView();
+          } else if (event.type === "content") {
+            state.requirementStream.content += event.text;
+            updateRequirementStreamingView();
+          } else if (event.type === "done") {
+            currentTask = event.task;
+          } else if (event.type === "error") {
+            throw new Error(event.error);
+          }
+        });
+        state.requirementStream = null;
+        if (state.requirementAbortRequested) {
+          return null;
+        }
+        state.activeRequirementTask = currentTask;
+        state.requirementTasks = [currentTask, ...state.requirementTasks.filter((item) => item.id !== currentTask.id)];
+        renderRequirementAnalysis();
+      }
+      return currentTask;
+    }
+
+    async function createRequirementTask(event) {
+      event.preventDefault();
+      const fileInput = document.getElementById("requirementFileInput");
+      const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+      const file = fileInput?.files?.[0];
+      if (!file) {
+        showToast("请先选择需求文档", "error");
+        return;
+      }
+
+      setActionLoading(submitButton, true, "解析中...");
+      state.requirementAbortRequested = false;
+      state.requirementEditMode = false;
+      try {
+        state.activeRequirementTask = buildPendingRequirementTask(file.name, file.type);
+        state.requirementActiveTab = "analysis";
+        renderRequirementAnalysis();
+        const content = await readRequirementFile(file);
+        if (state.requirementAbortRequested) {
+          return;
+        }
+        const data = await postJson("/api/requirement-tasks", {
+          fileName: file.name,
+          fileType: file.type,
+          content,
+          projectId: state.inWorkspace ? (state.workspace?.project?.id || "") : ""
+        });
+        if (state.requirementAbortRequested) {
+          return;
+        }
+        state.activeRequirementTask = data.task;
+        if (state.inWorkspace && state.workspace) {
+          state.workspace.requirementTask = data.task;
+        }
+        state.requirementTasks = [data.task, ...state.requirementTasks.filter((task) => task.id !== data.task.id)];
+        state.requirementActiveTab = "analysis";
+        renderRequirementAnalysis();
+        const completedTask = await runRequirementSkillSteps(data.task);
+        if (!completedTask) {
+          return;
+        }
+        state.activeRequirementTask = completedTask;
+        state.requirementTasks = [completedTask, ...state.requirementTasks.filter((task) => task.id !== completedTask.id)];
+        state.requirementActiveTab = "analysis";
+        if (state.inWorkspace && state.workspace) {
+          state.workspace.requirementTask = completedTask;
+          renderWorkspacePage();
+        } else {
+          renderRequirementAnalysis();
+        }
+        showToast("需求解析已完成", "success");
+        ensureRequirementModelingSpec(completedTask);
+      } catch (error) {
+        if (state.requirementAbortRequested) {
+          return;
+        }
+        state.activeRequirementTask = buildFailedRequirementTask(state.activeRequirementTask, error.message);
+        state.requirementActiveTab = "analysis";
+        renderRequirementAnalysis();
+        showToast(`需求解析失败：${error.message}`, "error");
+      } finally {
+        setActionLoading(submitButton, false, "解析中...");
+      }
+    }
+
+    async function sendRequirementMessage(event) {
+      event.preventDefault();
+      if (!state.activeRequirementTask) {
+        showToast("请先上传需求文档", "error");
+        return;
+      }
+      const input = document.getElementById("requirementMessageInput");
+      const message = String(input?.value || "").trim();
+      if (!message) {
+        return;
+      }
+
+      const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+      setActionLoading(submitButton, true, "发送中...");
+      try {
+        let currentTask = buildPendingRequirementMessageTask(state.activeRequirementTask, message);
+        state.activeRequirementTask = currentTask;
+        state.requirementEditMode = false;
+        state.requirementActiveTab = "plan";
+        renderRequirementAnalysis();
+        state.requirementStream = { active: true, reasoning: "", content: "", target: "plan" };
+        await streamRequirement(`/api/requirement-tasks/${currentTask.id}/messages`, { message, model: state.requirementModel }, (event) => {
+          if (event.type === "reasoning") {
+            state.requirementStream.reasoning += event.text;
+            updateRequirementStreamingView();
+          } else if (event.type === "content") {
+            state.requirementStream.content += event.text;
+            updateRequirementStreamingView();
+          } else if (event.type === "done") {
+            currentTask = event.task;
+          } else if (event.type === "error") {
+            throw new Error(event.error);
+          }
+        });
+        state.requirementStream = null;
+        state.activeRequirementTask = currentTask;
+        state.requirementTasks = state.requirementTasks.map((task) => task.id === currentTask.id ? currentTask : task);
+        state.requirementActiveTab = "plan";
+        state.requirementHighlightChanges = true;
+        renderRequirementAnalysis();
+        showToast("方案已更新并保存新版本", "success");
+        ensureRequirementModelingSpec(currentTask);
+      } catch (error) {
+        state.requirementStream = null;
+        state.activeRequirementTask = buildFailedRequirementMessageTask(state.activeRequirementTask, error.message);
+        state.requirementActiveTab = "plan";
+        renderRequirementAnalysis();
+        showToast(`方案优化失败：${error.message}`, "error");
+      } finally {
+        setActionLoading(submitButton, false, "发送中...");
+      }
+    }
+
+    async function saveRequirementEditedVersion() {
+      const task = state.activeRequirementTask;
+      const textarea = document.getElementById("requirementEditArea");
+      if (!task || !textarea) {
+        return;
+      }
+      const content = String(textarea.value || "").trim();
+      if (!content) {
+        showToast("内容不能为空", "error");
+        return;
+      }
+      const target = state.requirementActiveTab === "plan" ? "plan" : "analysis";
+      const button = document.getElementById("saveRequirementVersionButton");
+      setActionLoading(button, true, "保存中...");
+      try {
+        const data = await postJson(`/api/requirement-tasks/${task.id}/versions`, { target, content });
+        const updated = data.task;
+        state.activeRequirementTask = updated;
+        state.requirementTasks = state.requirementTasks.map((item) => item.id === updated.id ? updated : item);
+        state.requirementEditMode = false;
+        state.requirementHighlightChanges = false;
+        renderRequirementAnalysis();
+        showToast("已保存为新版本", "success");
+      } catch (error) {
+        showToast(`保存失败：${error.message}`, "error");
+      } finally {
+        setActionLoading(button, false, "保存中...");
+      }
+    }
+
+    function downloadBlob(blob, fileName) {
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function buildExportHtmlDocument(markdown, title) {
+      const body = renderMarkdownPreview(markdown);
+      return `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>${escapeHtml(title)}</title>`
+        + `<style>body{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;color:#1f2933;line-height:1.6;padding:24px;}`
+        + `h1,h2,h3{color:#0f172a;}code{background:#f1f5f9;padding:2px 4px;border-radius:4px;}`
+        + `pre{background:#f1f5f9;padding:12px;border-radius:8px;overflow:auto;}`
+        + `table{border-collapse:collapse;}th,td{border:1px solid #cbd5e1;padding:6px 10px;}</style>`
+        + `</head><body>${body}</body></html>`;
+    }
+
+    async function exportCurrentRequirementDocument() {
+      const task = state.activeRequirementTask;
+      const markdown = getRequirementExportMarkdown(task);
+      const documentName = state.requirementActiveTab === "analysis" ? "解析结果" : state.requirementActiveTab === "plan" ? "实施方案" : "思考过程";
+      const format = document.getElementById("requirementExportFormat")?.value || "md";
+
+      if (format === "md") {
+        downloadBlob(new Blob([markdown], { type: "text/markdown;charset=utf-8" }), `${documentName}.md`);
+        showToast("Markdown 已导出", "success");
+        return;
+      }
+
+      if (format === "docx") {
+        if (!window.htmlDocx) {
+          showToast("Word 导出组件未加载，请检查网络后重试", "error");
+          return;
+        }
+        const html = buildExportHtmlDocument(markdown, documentName);
+        downloadBlob(window.htmlDocx.asBlob(html), `${documentName}.docx`);
+        showToast("Word 文档已导出", "success");
+        return;
+      }
+
+      if (format === "pdf") {
+        if (!window.html2pdf) {
+          showToast("PDF 导出组件未加载，请检查网络后重试", "error");
+          return;
+        }
+        const container = document.createElement("div");
+        container.style.background = "#ffffff";
+        container.innerHTML = buildExportHtmlDocument(markdown, documentName);
+        try {
+          await window.html2pdf().set({
+            margin: 10,
+            filename: `${documentName}.pdf`,
+            image: { type: "jpeg", quality: 0.95 },
+            html2canvas: { scale: 2, backgroundColor: "#ffffff" },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+          }).from(container).save();
+          showToast("PDF 已导出", "success");
+        } catch (error) {
+          showToast(`PDF 导出失败：${error.message}`, "error");
+        }
+      }
     }
 
     function bindGlobalUi() {
@@ -1917,28 +4060,40 @@
 
       navGroupEl.querySelectorAll(".nav-item").forEach((button) => {
         button.addEventListener("click", () => {
+          if (button.dataset.page === "create") {
+            openCreateProjectModal();
+            return;
+          }
           navigateTo(button.dataset.page, button.dataset.id || undefined);
         });
       });
     }
 
     function renderPageHeader(title, description) {
-      const statusClass = state.apiOnline ? "online" : "offline";
-      const statusText = state.apiOnline ? `后端已连接 · ${apiBaseUrl}` : "当前显示本地示例数据";
-
       return `
         <section class="page-header page-header--split">
           <div class="page-header-main">
             <div class="page-title">
-              <div class="eyebrow">运营工作台</div>
               <h1>${escapeHtml(title)}</h1>
               <p>${escapeHtml(description)}</p>
             </div>
           </div>
           <div class="page-header-side">
-            <div class="status-group">
-              <div class="status-pill ${statusClass}">${escapeHtml(statusText)}</div>
+            <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderRequirementHeader() {
+      return `
+        <section class="page-header page-header--split">
+          <div class="page-header-main">
+            <div class="page-title">
+              <h1>需求解析</h1>
             </div>
+          </div>
+          <div class="page-header-side">
             <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
           </div>
         </section>
@@ -2149,7 +4304,7 @@
         ${renderPageHeader("项目仪表盘", "聚焦项目进度、交付风险和金额分布，优先处理本周最影响交付的事项。")}
         <div class="page-toolbar">
           <button class="button-secondary" type="button" onclick="navigateTo('projects')">查看项目列表</button>
-          <button class="button-primary" type="button" onclick="navigateTo('create')">新建项目</button>
+          <button class="button-primary" type="button" onclick="openCreateProjectModal()">新建项目</button>
         </div>
         <section class="dashboard-shell">
           <section class="dashboard-hero">
@@ -2241,7 +4396,7 @@
               </div>
               <div class="action-strip-actions">
                 <button class="button-secondary" type="button" onclick="navigateTo('projects')">处理项目列表</button>
-                <button class="button-primary" type="button" onclick="navigateTo('create')">新建项目</button>
+                <button class="button-primary" type="button" onclick="openCreateProjectModal()">新建项目</button>
               </div>
             </div>
             <div class="action-strip-list" id="actionList">
@@ -2260,78 +4415,58 @@
       renderTrendChart(dashboard.deliveryTrend);
     }
 
-    function renderCreatePage() {
-      mainContentEl.innerHTML = `
-        ${renderPageHeader("新建项目", "填写项目基础信息并建立新的项目记录。")}
-        <section class="page-card">
-          <h2>项目基础信息</h2>
-          <p class="helper-text">保存后会立即写入系统，并跳转到项目详情页继续维护。</p>
-          <form id="projectForm">
-            <div class="form-grid">
-              <div class="field-group">
-                <label for="name">项目名称</label>
-                <input id="name" name="name" required>
-              </div>
-              <div class="field-group">
-                <label for="customer">客户名称</label>
-                <input id="customer" name="customer" required>
-              </div>
-              <div class="field-group">
-                <label for="amount">项目金额</label>
-                <input id="amount" name="amount" type="number" min="0" required>
-              </div>
-              <div class="field-group">
-                <label for="plannedDeliveryDate">计划交付日期</label>
-                <input id="plannedDeliveryDate" name="plannedDeliveryDate" type="date" required>
-              </div>
-              <div class="field-group">
-                <label for="template">项目模板</label>
-                <select id="template" name="template">
-                  <option>标准计算项目</option>
-                  <option>扩散模拟模板</option>
-                  <option>界面分析模板</option>
-                  <option>吸附能扫描模板</option>
-                </select>
-              </div>
-              <div class="field-group">
-                <label for="rootDirectory">根目录路径</label>
-                <input id="rootDirectory" name="rootDirectory" value="/data/projects/new-project">
-              </div>
-              <div class="field-group wide">
-                <label for="description">项目简介</label>
-                <textarea id="description" name="description"></textarea>
-              </div>
-            </div>
-            <div class="actions">
-              <button class="button-primary" type="submit">保存项目草稿</button>
-              <button class="button-secondary" type="button" onclick="navigateTo('projects')">查看项目列表</button>
-            </div>
-          </form>
-        </section>
-      `;
+    function openCreateProjectModal() {
+      const modal = document.getElementById("createProjectModal");
+      if (!modal) {
+        return;
+      }
+      const formEl = document.getElementById("projectForm");
+      formEl?.reset();
+      const rootDirectoryInput = document.getElementById("rootDirectory");
+      if (rootDirectoryInput) {
+        rootDirectoryInput.value = "/data/projects/new-project";
+        rootDirectoryInput.dataset.locked = "";
+      }
+      modal.classList.remove("hidden");
+      document.getElementById("name")?.focus();
+    }
 
-      document.getElementById("projectForm").addEventListener("submit", (event) => {
-        event.preventDefault();
+    function closeCreateProjectModal() {
+      document.getElementById("createProjectModal")?.classList.add("hidden");
+    }
+
+    function bindCreateProjectForm() {
+      const formEl = document.getElementById("projectForm");
+      if (!formEl || formEl.dataset.bound) {
+        return;
+      }
+      formEl.dataset.bound = "true";
+
+      document.getElementById("closeCreateProjectButton")?.addEventListener("click", closeCreateProjectModal);
+      document.getElementById("cancelCreateProjectButton")?.addEventListener("click", closeCreateProjectModal);
+      document.getElementById("createProjectModal")?.addEventListener("click", (event) => {
+        if (event.target.id === "createProjectModal") {
+          closeCreateProjectModal();
+        }
       });
 
-      const formEl = document.getElementById("projectForm");
       const nameInput = document.getElementById("name");
       const rootDirectoryInput = document.getElementById("rootDirectory");
 
-      nameInput.addEventListener("input", () => {
-        if (!rootDirectoryInput.dataset.locked) {
+      nameInput?.addEventListener("input", () => {
+        if (rootDirectoryInput && !rootDirectoryInput.dataset.locked) {
           rootDirectoryInput.value = `/data/projects/${slugifyProjectName(nameInput.value)}`;
         }
       });
 
-      rootDirectoryInput.addEventListener("input", () => {
+      rootDirectoryInput?.addEventListener("input", () => {
         rootDirectoryInput.dataset.locked = rootDirectoryInput.value.trim() ? "true" : "";
       });
 
       formEl.addEventListener("submit", async (event) => {
         event.preventDefault();
         const submitButton = formEl.querySelector('button[type="submit"]');
-        setActionLoading(submitButton, true, "保存中...");
+        setActionLoading(submitButton, true, "创建中...");
 
         const formData = new FormData(formEl);
         const payload = {
@@ -2346,12 +4481,13 @@
 
         try {
           const data = await postJson("/api/projects", payload);
-          showToast("项目创建成功，正在进入详情页", "success");
-          navigateTo("detail", data.project.id);
+          showToast("项目创建成功，正在进入工作台", "success");
+          closeCreateProjectModal();
+          navigateTo("workspace", data.project.id, { tab: "plan" });
         } catch (error) {
           showToast(`项目创建失败：${error.message}`, "error");
         } finally {
-          setActionLoading(submitButton, false, "保存中...");
+          setActionLoading(submitButton, false, "创建中...");
         }
       });
     }
@@ -2368,6 +4504,8 @@
           <p class="helper-text">支持按阶段、状态、打包情况和关键字段快速筛选，并按优先维度排序。</p>
           <div class="page-toolbar">
             <button class="button-secondary" type="button" id="resetFiltersButton">重置筛选</button>
+            <button class="button-secondary" type="button" id="deleteSelectedProjectsButton" disabled>删除选中项目</button>
+            <span class="helper-text" id="selectedProjectsCount">已选择 0 个项目</span>
           </div>
           <div class="toolbar">
             <input id="searchInput" type="search" aria-label="搜索项目">
@@ -2391,6 +4529,7 @@
           </div>
           <div class="table">
             <div class="table-header">
+              <div>选择</div>
               <div>项目名称</div>
               <div>客户</div>
               <div>阶段</div>
@@ -2410,10 +4549,24 @@
       const packageFilter = document.getElementById("packageFilter");
       const sortFilter = document.getElementById("sortFilter");
       const resetFiltersButton = document.getElementById("resetFiltersButton");
+      const deleteSelectedProjectsButton = document.getElementById("deleteSelectedProjectsButton");
+      const selectedProjectsCount = document.getElementById("selectedProjectsCount");
       const rowsEl = document.getElementById("projectRows");
       sortFilter.value = state.preferences.projectsSort;
 
+      function updateSelectionControls() {
+        const selectedCount = state.selectedProjectIds.size;
+        selectedProjectsCount.textContent = `已选择 ${selectedCount} 个项目`;
+        deleteSelectedProjectsButton.disabled = selectedCount === 0;
+      }
+
       function renderRows() {
+        const knownIds = new Set(state.projects.map((project) => project.id));
+        state.selectedProjectIds = new Set(
+          [...state.selectedProjectIds].filter((projectId) => knownIds.has(projectId))
+        );
+        updateSelectionControls();
+
         const searchValue = searchInput.value.trim().toLowerCase();
         const stageValue = stageFilter.value;
         const statusValue = statusFilter.value;
@@ -2449,6 +4602,15 @@
 
         rowsEl.innerHTML = filtered.map((project) => `
           <div class="table-row" data-id="${project.id}">
+            <div class="project-select-cell">
+              <input
+                class="project-select"
+                type="checkbox"
+                aria-label="选择 ${escapeHtml(project.name)}"
+                data-project-select="${escapeHtml(project.id)}"
+                ${state.selectedProjectIds.has(project.id) ? "checked" : ""}
+              >
+            </div>
             <div>
               <strong>${escapeHtml(project.name)}</strong>
               <div class="table-sub">${escapeHtml(project.id)}</div>
@@ -2466,7 +4628,19 @@
         `).join("");
 
         rowsEl.querySelectorAll(".table-row").forEach((row) => {
-          row.addEventListener("click", () => navigateTo("detail", row.dataset.id));
+          row.addEventListener("click", () => navigateTo("workspace", row.dataset.id));
+        });
+        rowsEl.querySelectorAll(".project-select").forEach((checkbox) => {
+          checkbox.addEventListener("click", (event) => event.stopPropagation());
+          checkbox.addEventListener("change", () => {
+            const projectId = checkbox.dataset.projectSelect;
+            if (checkbox.checked) {
+              state.selectedProjectIds.add(projectId);
+            } else {
+              state.selectedProjectIds.delete(projectId);
+            }
+            updateSelectionControls();
+          });
         });
       }
 
@@ -2484,172 +4658,1390 @@
         renderRows();
       });
 
+      deleteSelectedProjectsButton.addEventListener("click", async () => {
+        const selectedIds = [...state.selectedProjectIds];
+        if (!selectedIds.length) {
+          return;
+        }
+        const confirmed = window.confirm(`确定删除选中的 ${selectedIds.length} 个项目吗？此操作不可恢复。`);
+        if (!confirmed) {
+          return;
+        }
+
+        setActionLoading(deleteSelectedProjectsButton, true, "删除中...");
+        try {
+          const data = await deleteJson("/api/projects", { ids: selectedIds });
+          const deletedIds = Array.isArray(data.deletedIds) ? data.deletedIds : selectedIds;
+          if (Array.isArray(data.projects)) {
+            state.projects = data.projects;
+          }
+          removeProjectsFromState(deletedIds);
+          await loadDashboardData();
+          showToast(`已删除 ${deletedIds.length} 个项目`, "success");
+          renderProjectsPage();
+        } catch (error) {
+          showToast(`删除失败：${error.message}`, "error");
+        } finally {
+          setActionLoading(deleteSelectedProjectsButton, false, "删除中...");
+        }
+      });
+
       renderRows();
     }
 
-    function renderProjectDetailPage() {
-      const project = state.projectDetail;
-      if (!project) {
-        mainContentEl.innerHTML = `
-          ${renderPageHeader("项目详情", "当前未找到项目，请先从项目列表进入有效项目。")}
-          <div class="empty-state">
-            <h3>项目不存在</h3>
-            <p>请返回项目列表重新选择项目。</p>
+    function renderProjectMaintenanceStack(project) {
+      return `
+        <div class="detail-stack">
+          <div class="detail-card">
+            <div class="detail-card-head">
+              <h3>项目维护</h3>
+              <span class="${getTagClass(project.status)}">${escapeHtml(project.status)}</span>
+            </div>
+            <form class="detail-edit-form" id="detailEditForm">
+              <div class="detail-form-grid">
+                <div class="field-group">
+                  <label for="detailCustomer">客户名称</label>
+                  <input id="detailCustomer" name="customer" value="${escapeHtml(project.customer)}" required>
+                </div>
+                <div class="field-group">
+                  <label for="detailAmount">项目金额</label>
+                  <input id="detailAmount" name="amount" type="number" min="0" value="${project.amount}" required>
+                </div>
+                <div class="field-group">
+                  <label for="detailStage">当前阶段</label>
+                  <select id="detailStage" name="currentStage">${renderSelectOptions(stageOptions, project.currentStage)}</select>
+                </div>
+                <div class="field-group">
+                  <label for="detailProgress">进度</label>
+                  <input id="detailProgress" name="progress" type="number" min="0" max="100" value="${project.progress}" required>
+                </div>
+                <div class="field-group">
+                  <label for="detailStatus">项目状态</label>
+                  <select id="detailStatus" name="status">${renderSelectOptions(projectStatusOptions, project.status)}</select>
+                </div>
+                <div class="field-group">
+                  <label for="detailPackageStatus">打包状态</label>
+                  <select id="detailPackageStatus" name="packageStatus">${renderSelectOptions(packageStatusOptions, project.packageStatus)}</select>
+                </div>
+                <div class="field-group">
+                  <label for="detailDeliveryDate">计划交付</label>
+                  <input id="detailDeliveryDate" name="plannedDeliveryDate" type="date" value="${escapeHtml(project.plannedDeliveryDate)}" required>
+                </div>
+                <div class="field-group">
+                  <label for="detailRootDirectory">目录路径</label>
+                  <input id="detailRootDirectory" name="rootDirectory" value="${escapeHtml(project.rootDirectory)}" required>
+                </div>
+                <div class="field-group wide">
+                  <label for="detailDescription">项目说明</label>
+                  <textarea id="detailDescription" name="description">${escapeHtml(project.description || "")}</textarea>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="button-primary" type="submit">保存项目更新</button>
+              </div>
+            </form>
           </div>
-        `;
-        return;
-      }
+        </div>
+      `;
+    }
 
-      mainContentEl.innerHTML = `
-        ${renderPageHeader(project.name, project.description || "查看并维护项目状态、交付清单和打包记录。")}
-        <section class="page-card">
-          <h2>项目总览</h2>
-          <p class="helper-text">可以直接在本页更新项目状态、维护交付清单，并登记新的打包记录。</p>
-          <div class="detail-grid">
-            <div class="detail-stack">
-              <div class="detail-card">
-                <div class="detail-card-head">
-                  <h3>项目维护</h3>
-                  <span class="${getTagClass(project.status)}">${escapeHtml(project.status)}</span>
-                </div>
-                <form class="detail-edit-form" id="detailEditForm">
-                  <div class="detail-form-grid">
-                    <div class="field-group">
-                      <label for="detailCustomer">客户名称</label>
-                      <input id="detailCustomer" name="customer" value="${escapeHtml(project.customer)}" required>
-                    </div>
-                    <div class="field-group">
-                      <label for="detailAmount">项目金额</label>
-                      <input id="detailAmount" name="amount" type="number" min="0" value="${project.amount}" required>
-                    </div>
-                    <div class="field-group">
-                      <label for="detailStage">当前阶段</label>
-                      <select id="detailStage" name="currentStage">${renderSelectOptions(stageOptions, project.currentStage)}</select>
-                    </div>
-                    <div class="field-group">
-                      <label for="detailProgress">进度</label>
-                      <input id="detailProgress" name="progress" type="number" min="0" max="100" value="${project.progress}" required>
-                    </div>
-                    <div class="field-group">
-                      <label for="detailStatus">项目状态</label>
-                      <select id="detailStatus" name="status">${renderSelectOptions(projectStatusOptions, project.status)}</select>
-                    </div>
-                    <div class="field-group">
-                      <label for="detailPackageStatus">打包状态</label>
-                      <select id="detailPackageStatus" name="packageStatus">${renderSelectOptions(packageStatusOptions, project.packageStatus)}</select>
-                    </div>
-                    <div class="field-group">
-                      <label for="detailDeliveryDate">计划交付</label>
-                      <input id="detailDeliveryDate" name="plannedDeliveryDate" type="date" value="${escapeHtml(project.plannedDeliveryDate)}" required>
-                    </div>
-                    <div class="field-group">
-                      <label for="detailRootDirectory">目录路径</label>
-                      <input id="detailRootDirectory" name="rootDirectory" value="${escapeHtml(project.rootDirectory)}" required>
-                    </div>
-                    <div class="field-group wide">
-                      <label for="detailDescription">项目说明</label>
-                      <textarea id="detailDescription" name="description">${escapeHtml(project.description || "")}</textarea>
-                    </div>
-                  </div>
-                  <div class="actions">
-                    <button class="button-primary" type="submit">保存项目更新</button>
-                  </div>
-                </form>
-              </div>
-              <div class="detail-card">
-                <h3>阶段进度</h3>
-                <div class="stage-list">
-                  ${project.stageTimeline.map((stage) => {
-                    const stageClass = stage.status === "已完成" ? "stage-chip done" : stage.status === "进行中" ? "stage-chip current" : "stage-chip";
-                    return `<div class="${stageClass}"><span>${escapeHtml(stage.name)}</span><span>${escapeHtml(stage.status)}</span></div>`;
-                  }).join("")}
-                </div>
-              </div>
+    function renderProjectDeliveryStack(project) {
+      return `
+        <div class="detail-stack">
+          <div class="detail-card">
+            <div class="detail-card-head">
+              <h3>交付清单</h3>
+              <span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span>
             </div>
-            <div class="detail-stack">
-              <div class="detail-card">
-                <div class="detail-card-head">
-                  <h3>交付清单</h3>
-                  <span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span>
+            <div class="checklist">
+              ${project.deliveryChecklist.map((item) => `
+                <div class="check-item">
+                  <strong>${escapeHtml(item.name)}</strong>
+                  <select class="version-select check-status-select" data-check-name="${escapeHtml(item.name)}">
+                    ${checklistStatusOptions.map((status) => `<option ${item.status === status ? "selected" : ""}>${escapeHtml(status)}</option>`).join("")}
+                  </select>
                 </div>
-                <div class="checklist">
-                  ${project.deliveryChecklist.map((item) => `
-                    <div class="check-item">
-                      <div>
-                        <strong>${escapeHtml(item.name)}</strong>
-                        <div class="muted">${escapeHtml(item.status)}</div>
-                      </div>
-                      <div class="check-actions">
-                        ${checklistStatusOptions.map((status) => `
-                          <button
-                            class="button-small ${item.status === status ? "active" : ""}"
-                            type="button"
-                            data-check-name="${escapeHtml(item.name)}"
-                            data-check-status="${escapeHtml(status)}"
-                          >${escapeHtml(status)}</button>
-                        `).join("")}
-                      </div>
-                    </div>
-                  `).join("")}
-                </div>
-              </div>
-              <div class="detail-card">
-                <div class="detail-card-head">
-                  <h3>打包记录</h3>
-                  <span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span>
-                </div>
-                <form class="package-form" id="packageRecordForm">
-                  <div class="detail-form-grid">
-                    <div class="field-group">
-                      <label for="packageVersion">版本号</label>
-                      <input id="packageVersion" name="version" required>
-                    </div>
-                    <div class="field-group">
-                      <label for="packageDate">打包日期</label>
-                      <input id="packageDate" name="date" type="date" value="${escapeHtml(project.plannedDeliveryDate)}" required>
-                    </div>
-                    <div class="field-group wide">
-                      <label for="packageType">记录类型</label>
-                      <select id="packageType" name="type">
-                        <option>客户交付包</option>
-                        <option>内部预审包</option>
-                        <option>归档包</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="actions">
-                    <button class="button-secondary" type="submit">新增打包记录</button>
-                  </div>
-                </form>
-                <div class="record-list">
-                  ${project.packageRecords.length ? project.packageRecords.map((record) => `
-                    <div class="record-item">
-                      <div>
-                        <strong>${escapeHtml(record.version)}</strong>
-                        <div class="muted">${escapeHtml(record.date)}</div>
-                      </div>
-                      <span class="record-badge">${escapeHtml(record.type)}</span>
-                    </div>
-                  `).join("") : `
-                    <div class="empty-state">
-                      <h3>暂无打包记录</h3>
-                      <p>当前项目还没有登记打包记录。</p>
-                    </div>
-                  `}
-                </div>
-              </div>
+              `).join("")}
             </div>
           </div>
+          <div class="detail-card">
+            <div class="detail-card-head">
+              <h3>打包记录</h3>
+              <span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span>
+            </div>
+            <form class="package-form" id="packageRecordForm">
+              <div class="detail-form-grid">
+                <div class="field-group">
+                  <label for="packageVersion">版本号</label>
+                  <input id="packageVersion" name="version" required>
+                </div>
+                <div class="field-group">
+                  <label for="packageDate">打包日期</label>
+                  <input id="packageDate" name="date" type="date" value="${escapeHtml(project.plannedDeliveryDate)}" required>
+                </div>
+                <div class="field-group wide">
+                  <label for="packageType">记录类型</label>
+                  <select id="packageType" name="type">
+                    <option>客户交付包</option>
+                    <option>内部预审包</option>
+                    <option>归档包</option>
+                  </select>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="button-secondary" type="submit">新增打包记录</button>
+              </div>
+            </form>
+            <div class="record-list">
+              ${project.packageRecords.length ? project.packageRecords.map((record) => `
+                <div class="record-item">
+                  <div>
+                    <strong>${escapeHtml(record.version)}</strong>
+                    <div class="muted">${escapeHtml(record.date)}</div>
+                  </div>
+                  <span class="record-badge">${escapeHtml(record.type)}</span>
+                </div>
+              `).join("") : `
+                <div class="empty-state">
+                  <h3>暂无打包记录</h3>
+                  <p>当前项目还没有登记打包记录。</p>
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function bindProjectDetailEvents() {
+      document.getElementById("detailEditForm")?.addEventListener("submit", saveProjectDetail);
+      document.getElementById("packageRecordForm")?.addEventListener("submit", savePackageRecord);
+      document.querySelectorAll("select[data-check-name]").forEach((select) => {
+        select.addEventListener("change", () => {
+          updateChecklistStatus(select.dataset.checkName, select.value, null);
+        });
+      });
+    }
+
+    function renderProjectDetailPage() {
+      navigateTo("workspace", state.projectDetail?.id || currentProjectId, { tab: "overview" });
+    }
+
+    function renderRequirementAnalysis() {
+      const task = state.activeRequirementTask;
+      const activeDocument = getRequirementDocument(task);
+      const markdown = getRequirementMarkdown(task);
+      const isRequirementProcessing = task?.status === "processing";
+      const previousDocumentVersion = getPreviousRequirementVersion(activeDocument);
+      const canEditDocument = Boolean(activeDocument)
+        && (state.requirementActiveTab === "analysis" || state.requirementActiveTab === "plan")
+        && !state.requirementStream
+        && !isRequirementProcessing;
+      const isEditingDocument = state.requirementEditMode && canEditDocument;
+      const canHighlightChanges = state.requirementActiveTab === "plan" && Boolean(previousDocumentVersion) && !isEditingDocument;
+      const isRequirementMessageProcessing = Boolean(task?.optimizationPending);
+      let markdownPreview;
+      if (state.requirementStream && state.requirementActiveTab === "thinking") {
+        markdownPreview = renderMarkdownPreview(state.requirementStream.reasoning || "_小P 正在思考..._");
+      } else if (state.requirementStream && state.requirementActiveTab === state.requirementStream.target) {
+        markdownPreview = renderMarkdownPreview(state.requirementStream.content || "_小P 正在生成..._");
+      } else if (canHighlightChanges && state.requirementHighlightChanges) {
+        markdownPreview = renderMarkdownDiffPreview(markdown, previousDocumentVersion.content);
+      } else {
+        markdownPreview = renderMarkdownPreview(markdown);
+      }
+      if (state.requirementActiveTab === "plan" && !isEditingDocument && !state.requirementStream) {
+        markdownPreview += renderRequirementSpecBlock(task);
+      }
+      const tabs = [
+        { id: "thinking", label: "思考过程" },
+        { id: "analysis", label: "解析结果" },
+        { id: "plan", label: "实施方案" }
+      ];
+
+      getRenderRoot().innerHTML = `
+        ${state.inWorkspace && state.workspaceTab === "plan" ? renderPlanSubsteps() : ""}
+        ${state.inWorkspace ? "" : `<div class="requirement-page-header">${renderRequirementHeader()}</div>`}
+        <section class="requirement-workspace">
+          <aside class="page-card requirement-chat">
+            <div class="requirement-chat-panel">
+              <div>
+                <div class="nav-title">小P 对话</div>
+                <h2>需求方案助手</h2>
+              </div>
+
+              <div class="chat-stream" id="requirementChatStream">
+                <form class="upload-drop" id="requirementUploadForm">
+                  <strong>上传需求文档</strong>
+                  <div class="requirement-upload-row">
+                    <input id="requirementFileInput" name="requirementFile" type="file" accept=".pdf,.doc,.docx,.txt,.md,text/plain,text/markdown,application/pdf">
+                    <button class="button-primary" type="submit" ${isRequirementProcessing ? "disabled" : ""}>${isRequirementProcessing ? "解析中..." : "开始解析"}</button>
+                    ${isRequirementProcessing ? `<button class="button-secondary" type="button" id="requirementAbortButton">终止</button>` : ""}
+                  </div>
+                </form>
+                ${renderRequirementConversation(task)}
+              </div>
+
+              <form id="requirementChatForm">
+                <div class="model-select-row">
+                  <label class="helper-text" for="requirementModelSelect">模型</label>
+                  <select class="version-select" id="requirementModelSelect">
+                    <option value="gpt-5.5-medium-fast" ${state.requirementModel === "gpt-5.5-medium-fast" ? "selected" : ""}>gpt-5.5-medium-fast</option>
+                    <option value="deepseek" ${state.requirementModel === "deepseek" ? "selected" : ""}>deepseek</option>
+                  </select>
+                </div>
+                <div class="chat-input-row">
+                  <input id="requirementMessageInput" placeholder="继续输入优化要求..." ${isRequirementMessageProcessing ? "disabled" : ""}>
+                  <button class="button-secondary" type="submit" ${isRequirementMessageProcessing ? "disabled" : ""}>${isRequirementMessageProcessing ? "小P处理中..." : "发送"}</button>
+                </div>
+              </form>
+            </div>
+          </aside>
+
+          <main class="page-card requirement-results">
+            <div class="page-header page-header--split">
+              <div>
+                <h2>工作区</h2>
+                <p class="helper-text">当前查看：${state.requirementActiveTab === "analysis" ? "解析结果" : state.requirementActiveTab === "plan" ? "实施方案" : "思考过程"}${activeDocument ? ` / ${escapeHtml((activeDocument.versions || []).find((version) => version.id === activeDocument.currentVersionId)?.name || "")}` : ""}</p>
+              </div>
+              <div class="status-group">
+                ${activeDocument ? `<select class="version-select" id="requirementVersionSelect" ${isEditingDocument ? "disabled" : ""}>${renderRequirementVersionOptions(activeDocument)}</select>` : ""}
+                ${canHighlightChanges ? `<button class="button-secondary" type="button" id="toggleRequirementDiffButton">${state.requirementHighlightChanges ? "正常预览" : "高亮修改"}</button>` : ""}
+                ${isEditingDocument
+                  ? `<button class="button-primary" type="button" id="saveRequirementVersionButton">保存新版本</button>
+                     <button class="button-secondary" type="button" id="cancelRequirementEditButton">取消</button>`
+                  : (canEditDocument ? `<button class="button-secondary" type="button" id="editRequirementButton">编辑</button>` : "")}
+                <select class="version-select" id="requirementExportFormat" ${isEditingDocument ? "disabled" : ""}>
+                  <option value="md">Markdown (.md)</option>
+                  <option value="docx">Word (.docx)</option>
+                  <option value="pdf">PDF (.pdf)</option>
+                </select>
+                <button class="button-primary" type="button" id="exportRequirementMarkdownButton" ${isEditingDocument ? "disabled" : ""}>导出当前</button>
+                ${task?.documents?.plan ? `<button class="button-primary" type="button" id="enterExecutionButton">进入建模</button>` : ""}
+              </div>
+            </div>
+
+            <div class="requirement-result-tabs">
+              ${tabs.map((tab) => `
+                <button class="requirement-tab ${state.requirementActiveTab === tab.id ? "active" : ""}" type="button" data-requirement-tab="${tab.id}">
+                  ${tab.label}
+                </button>
+              `).join("")}
+            </div>
+
+            ${isEditingDocument
+              ? `<textarea class="markdown-editor" id="requirementEditArea" spellcheck="false">${escapeHtml(markdown)}</textarea>`
+              : `<div class="markdown-preview" id="requirementMarkdownPreview">${markdownPreview}</div>`}
+          </main>
         </section>
       `;
 
-      document.getElementById("detailEditForm").addEventListener("submit", saveProjectDetail);
-      document.getElementById("packageRecordForm").addEventListener("submit", savePackageRecord);
-      document.querySelectorAll("[data-check-name]").forEach((button) => {
+      document.getElementById("requirementUploadForm")?.addEventListener("submit", createRequirementTask);
+      document.getElementById("requirementAbortButton")?.addEventListener("click", cancelRequirementProcessing);
+      document.getElementById("requirementChatForm")?.addEventListener("submit", sendRequirementMessage);
+      document.getElementById("exportRequirementMarkdownButton")?.addEventListener("click", exportCurrentRequirementDocument);
+      document.getElementById("editRequirementButton")?.addEventListener("click", () => {
+        state.requirementEditMode = true;
+        state.requirementHighlightChanges = false;
+        renderRequirementAnalysis();
+        document.getElementById("requirementEditArea")?.focus();
+      });
+      document.getElementById("cancelRequirementEditButton")?.addEventListener("click", () => {
+        state.requirementEditMode = false;
+        renderRequirementAnalysis();
+      });
+      document.getElementById("saveRequirementVersionButton")?.addEventListener("click", saveRequirementEditedVersion);
+      document.getElementById("toggleRequirementDiffButton")?.addEventListener("click", () => {
+        state.requirementHighlightChanges = !state.requirementHighlightChanges;
+        renderRequirementAnalysis();
+      });
+      document.getElementById("requirementVersionSelect")?.addEventListener("change", (event) => {
+        if (!activeDocument) {
+          return;
+        }
+        const version = (activeDocument.versions || []).find((item) => item.id === event.target.value);
+        if (version) {
+          activeDocument.currentVersionId = version.id;
+          activeDocument.content = version.content;
+          renderRequirementAnalysis();
+        }
+      });
+      document.querySelectorAll("[data-requirement-tab]").forEach((button) => {
         button.addEventListener("click", () => {
-          updateChecklistStatus(button.dataset.checkName, button.dataset.checkStatus, button);
+          state.requirementActiveTab = button.dataset.requirementTab;
+          state.requirementEditMode = false;
+          renderRequirementAnalysis();
         });
       });
+      document.getElementById("requirementModelSelect")?.addEventListener("change", (event) => {
+        state.requirementModel = event.target.value;
+      });
+      document.getElementById("enterExecutionButton")?.addEventListener("click", enterProjectExecution);
+    }
+
+    async function enterProjectExecution() {
+      const task = state.activeRequirementTask;
+      if (!task?.documents?.plan) {
+        showToast("请先完成实施方案", "error");
+        return;
+      }
+      if (state.inWorkspace) {
+        switchWorkspaceTab("modeling");
+        return;
+      }
+      try {
+        await postJson("/api/executions", { requirementTaskId: task.id });
+        const projectId = task.projectId || state.projectDetail?.id || currentProjectId;
+        navigateTo("workspace", projectId, { tab: "modeling" });
+      } catch (error) {
+        showToast(`进入建模失败：${error.message}`, "error");
+      }
+    }
+
+    let molstarViewer = null;
+    let molstarLoadToken = 0;
+
+    async function loadExecutionData(taskId) {
+      try {
+        if (taskId) {
+          const created = await postJson("/api/executions", { requirementTaskId: taskId });
+          state.activeExecution = created.execution || null;
+        } else {
+          const data = await fetchJson("/api/executions");
+          const list = Array.isArray(data.executions) ? data.executions : [];
+          state.activeExecution = list[0] || null;
+        }
+        state.apiOnline = true;
+      } catch (error) {
+        state.activeExecution = null;
+      }
+      state.executionStructureView = null;
+      state.executionSpecLoading = false;
+      state.executionSpecAttempted = null;
+      const requirementTaskId = state.activeExecution?.requirementTaskId;
+      if (requirementTaskId) {
+        try {
+          const data = await fetchJson(`/api/requirement-tasks/${requirementTaskId}`);
+          state.executionRequirement = data.task || null;
+        } catch (error) {
+          state.executionRequirement = null;
+        }
+      }
+    }
+
+    // 建模规划抽取是较慢的大模型调用，绝不能阻塞首屏渲染（否则进入页面会“黑屏”等待）。
+    // 这里在页面渲染后异步触发，完成后再重渲染；每个需求任务只自动尝试一次，避免失败时死循环。
+    function maybeGenerateExecutionSpec() {
+      const task = state.executionRequirement;
+      const requirementTaskId = state.activeExecution?.requirementTaskId;
+      if (!requirementTaskId || !task?.documents?.plan) {
+        return;
+      }
+      const spec = task.documents.modelingSpec;
+      if (spec && spec.planVersionId === task.documents.plan.currentVersionId) {
+        return;
+      }
+      if (state.executionSpecLoading || state.executionSpecAttempted === requirementTaskId) {
+        return;
+      }
+      ensureExecutionModelingSpec(requirementTaskId);
+    }
+
+    async function ensureExecutionModelingSpec(requirementTaskId) {
+      state.executionSpecLoading = true;
+      state.executionSpecAttempted = requirementTaskId;
+      renderExecutionPage();
+      try {
+        const data = await postJson(`/api/requirement-tasks/${requirementTaskId}/modeling-spec`, { model: state.executionModel });
+        if (data.task) {
+          state.executionRequirement = data.task;
+        }
+      } catch (error) {
+        // 抽取建模规划失败不阻塞项目执行
+      } finally {
+        state.executionSpecLoading = false;
+        renderExecutionPage();
+      }
+    }
+
+    function executionStatusLabel(status) {
+      return ({ pending: "待开始", running: "运行中", in_progress: "进行中", completed: "已完成", failed: "失败", locked: "未解锁" })[status] || "待开始";
+    }
+
+    function molstarFormat(format) {
+      const map = { pdb: "pdb", xyz: "xyz", mol: "mol", sdf: "sdf", mol2: "mol2", gro: "gro", cif: "mmcif", mmcif: "mmcif" };
+      return map[String(format || "").toLowerCase()] || "pdb";
+    }
+
+    function stripStructureBlocks(text) {
+      return String(text || "")
+        .replace(/```(pdb|xyz|mol2|sdf|mol|gro|cif|mmcif)[\s\S]*?```/gi, "\n（结构已在右侧 Mol* 视图展示）\n")
+        .replace(/```(pdb|xyz|mol2|sdf|mol|gro|cif|mmcif)[\s\S]*$/i, "\n（正在生成结构...）")
+        .trim();
+    }
+
+    function getExecutionDocumentMarkdown(tab) {
+      const requirement = state.executionRequirement;
+      if (!requirement) {
+        return "# 暂无关联需求内容\n\n未能加载到该执行关联的需求方案。";
+      }
+      const document = tab === "plan" ? requirement.documents?.plan : requirement.documents?.analysis;
+      if (document?.content) {
+        return document.content;
+      }
+      return tab === "plan" ? "# 暂无实施方案" : "# 暂无解析结果";
+    }
+
+    function getComputationSpec() {
+      return state.executionRequirement?.documents?.computationSpec
+        || state.activeRequirementTask?.documents?.computationSpec
+        || null;
+    }
+
+    function isExecutionSystemReady(execution) {
+      return Boolean(execution?.modules?.modeling?.system?.content || execution?.modules?.modeling?.system?.atomCount || state.workspaceFlags?.hasSystem);
+    }
+
+    function currentExecutionHasSystem() {
+      const exec = state.activeExecution || state.workspace?.execution;
+      return Boolean(state.workspaceFlags?.hasSystem || exec?.modules?.modeling?.system?.content || exec?.modules?.modeling?.system?.atomCount || isExecutionSystemReady(exec));
+    }
+
+    function modelingStatusForExecution(execution) {
+      return isExecutionSystemReady(execution) ? "completed" : (execution?.modules?.modeling?.status || "pending");
+    }
+
+    function getExecutionComputationDocument(execution) {
+      const spec = getComputationSpec();
+      const stepId = state.computationActiveStep;
+      const step = (spec?.workflowSteps || []).find((s) => s.id === stepId) || (spec?.workflowSteps || [])[0];
+      return step?.executionDoc || "";
+    }
+
+    function renderPlanSubsteps() {
+      const active = state.planSubTab || "analysis";
+      const hasAnalysis = Boolean(state.activeRequirementTask?.documents?.analysis);
+      const hasPlan = Boolean(state.activeRequirementTask?.documents?.plan);
+      return `
+        <div class="plan-substeps">
+          <button class="plan-substep ${active === "analysis" ? "active" : ""} ${hasAnalysis ? "done" : ""}" type="button" data-plan-sub="analysis">
+            <span class="step-num">1</span>需求解析
+          </button>
+          <button class="plan-substep ${active === "plan" ? "active" : ""} ${hasPlan ? "done" : ""}" type="button" data-plan-sub="plan">
+            <span class="step-num">2</span>方案确认
+          </button>
+        </div>`;
+    }
+
+    function renderComputationStepTimeline(spec) {
+      const steps = spec?.workflowSteps || [];
+      if (!steps.length) {
+        return `<div class="empty-state"><h3>尚无计算流程</h3><p>建模完成后点击「细化全部参数」从方案生成步骤。</p></div>`;
+      }
+      const module = getComputationModule(state.activeExecution);
+      const hasActiveStep = steps.some((step) => step.id === state.computationActiveStep);
+      const currentStepId = steps.some((step) => step.id === module.currentStepId) ? module.currentStepId : "";
+      const firstRunStepId = steps.find((step) => module.runs?.[step.id])?.id || "";
+      const activeId = hasActiveStep
+        ? state.computationActiveStep
+        : currentStepId || firstRunStepId || steps.find((s) => s.status !== "completed")?.id || steps[0]?.id;
+      state.computationActiveStep = activeId;
+      return steps.map((step) => {
+        const status = step.status || "pending";
+        const statusClass = status === "completed"
+          ? "done"
+          : status === "failed"
+            ? "failed"
+            : ["running", "in_progress"].includes(status)
+              ? "running"
+              : "";
+        return `
+        <button class="step-item ${statusClass} ${step.id === activeId ? "active" : ""}" type="button" data-computation-step="${escapeHtml(step.id)}">
+          <span class="step-name">${escapeHtml(step.name)}</span>
+          <span class="step-meta">${escapeHtml(step.software || spec.software?.[0] || "")} · ${escapeHtml(step.phase || "")} · ${executionStatusLabel(status)}</span>
+        </button>`;
+      }).join("");
+    }
+
+    function renderStepUsedSkills(step) {
+      const skills = step.usedSkills || [];
+      if (!skills.length) return "";
+      return `
+        <div class="used-skills-card">
+          <div class="used-skills-title">使用的 Skills</div>
+          ${skills.map((skill) => {
+            const scripts = skill.scripts || [];
+            return `
+              <div class="used-skill-item">
+                <div><span class="used-skill-name">${escapeHtml(skill.name || skill.id || "未命名 Skill")}</span>${skill.id ? ` <span class="tag">${escapeHtml(skill.id)}</span>` : ""}</div>
+                ${skill.reason ? `<div>${escapeHtml(skill.reason)}</div>` : ""}
+                ${scripts.length ? `<div>${scripts.map((script) => `<div class="used-skill-script">${escapeHtml(script)}</div>`).join("")}</div>` : ""}
+              </div>`;
+          }).join("")}
+        </div>`;
+    }
+
+    function getComputationModule(execution) {
+      return execution?.modules?.computation || {};
+    }
+
+    function getComputationRunnerForStep(execution, step) {
+      const stepId = step?.id || "";
+      const module = getComputationModule(execution);
+      return state.computationRunnerSelections[stepId]
+        || module.runnerSelections?.[stepId]
+        || step?.runner
+        || state.computationDefaultRunner
+        || "local";
+    }
+
+    function renderRunnerOptions(selected) {
+      return `
+        <option value="local" ${selected === "local" ? "selected" : ""}>cursor-cli 本地运行</option>
+        <option value="bohrium" ${selected === "bohrium" ? "selected" : ""}>Bohrium 提交</option>`;
+    }
+
+    function artifactUrl(execution, artifact) {
+      return `${apiBaseUrl}/api/executions/${encodeURIComponent(execution.id)}/computation/artifacts/${encodeURIComponent(artifact.id)}`;
+    }
+
+    function buildPendingComputationRun(step, runner, mode = "single") {
+      const runnerText = runner === "bohrium" ? "Bohrium" : "cursor-cli";
+      return {
+        stepId: step?.id || "",
+        stepName: step?.name || step?.id || "计算步骤",
+        runner,
+        status: "running",
+        summary: `${runnerText} 运行中：${step?.name || step?.id || "计算步骤"}`,
+        logs: [
+          mode === "all" ? "已加入顺序运行队列。" : "已提交当前步骤运行请求。",
+          runner === "bohrium" ? "正在准备 Bohrium 提交..." : "正在调用 cursor-cli 生成本地运行结果...",
+          "后端返回后会在这里展示完整日志和生成文件。"
+        ],
+        artifacts: [],
+        startedAt: new Date().toISOString()
+      };
+    }
+
+    function renderComputationRunResult(execution, step) {
+      const module = getComputationModule(execution);
+      const run = state.computationPendingRuns[step?.id || ""] || module.runs?.[step?.id || ""];
+      if (!run) {
+        return `<div class="computation-run-card"><div class="helper-text">尚未运行本步骤。</div></div>`;
+      }
+      const artifacts = run.artifacts || [];
+      return `
+        <div class="computation-run-card">
+          <div><strong>运行状态：</strong>${executionStatusLabel(run.status)} ${run.runner ? `<span class="tag">${escapeHtml(run.runner)}</span>` : ""}</div>
+          ${run.summary ? `<div>${escapeHtml(run.summary)}</div>` : ""}
+          ${(run.logs || []).length ? `<div class="computation-log">${escapeHtml((run.logs || []).join("\n"))}</div>` : ""}
+          <div class="artifact-list">
+            ${artifacts.length ? artifacts.map((artifact) => `
+              <div class="artifact-item">
+                <span>${escapeHtml(artifact.name || artifact.id)} <span class="tag">${escapeHtml(artifact.kind || "file")}</span></span>
+                <a class="button-secondary" href="${artifactUrl(execution, artifact)}" target="_blank" rel="noopener">打开</a>
+              </div>
+            `).join("") : `<span class="helper-text">暂无生成文件。</span>`}
+          </div>
+        </div>`;
+    }
+
+    function renderModelingToComputationAction(execution) {
+      if (!isExecutionSystemReady(execution)) {
+        return "";
+      }
+      const modelInput = execution?.modules?.computation?.modelInput;
+      const system = execution?.modules?.modeling?.system || {};
+      const filePath = modelInput?.filePath || system.filePath || "完整体系结构";
+      return `
+        <div class="auto-modeling-card">
+          <div class="pane-head" style="border:0;padding:0;">计算输入已就绪</div>
+          <p class="helper-text">将完整体系作为模拟计算第一步输入：${escapeHtml(filePath)}${modelInput?.atomCount ? ` · ${escapeHtml(modelInput.atomCount)} atoms` : ""}</p>
+          <button class="button-primary" type="button" id="enterComputationButton" ${state.computationPreparing ? "disabled" : ""}>${state.computationPreparing ? "进入中..." : "进入模拟计算"}</button>
+        </div>`;
+    }
+
+    function renderComputationModelInput(execution) {
+      const modelInput = execution?.modules?.computation?.modelInput;
+      if (!modelInput?.filePath) {
+        return "";
+      }
+      const moleculeCount = (modelInput.molecules || []).length;
+      return `
+        <div class="used-skills-card">
+          <div class="used-skills-title">建模输入</div>
+          <div class="used-skill-item">
+            <div><span class="used-skill-name">${escapeHtml(modelInput.name || "完整体系")}</span> <span class="tag">${escapeHtml(modelInput.format || "pdb")}</span></div>
+            <div>${escapeHtml(modelInput.filePath)}</div>
+            <div>${modelInput.atomCount ? `${escapeHtml(modelInput.atomCount)} atoms` : "原子数待解析"}${moleculeCount ? ` · ${escapeHtml(moleculeCount)} 个单体结构` : ""}</div>
+            ${modelInput.manifestPath ? `<div>输入清单：${escapeHtml(modelInput.manifestPath)}</div>` : ""}
+          </div>
+        </div>`;
+    }
+
+    function renderComputationStepDetail(spec) {
+      const execution = state.activeExecution;
+      const steps = spec?.workflowSteps || [];
+      const step = steps.find((s) => s.id === state.computationActiveStep) || steps[0];
+      if (!step) return `<p class="helper-text">选择左侧步骤查看详情。</p>`;
+      const params = step.parameters || {};
+      const paramRows = Object.entries(params).map(([k, v]) => `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(String(v))}</td></tr>`).join("");
+      const selectedRunner = getComputationRunnerForStep(execution, step);
+      const running = state.computationRunningStepId === step.id || state.computationRunAllRunning;
+      const run = getComputationModule(execution).runs?.[step.id];
+      const canTerminate = run?.runner === "bohrium" && run?.status === "running";
+      const terminating = state.computationTerminatingStepId === step.id;
+      return `
+        <div class="computation-run-toolbar">
+          <label class="helper-text" for="computationStepRunnerSelect">运行方式</label>
+          <select id="computationStepRunnerSelect" data-computation-runner-step="${escapeHtml(step.id)}">${renderRunnerOptions(selectedRunner)}</select>
+          <button class="button-primary" type="button" id="computationRunStepButton" data-run-computation-step="${escapeHtml(step.id)}" ${running ? "disabled" : ""}>${state.computationRunningStepId === step.id ? "运行中..." : "运行本步"}</button>
+          ${canTerminate ? `<button class="button-secondary" type="button" id="computationTerminateStepButton" data-terminate-computation-step="${escapeHtml(step.id)}" ${terminating ? "disabled" : ""}>${terminating ? "终止中..." : "终止"}</button>` : ""}
+        </div>
+        <p class="helper-text">${escapeHtml(step.purpose || "")}</p>
+        ${renderStepUsedSkills(step)}
+        ${paramRows ? `<table class="param-table" style="width:100%;border-collapse:collapse;font-size:11px;margin:12px 0;"><tr><th>参数</th><th>取值</th></tr>${paramRows}</table>` : ""}
+        ${step.executionDoc ? `<div class="markdown-preview">${renderMarkdownPreview(step.executionDoc)}</div>` : ""}
+        ${renderComputationRunResult(execution, step)}`;
+    }
+
+    function renderExecutionComputationPane(execution) {
+      const running = state.executionComputationRunning;
+      const systemReady = isExecutionSystemReady(execution) || state.workspaceFlags?.hasSystem;
+      const spec = getComputationSpec();
+      if (running) {
+        const label = state.executionStream?.label || "正在细化模拟计算流程...";
+        const live = state.executionStream?.content || "";
+        return `
+          <div class="execution-computation-pane">
+            <div class="chat-step-label">${escapeHtml(label)}</div>
+            <div class="markdown-preview" id="computationStreamView">${renderMarkdownPreview(live || "正在生成…")}</div>
+          </div>`;
+      }
+      if (!systemReady) {
+        return `<div class="empty-state"><h3>请先完成建模</h3><p>组装出完整体系后，即可在此细化模拟计算流程。</p></div>`;
+      }
+      return `
+        ${renderComputationModelInput(execution)}
+        <div class="computation-pane">
+          <div class="pane-left page-card" style="padding:12px;display:flex;flex-direction:column;gap:8px;">
+            <div class="pane-head" style="border:0;padding:0;">计算流程 ${spec?.software?.[0] ? `<span class="tag">${escapeHtml(spec.software[0])}</span>` : ""}</div>
+            <p class="helper-text">步骤来自实施方案，建模完成后细化参数。</p>
+            <div class="step-timeline" id="computationStepTimeline">${renderComputationStepTimeline(spec)}</div>
+            <button class="button-secondary" type="button" id="computationRunButton" style="margin-top:auto;">${spec?.refinedAt ? "重新细化" : "细化全部参数"}</button>
+            <label class="helper-text" for="computationDefaultRunnerSelect">默认运行方式</label>
+            <select id="computationDefaultRunnerSelect">${renderRunnerOptions(state.computationDefaultRunner)}</select>
+            <button class="button-primary" type="button" id="computationRunAllButton" ${state.computationRunAllRunning ? "disabled" : ""}>${state.computationRunAllRunning ? "运行中..." : "运行全部"}</button>
+          </div>
+          <div class="pane-right page-card" style="padding:14px;overflow:auto;">
+            <div id="computationStepDetail">${renderComputationStepDetail(spec)}</div>
+          </div>
+        </div>`;
+    }
+
+    function updateComputationStreamingView() {
+      const el = document.getElementById("computationStreamView");
+      if (el) {
+        el.innerHTML = renderMarkdownPreview(state.executionStream?.content || "正在生成…");
+        el.scrollTop = el.scrollHeight;
+      }
+    }
+
+    function getExecutionStructures(execution) {
+      const modeling = execution?.modules?.modeling || {};
+      const list = (modeling.molecules || []).map((molecule) => ({
+        id: molecule.id,
+        name: molecule.name || molecule.id,
+        format: molecule.format,
+        content: molecule.content || state.structureCache[molecule.id]?.content,
+        kind: "molecule",
+        atomCount: molecule.atomCount
+      }));
+      const system = modeling.system;
+      if (system?.content || state.structureCache.system?.content) {
+        list.push({
+          id: "system",
+          name: "完整体系",
+          format: system?.format || "pdb",
+          content: system?.content || state.structureCache.system?.content,
+          kind: "system",
+          atomCount: system?.atomCount
+        });
+      } else if (execution?.structures?.length) {
+        execution.structures.forEach((s) => {
+          list.push({ ...s, content: state.structureCache[s.id]?.content });
+        });
+      } else if (modeling.structure?.content) {
+        list.push({ id: "legacy", name: "初始结构", format: modeling.structure.format, content: modeling.structure.content, kind: "system" });
+      }
+      return list;
+    }
+
+    function getExecutionModelingSpec() {
+      return state.executionRequirement?.documents?.modelingSpec || null;
+    }
+
+    function getActiveExecutionStructure(execution) {
+      const list = getExecutionStructures(execution);
+      if (!list.length) {
+        return null;
+      }
+      const selected = list.find((item) => item.id === state.executionStructureView);
+      return selected || list[list.length - 1];
+    }
+
+    function renderExecutionModules(execution) {
+      const modules = execution?.modules || {};
+      return [["modeling", "建模"], ["computation", "模拟计算"]].map(([key, label]) => {
+        const module = modules[key] || {};
+        const status = key === "modeling" ? modelingStatusForExecution(execution) : module.status;
+        return `<span class="execution-module-chip ${status || ""}">${escapeHtml(label)} · ${executionStatusLabel(status)}</span>`;
+      }).join("");
+    }
+
+    function renderMessageUsedSkills(message) {
+      const skills = message?.usedSkills || [];
+      if (!skills.length) return "";
+      return skills.map((skill) => {
+        const label = skill.id || skill.name || "skill";
+        return `<span class="chat-skill-badge">${escapeHtml(label)}</span>`;
+      }).join("");
+    }
+
+    function renderExecutionConversation(execution) {
+      const messages = execution?.conversation || [];
+      let html = messages.map((message) => `
+        <div class="chat-message ${message.role === "assistant" ? "assistant" : ""}">
+          <div class="chat-role">${message.role === "assistant" ? "小P" : "用户"}${message.role === "assistant" ? renderMessageUsedSkills(message) : ""}</div>
+          ${escapeHtml(stripStructureBlocks(message.content)) || "（无内容）"}
+        </div>
+      `).join("");
+      if (state.executionStream) {
+        const label = state.executionStream.label
+          ? `<div class="chat-step-label">${escapeHtml(state.executionStream.label)}</div>`
+          : "";
+        const live = stripStructureBlocks(state.executionStream.content) || "正在建模...";
+        html += `
+          <div class="chat-message assistant">
+            <div class="chat-role">小P</div>
+            ${label}${escapeHtml(live)}
+          </div>
+        `;
+      }
+      return html;
+    }
+
+    function updateExecutionStreamingView() {
+      const streamEl = document.getElementById("executionChatStream");
+      if (streamEl) {
+        streamEl.innerHTML = renderExecutionConversation(state.activeExecution);
+        streamEl.scrollTop = streamEl.scrollHeight;
+      }
+    }
+
+    function disposeMolstarViewer() {
+      try {
+        if (molstarViewer?.dispose) {
+          molstarViewer.dispose();
+        } else if (molstarViewer?.plugin?.dispose) {
+          molstarViewer.plugin.dispose();
+        }
+      } catch (error) {
+        // ignore dispose failures
+      }
+      molstarViewer = null;
+    }
+
+    async function loadStructureAsBallAndStick(viewer, structure) {
+      const format = molstarFormat(structure.format);
+      const plugin = viewer.plugin;
+      // 用底层 builders 显式指定球棍模型；默认预设对完整体系可能选成线条/其他表示。
+      if (plugin?.builders?.structure) {
+        try {
+          await plugin.clear();
+          const data = await plugin.builders.data.rawData({ data: structure.content, label: structure.name || "structure" });
+          const trajectory = await plugin.builders.structure.parseTrajectory(data, format);
+          const model = await plugin.builders.structure.createModel(trajectory);
+          const struct = await plugin.builders.structure.createStructure(model);
+          const component = await plugin.builders.structure.tryCreateComponentStatic(struct, "all");
+          if (component) {
+            await plugin.builders.structure.representation.addRepresentation(component, {
+              type: "ball-and-stick",
+              color: "element-symbol",
+              // 默认 element-symbol 主题会把碳按链着色以区分分子；这里改为按元素统一着色（碳=灰）。
+              colorParams: { carbonColor: { name: "element-symbol", params: {} } },
+            });
+          }
+          // 完整体系（含 CRYST1 晶胞）额外画出模拟盒子。
+          if (structure.kind === "system") {
+            try {
+              await plugin.builders.structure.tryCreateUnitcell(model, undefined, { isHidden: false });
+            } catch (cellError) {
+              // 无晶胞信息时忽略
+            }
+          }
+          plugin.canvas3d?.requestCameraReset?.();
+          return;
+        } catch (error) {
+          // 退回到默认加载方式
+        }
+      }
+      await viewer.loadStructureFromData(structure.content, format);
+    }
+
+    async function initExecutionViewer() {
+      const container = document.getElementById("molstarViewer");
+      if (!container) {
+        return;
+      }
+      if (!window.molstar || !window.molstar.Viewer) {
+        container.innerHTML = `<div class="execution-viewer-empty">Mol* 加载失败，请检查网络后刷新页面。</div>`;
+        return;
+      }
+      // 每次进入都自增 token；后续 await 之后若 token 已变化（发生了新的渲染/切换），
+      // 立即放弃本次加载，避免旧结构覆盖新选择导致"看起来都一样"。
+      const token = ++molstarLoadToken;
+      disposeMolstarViewer();
+      // 等待一帧，确保容器已完成布局（拿到非零尺寸）再创建 Mol*，否则画布会以
+      // 0×0 初始化导致渲染为空。
+      await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+      if (token !== molstarLoadToken) {
+        return;
+      }
+      try {
+        const viewer = await window.molstar.Viewer.create(container, {
+          layoutIsExpanded: false,
+          layoutShowControls: false,
+          layoutShowSequence: false,
+          layoutShowLog: false,
+          layoutShowLeftPanel: false,
+          viewportShowExpand: true,
+          viewportShowSelectionMode: false,
+          viewportShowAnimation: false
+        });
+        if (token !== molstarLoadToken) {
+          try { viewer.dispose?.(); } catch (_) { /* noop */ }
+          return;
+        }
+        molstarViewer = viewer;
+        const structure = getActiveExecutionStructure(state.activeExecution);
+        if (structure?.content) {
+          await loadStructureAsBallAndStick(viewer, structure);
+          if (token !== molstarLoadToken) {
+            return;
+          }
+          try {
+            viewer.handleResize?.();
+            viewer.plugin?.canvas3d?.requestCameraReset?.();
+          } catch (resetError) {
+            // 相机/尺寸调整失败不影响主流程
+          }
+        }
+      } catch (error) {
+        container.innerHTML = `<div class="execution-viewer-empty">结构渲染失败：${escapeHtml(error.message || String(error))}</div>`;
+      }
+    }
+
+    function renderExecutionHeader() {
+      return `
+        <section class="page-header page-header--split">
+          <div class="page-header-main">
+            <div class="page-title">
+              <h1>项目执行</h1>
+            </div>
+          </div>
+          <div class="page-header-side">
+            <button class="button-secondary" type="button" id="backToRequirementsButton">返回需求解析</button>
+            <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderExecutionPage() {
+      const execution = state.activeExecution;
+      const structures = getExecutionStructures(execution);
+      const activeStructure = getActiveExecutionStructure(execution);
+      const spec = getExecutionModelingSpec();
+      const autoRunning = state.executionAutoRunning;
+      const specLoading = state.executionSpecLoading;
+      const blockCount = (spec?.buildingBlocks || []).length;
+      const canAuto = modelingSpecHasContent(spec) && blockCount > 0;
+      const autoHint = specLoading
+        ? "正在从方案抽取建模规划，请稍候…"
+        : (canAuto
+          ? `小P 将按建模规划自动完成：分析 → 逐个构建 ${blockCount} 个分子 → 组装完整体系，无需逐步操作。`
+          : "尚无建模规划，请先在「需求解析」完成方案（系统会自动抽取规划）。");
+      const autoCard = `
+        <div class="auto-modeling-card">
+          <div class="model-select-row">
+            <label class="helper-text" for="executionModelSelect">模型</label>
+            <select class="version-select" id="executionModelSelect" ${autoRunning ? "disabled" : ""}>
+              <option value="gpt-5.5-medium-fast" ${state.executionModel === "gpt-5.5-medium-fast" ? "selected" : ""}>gpt-5.5-medium-fast</option>
+              <option value="deepseek" ${state.executionModel === "deepseek" ? "selected" : ""}>deepseek</option>
+            </select>
+          </div>
+          <button class="button-primary" type="button" id="autoModelingButton" ${canAuto && !autoRunning && !specLoading ? "" : "disabled"}>${autoRunning ? "自动建模中..." : (specLoading ? "规划生成中..." : "🚀 自动建模")}</button>
+          <p class="helper-text">${autoHint}</p>
+        </div>`;
+
+      getRenderRoot().innerHTML = `
+        ${state.inWorkspace ? "" : `<div class="requirement-page-header">${renderExecutionHeader()}</div>`}
+        ${execution ? `
+        <section class="execution-workspace">
+          <aside class="page-card requirement-chat">
+            <div class="requirement-chat-panel">
+              <div>
+                <div class="nav-title">结构建模</div>
+                <h2>${escapeHtml(execution.title)}</h2>
+                ${autoCard}
+                ${renderModelingProgress(execution)}
+                ${renderModelingToComputationAction(execution)}
+              </div>
+              <div class="chat-stream execution-chat-stream" id="executionChatStream">${renderExecutionConversation(execution)}</div>
+              <form id="executionChatForm">
+                <div class="chat-input-row">
+                  <input id="executionMessageInput" placeholder="继续优化结构…" ${autoRunning ? "disabled" : ""}>
+                  <button class="button-secondary" type="submit" ${autoRunning ? "disabled" : ""}>发送</button>
+                </div>
+              </form>
+            </div>
+          </aside>
+          <main class="page-card requirement-results execution-results">
+            <div class="execution-structure-pane">
+              ${structures.length ? `
+              <div class="execution-structure-bar">
+                <label class="helper-text" for="executionStructureSelect">查看结构</label>
+                <select class="version-select" id="executionStructureSelect">
+                  ${structures.map((item) => `<option value="${item.id}" ${activeStructure?.id === item.id ? "selected" : ""}>${escapeHtml(item.kind === "system" ? item.name : `分子 · ${item.name}`)}</option>`).join("")}
+                </select>
+              </div>` : ""}
+              <div class="execution-viewer">
+                <div id="molstarViewer"></div>
+                ${activeStructure?.content ? "" : `<div class="execution-viewer-empty">尚无结构。点击「自动建模」生成结构后在此预览。</div>`}
+              </div>
+            </div>
+          </main>
+        </section>
+        ` : `
+          <div class="empty-state">
+            <h3>还没有可执行的项目</h3>
+            <p>请先到“需求解析”完成实施方案，然后点击“进入项目执行”。</p>
+          </div>
+        `}
+      `;
+
+      document.getElementById("autoModelingButton")?.addEventListener("click", startAutoModeling);
+      document.getElementById("enterComputationButton")?.addEventListener("click", enterComputationFromModeling);
+      document.getElementById("executionChatForm")?.addEventListener("submit", sendModelingMessage);
+      document.getElementById("executionModelSelect")?.addEventListener("change", (event) => {
+        state.executionModel = event.target.value;
+      });
+      document.getElementById("backToRequirementsButton")?.addEventListener("click", () => {
+        if (state.inWorkspace) {
+          switchWorkspaceTab("plan");
+        } else {
+          const projectId = state.executionRequirement?.projectId || state.projectDetail?.id || currentProjectId;
+          navigateTo("workspace", projectId, { tab: "plan" });
+        }
+      });
+      document.getElementById("executionStructureSelect")?.addEventListener("change", (event) => {
+        state.executionStructureView = event.target.value;
+        renderExecutionPage();
+      });
+      document.querySelectorAll("[data-execution-tab]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.executionActiveTab = button.dataset.executionTab;
+          renderExecutionPage();
+        });
+      });
+      document.querySelectorAll("[data-computation-step]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.computationActiveStep = button.dataset.computationStep;
+          renderComputationPage();
+        });
+      });
+      document.getElementById("computationRunButton")?.addEventListener("click", startComputation);
+      bindGlobalUi();
+      if (execution) {
+        initExecutionViewerForActiveStructure();
+        maybeGenerateExecutionSpec();
+      }
+    }
+
+    function renderModelingUsedSkills(modeling) {
+      const skills = modeling.usedSkills || [];
+      if (!skills.length) return "";
+      return `
+        <div class="used-skills-card">
+          <div class="used-skills-title">建模使用的 Skills</div>
+          ${skills.map((skill) => `
+            <div class="used-skill-item">
+              <div><span class="used-skill-name">${escapeHtml(skill.name || skill.id)}</span>${skill.id ? ` <span class="tag">${escapeHtml(skill.id)}</span>` : ""}</div>
+              ${skill.reason ? `<div>${escapeHtml(skill.reason)}</div>` : ""}
+            </div>
+          `).join("")}
+        </div>`;
+    }
+
+    function renderModelingProgress(execution) {
+      const modeling = execution?.modules?.modeling || {};
+      const molecules = execution?.modules?.modeling?.molecules || [];
+      const hasSystem = Boolean(execution?.modules?.modeling?.system?.content || execution?.modules?.modeling?.system?.atomCount);
+      if (!molecules.length && !hasSystem) return "";
+      let html = `<div class="mol-progress">`;
+      molecules.forEach((mol) => {
+        html += `<div class="mol-item done"><span>✓</span> ${escapeHtml(mol.name)}</div>`;
+      });
+      if (hasSystem) {
+        html += `<div class="mol-item done"><span>✓</span> 完整体系</div>`;
+      } else if (molecules.length) {
+        html += `<div class="mol-item current"><span>→</span> 体系组装</div>`;
+      }
+      html += `</div>`;
+      return html + renderModelingUsedSkills(modeling);
+    }
+
+    function renderComputationPage() {
+      const execution = state.activeExecution;
+      getRenderRoot().innerHTML = execution
+        ? renderExecutionComputationPane(execution)
+        : `<div class="empty-state"><h3>还没有执行记录</h3><p>请先完成方案并进入建模。</p></div>`;
+      document.querySelectorAll("[data-computation-step]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.computationActiveStep = button.dataset.computationStep;
+          renderComputationPage();
+        });
+      });
+      document.getElementById("computationRunButton")?.addEventListener("click", startComputation);
+      document.getElementById("computationDefaultRunnerSelect")?.addEventListener("change", (event) => {
+        state.computationDefaultRunner = event.target.value;
+      });
+      document.getElementById("computationStepRunnerSelect")?.addEventListener("change", (event) => {
+        const stepId = event.target.dataset.computationRunnerStep;
+        if (stepId) {
+          state.computationRunnerSelections[stepId] = event.target.value;
+        }
+      });
+      document.getElementById("computationRunStepButton")?.addEventListener("click", (event) => {
+        const stepId = event.currentTarget.dataset.runComputationStep || state.computationActiveStep;
+        runComputationStep(stepId);
+      });
+      document.getElementById("computationTerminateStepButton")?.addEventListener("click", (event) => {
+        const stepId = event.currentTarget.dataset.terminateComputationStep || state.computationActiveStep;
+        terminateComputationStep(stepId);
+      });
+      document.getElementById("computationRunAllButton")?.addEventListener("click", runAllComputationSteps);
+      bindGlobalUi();
+    }
+
+    async function initExecutionViewerForActiveStructure() {
+      const execution = state.activeExecution;
+      const active = getActiveExecutionStructure(execution);
+      if (active && !active.content && active.id) {
+        await loadStructureContent(active.id);
+      }
+      if (state.workspaceTab === "modeling") {
+        initExecutionViewer();
+      }
+    }
+
+    async function startAutoModeling() {
+      const execution = state.activeExecution;
+      if (!execution) {
+        showToast("请先从需求解析进入项目执行", "error");
+        return;
+      }
+      state.executionAutoRunning = true;
+      // 清空上一轮对话历史，从干净状态重新建模。
+      state.activeExecution = { ...execution, conversation: [] };
+      state.executionStream = { active: true, content: "", reasoning: "", label: "准备自动建模..." };
+      renderExecutionPage();
+      try {
+        let updated = execution;
+        await streamRequirement(`/api/executions/${execution.id}/auto-modeling`, { model: state.executionModel }, async (streamEvent) => {
+          if (streamEvent.type === "step") {
+            if (streamEvent.execution) {
+              state.activeExecution = streamEvent.execution;
+            }
+            state.executionStream = { active: true, content: "", reasoning: "", label: streamEvent.label || "建模中..." };
+            updateExecutionStreamingView();
+          } else if (streamEvent.type === "content") {
+            state.executionStream.content += streamEvent.text;
+            updateExecutionStreamingView();
+          } else if (streamEvent.type === "reasoning") {
+            state.executionStream.reasoning += streamEvent.text;
+          } else if (streamEvent.type === "progress") {
+            await refreshFullExecution(execution.id);
+            updated = state.activeExecution;
+            state.executionStream = null;
+            const structures = getExecutionStructures(updated);
+            if (structures.length) {
+              state.executionStructureView = structures[structures.length - 1].id;
+            }
+            renderExecutionPage();
+          } else if (streamEvent.type === "done") {
+            await refreshFullExecution(execution.id);
+            updated = state.activeExecution;
+          } else if (streamEvent.type === "error") {
+            throw new Error(streamEvent.error);
+          }
+        });
+        state.executionStream = null;
+        state.executionAutoRunning = false;
+        await refreshFullExecution(execution.id);
+        state.activeExecution = state.activeExecution || updated;
+        updated = state.activeExecution;
+        const structures = getExecutionStructures(updated);
+        if (updated?.modules?.modeling?.system?.content) {
+          state.executionStructureView = "system";
+          state.workspaceFlags = { ...(state.workspaceFlags || {}), hasSystem: true };
+        } else if (structures.length) {
+          state.executionStructureView = structures[structures.length - 1].id;
+        }
+        state.executionActiveTab = "structure";
+        renderExecutionPage();
+        showToast("自动建模完成", "success");
+      } catch (error) {
+        state.executionStream = null;
+        state.executionAutoRunning = false;
+        renderExecutionPage();
+        showToast(`自动建模失败：${error.message}`, "error");
+      }
+    }
+
+    async function enterComputationFromModeling() {
+      const execution = state.activeExecution;
+      if (!execution) {
+        showToast("请先进入建模执行", "error");
+        return;
+      }
+      if (!isExecutionSystemReady(execution)) {
+        showToast("请先完成建模并组装完整体系", "error");
+        return;
+      }
+      state.computationPreparing = true;
+      renderExecutionPage();
+      try {
+        const payload = await postJson(`/api/executions/${execution.id}/computation/prepare`, {});
+        if (payload.execution) {
+          state.activeExecution = payload.execution;
+          if (state.workspace) state.workspace.execution = payload.execution;
+        }
+        if (payload.project) {
+          state.projectDetail = payload.project;
+          if (state.workspace) state.workspace.project = payload.project;
+        }
+        state.workspaceFlags = { ...(state.workspaceFlags || {}), hasSystem: true };
+        state.computationPreparing = false;
+        showToast("已带入建模体系，进入模拟计算", "success");
+        await switchWorkspaceTab("computation");
+      } catch (error) {
+        state.computationPreparing = false;
+        renderExecutionPage();
+        showToast(`进入模拟计算失败：${error.message}`, "error");
+      }
+    }
+
+    async function startComputation() {
+      const execution = state.activeExecution;
+      if (!execution) {
+        showToast("请先从需求解析进入项目执行", "error");
+        return;
+      }
+      if (!isExecutionSystemReady(execution)) {
+        showToast("请先完成建模并组装体系", "error");
+        return;
+      }
+      if (state.executionComputationRunning || state.executionAutoRunning) {
+        return;
+      }
+      state.executionComputationRunning = true;
+      state.executionStream = { active: true, content: "", reasoning: "", label: "细化模拟计算流程..." };
+      renderComputationPage();
+      try {
+        let updated = execution;
+        await streamRequirement(`/api/executions/${execution.id}/run-computation`, { model: state.executionModel }, async (streamEvent) => {
+          if (streamEvent.type === "step") {
+            if (streamEvent.execution) {
+              state.activeExecution = streamEvent.execution;
+            }
+            state.executionStream = { active: true, content: "", reasoning: "", label: streamEvent.label || "生成中..." };
+            updateComputationStreamingView();
+          } else if (streamEvent.type === "content") {
+            state.executionStream.content += streamEvent.text;
+            updateComputationStreamingView();
+          } else if (streamEvent.type === "reasoning") {
+            state.executionStream.reasoning += streamEvent.text;
+          } else if (streamEvent.type === "done") {
+            if (streamEvent.computationSpec && state.activeRequirementTask) {
+              state.activeRequirementTask.documents = state.activeRequirementTask.documents || {};
+              state.activeRequirementTask.documents.computationSpec = streamEvent.computationSpec;
+            }
+            await refreshFullExecution(execution.id);
+            updated = state.activeExecution;
+          } else if (streamEvent.type === "error") {
+            throw new Error(streamEvent.error);
+          }
+        });
+        state.executionStream = null;
+        state.executionComputationRunning = false;
+        state.activeExecution = updated;
+        renderComputationPage();
+        showToast("模拟计算流程已细化", "success");
+      } catch (error) {
+        state.executionStream = null;
+        state.executionComputationRunning = false;
+        renderComputationPage();
+        showToast(`模拟计算失败：${error.message}`, "error");
+      }
+    }
+
+    function applyComputationRunPayload(payload) {
+      if (payload.execution) {
+        state.activeExecution = payload.execution;
+      }
+      if (payload.computationSpec && state.activeRequirementTask) {
+        state.activeRequirementTask.documents = state.activeRequirementTask.documents || {};
+        state.activeRequirementTask.documents.computationSpec = payload.computationSpec;
+      }
+      if (payload.computationSpec && state.executionRequirement) {
+        state.executionRequirement.documents = state.executionRequirement.documents || {};
+        state.executionRequirement.documents.computationSpec = payload.computationSpec;
+      }
+    }
+
+    async function runComputationStep(stepId) {
+      const execution = state.activeExecution;
+      if (!execution || !stepId) return;
+      const spec = getComputationSpec();
+      const step = (spec?.workflowSteps || []).find((item) => item.id === stepId) || { id: stepId };
+      const runner = state.computationRunnerSelections[stepId]
+        || execution.modules?.computation?.runnerSelections?.[stepId]
+        || state.computationDefaultRunner
+        || "local";
+      state.computationPendingRuns[stepId] = buildPendingComputationRun(step, runner);
+      state.computationRunningStepId = stepId;
+      renderComputationPage();
+      try {
+        const payload = await postJson(`/api/executions/${execution.id}/computation/steps/${encodeURIComponent(stepId)}/run`, { runner });
+        applyComputationRunPayload(payload);
+        showToast("计算步骤运行完成", payload.run?.status === "failed" ? "error" : "success");
+      } catch (error) {
+        await refreshFullExecution(execution.id);
+        showToast(`计算步骤运行失败：${error.message}`, "error");
+      } finally {
+        delete state.computationPendingRuns[stepId];
+        state.computationRunningStepId = null;
+        renderComputationPage();
+      }
+    }
+
+    async function terminateComputationStep(stepId) {
+      const execution = state.activeExecution;
+      if (!execution || !stepId || state.computationTerminatingStepId) return;
+      state.computationTerminatingStepId = stepId;
+      renderComputationPage();
+      try {
+        const payload = await postJson(`/api/executions/${execution.id}/computation/steps/${encodeURIComponent(stepId)}/terminate`, {});
+        applyComputationRunPayload(payload);
+        showToast("已终止 Bohrium 任务", "success");
+      } catch (error) {
+        await refreshFullExecution(execution.id);
+        showToast(`终止失败：${error.message}`, "error");
+      } finally {
+        state.computationTerminatingStepId = null;
+        renderComputationPage();
+      }
+    }
+
+    async function runAllComputationSteps() {
+      const execution = state.activeExecution;
+      if (!execution) return;
+      const spec = getComputationSpec();
+      (spec?.workflowSteps || []).forEach((step) => {
+        const runner = state.computationRunnerSelections[step.id] || state.computationDefaultRunner || "local";
+        state.computationPendingRuns[step.id] = buildPendingComputationRun(step, runner, "all");
+      });
+      state.computationRunAllRunning = true;
+      renderComputationPage();
+      try {
+        const payload = await postJson(`/api/executions/${execution.id}/computation/run-all`, {
+          defaultRunner: state.computationDefaultRunner,
+          runnerOverrides: state.computationRunnerSelections
+        });
+        applyComputationRunPayload(payload);
+        const failed = (payload.runs || []).some((run) => run.status === "failed");
+        showToast(failed ? "计算流程已停止：存在失败步骤" : "计算流程运行完成", failed ? "error" : "success");
+      } catch (error) {
+        await refreshFullExecution(execution.id);
+        showToast(`计算流程运行失败：${error.message}`, "error");
+      } finally {
+        state.computationPendingRuns = {};
+        state.computationRunAllRunning = false;
+        renderComputationPage();
+      }
+    }
+
+    async function sendModelingMessage(event) {
+      event.preventDefault();
+      const execution = state.activeExecution;
+      if (!execution) {
+        showToast("请先从需求解析进入项目执行", "error");
+        return;
+      }
+      if (state.executionAutoRunning) {
+        return;
+      }
+      const input = document.getElementById("executionMessageInput");
+      const message = String(input?.value || "").trim();
+      if (!message) {
+        return;
+      }
+      const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+      setActionLoading(submitButton, true, "优化中...");
+      const now = new Date().toISOString();
+      state.activeExecution = {
+        ...execution,
+        conversation: [...(execution.conversation || []), { role: "user", content: message, createdAt: now }]
+      };
+      state.executionStream = { active: true, content: "", reasoning: "", label: "根据反馈优化结构" };
+      if (input) {
+        input.value = "";
+      }
+      updateExecutionStreamingView();
+      try {
+        let updated = execution;
+        await streamRequirement(`/api/executions/${execution.id}/modeling-chat`, { message, model: state.executionModel }, (streamEvent) => {
+          if (streamEvent.type === "content") {
+            state.executionStream.content += streamEvent.text;
+            updateExecutionStreamingView();
+          } else if (streamEvent.type === "reasoning") {
+            state.executionStream.reasoning += streamEvent.text;
+          } else if (streamEvent.type === "done") {
+            updated = streamEvent.execution;
+          } else if (streamEvent.type === "error") {
+            throw new Error(streamEvent.error);
+          }
+        });
+        state.executionStream = null;
+        state.activeExecution = updated;
+        const structures = getExecutionStructures(updated);
+        if (updated?.modules?.modeling?.system?.content) {
+          state.executionStructureView = "system";
+        } else if (structures.length) {
+          state.executionStructureView = structures[structures.length - 1].id;
+        }
+        state.executionActiveTab = "structure";
+        renderExecutionPage();
+        showToast("已根据反馈更新结构", "success");
+      } catch (error) {
+        state.executionStream = null;
+        renderExecutionPage();
+        showToast(`优化失败：${error.message}`, "error");
+      } finally {
+        setActionLoading(submitButton, false, "优化中...");
+      }
     }
 
     async function loadDashboardData() {
@@ -2688,28 +6080,527 @@
       state.projectDetail = state.projects.find((project) => project.id === projectId) || fallbackProjects[0] || null;
     }
 
+    async function loadRequirementTasks() {
+      try {
+        const data = await fetchJson("/api/requirement-tasks");
+        state.requirementTasks = Array.isArray(data.tasks) ? data.tasks : [];
+        state.activeRequirementTask = state.requirementTasks[0] || null;
+        state.apiOnline = true;
+      } catch (error) {
+        state.requirementTasks = [];
+        state.activeRequirementTask = null;
+      }
+    }
+
+    const workspaceTabDefs = [
+      { id: "overview", label: "概览" },
+      { id: "plan", label: "方案" },
+      { id: "modeling", label: "建模" },
+      { id: "computation", label: "模拟计算" },
+      { id: "delivery", label: "交付" }
+    ];
+
+    async function refreshFullExecution(executionId) {
+      if (!executionId) return null;
+      const data = await fetchJson(`/api/executions/${executionId}`);
+      state.activeExecution = data.execution || null;
+      if (state.workspace) {
+        state.workspace.execution = data.execution;
+      }
+      return state.activeExecution;
+    }
+
+    async function loadWorkspaceData(projectId) {
+      try {
+        const data = await fetchJson(`/api/projects/${projectId}/workspace/summary`);
+        state.workspaceFlags = data.flags || {};
+        state.workspace = {
+          project: data.project,
+          requirementTask: data.requirementTask || null,
+          execution: data.execution || null
+        };
+        state.projectDetail = data.project;
+        state.apiOnline = true;
+      } catch (error) {
+        try {
+          const data = await fetchJson(`/api/projects/${projectId}/workspace`);
+          state.workspace = {
+            project: data.project,
+            requirementTask: data.requirementTask || null,
+            execution: data.execution || null
+          };
+          state.projectDetail = data.project;
+          state.workspaceFlags = data.flags || {};
+          state.apiOnline = true;
+        } catch (fallbackError) {
+          state.workspace = null;
+          state.projectDetail = state.projects.find((project) => project.id === projectId) || null;
+        }
+      }
+    }
+
+    async function ensureWorkspaceTaskDetail() {
+      const summary = state.workspace?.requirementTask;
+      const taskId = summary?.id || state.activeRequirementTask?.id;
+      if (!taskId) return;
+      if (state.activeRequirementTask?.documents) return;
+      const data = await fetchJson(`/api/requirement-tasks/${taskId}`);
+      state.activeRequirementTask = data.task || null;
+      state.executionRequirement = data.task || null;
+      if (state.workspace) state.workspace.requirementTask = data.task || summary;
+    }
+
+    async function ensureWorkspaceExecution() {
+      const task = state.activeRequirementTask || state.workspace?.requirementTask;
+      const taskId = task?.id;
+      if (!taskId) return;
+      const flags = state.workspaceFlags || {};
+      const hasPlan = Boolean(
+        flags.hasPlan ||
+        task?.hasPlan ||
+        state.activeRequirementTask?.documents?.plan ||
+        task?.documents?.plan
+      );
+      if (!hasPlan) {
+        await ensureWorkspaceTaskDetail();
+      }
+      const planReady = Boolean(
+        flags.hasPlan ||
+        state.activeRequirementTask?.hasPlan ||
+        state.activeRequirementTask?.documents?.plan ||
+        task?.hasPlan ||
+        task?.documents?.plan
+      );
+      if (!planReady) return;
+      if (state.workspace?.execution?.id && !state.activeExecution) {
+        state.activeExecution = state.workspace.execution;
+      }
+      const data = await postJson("/api/executions", { requirementTaskId: taskId });
+      state.activeExecution = data.execution || state.activeExecution || null;
+      if (state.workspace) state.workspace.execution = state.activeExecution;
+    }
+
+    async function loadPlanDocument(part) {
+      const taskId = state.activeRequirementTask?.id || state.workspace?.requirementTask?.id;
+      if (!taskId) return;
+      await ensureWorkspaceTaskDetail();
+      const data = await fetchJson(`/api/requirement-tasks/${taskId}/documents?part=${part}`);
+      const doc = data.document;
+      if (!doc) return;
+      state.activeRequirementTask.documents = state.activeRequirementTask.documents || {};
+      state.activeRequirementTask.documents[part] = {
+        ...(state.activeRequirementTask.documents[part] || {}),
+        content: doc.content,
+        currentVersionId: doc.currentVersionId,
+        versions: doc.versions
+      };
+      if (part === "plan") {
+        state.requirementActiveTab = "plan";
+      } else {
+        state.requirementActiveTab = "analysis";
+      }
+    }
+
+    async function loadStructureContent(structureId) {
+      const executionId = state.activeExecution?.id;
+      if (!executionId || !structureId) return null;
+      if (state.structureCache[structureId]) return state.structureCache[structureId];
+      const data = await fetchJson(`/api/executions/${executionId}/structures/${structureId}`);
+      state.structureCache[structureId] = data.structure;
+      return data.structure;
+    }
+
+    function computeWorkspaceStages() {
+      const ws = state.workspace || {};
+      const flags = state.workspaceFlags || {};
+      const project = state.projectDetail || ws.project || {};
+      const task = state.activeRequirementTask || ws.requirementTask;
+      const exec = state.activeExecution || ws.execution;
+      const hasAnalysis = Boolean(flags.hasAnalysis || task?.hasAnalysis || task?.documents?.analysis);
+      const hasPlan = Boolean(flags.hasPlan || task?.hasPlan || task?.documents?.plan);
+      const hasSystem = Boolean(flags.hasSystem || exec?.modules?.modeling?.system?.atomCount || exec?.modules?.modeling?.system?.content || isExecutionSystemReady(exec));
+      const spec = state.activeRequirementTask?.documents?.computationSpec || task?.documents?.computationSpec;
+      const steps = spec?.workflowSteps || [];
+      const computationDone = Boolean(flags.computationDone || (steps.length && steps.every((s) => s.status === "completed")));
+      const delivered = ["可打包", "已打包"].includes(project.packageStatus) || project.currentStage === "交付";
+      const defs = [
+        { id: "立项", tab: "overview", sub: "", desc: "项目信息", done: true },
+        { id: "需求解析", tab: "plan", sub: "analysis", desc: "解析报告", done: hasAnalysis },
+        { id: "方案确认", tab: "plan", sub: "plan", desc: "实施方案", done: hasPlan },
+        { id: "建模", tab: "modeling", sub: "", desc: "结构组装", done: hasSystem },
+        { id: "模拟计算", tab: "computation", sub: "", desc: "计算流程", done: computationDone },
+        { id: "交付", tab: "delivery", sub: "", desc: "清单打包", done: delivered }
+      ];
+      const currentIndex = defs.findIndex((stage) => !stage.done);
+      return defs.map((stage, idx) => ({
+        ...stage,
+        state: stage.done ? "done" : (idx === currentIndex ? "current" : "pending")
+      }));
+    }
+
+    function renderWorkspaceProjectOptions(currentId) {
+      const projects = state.projects || [];
+      return projects
+        .map((project) => `<option value="${escapeHtml(project.id)}" ${project.id === currentId ? "selected" : ""}>${escapeHtml(project.name)}</option>`)
+        .join("");
+    }
+
+    function renderWorkspaceProgress() {
+      const stages = computeWorkspaceStages();
+      return `
+        <div class="workspace-progress">
+          ${stages.map((stage, idx) => `
+            <button class="wp-step ${stage.state}" type="button" data-workspace-step-tab="${stage.tab}" data-workspace-step-sub="${stage.sub || ""}" title="${escapeHtml(stage.desc)}">
+              <span class="wp-dot">${stage.state === "done" ? "✓" : idx + 1}</span>
+              <span class="wp-label">${escapeHtml(stage.id)}</span>
+              <span class="wp-desc">${escapeHtml(stage.desc)}</span>
+            </button>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderWorkspaceHeader(project) {
+      return `
+        <section class="page-header page-header--split workspace-header">
+          <div class="page-header-main">
+            <div class="page-title">
+              <div class="workspace-title-row">
+                <h1>${escapeHtml(project.name)}</h1>
+                <select class="version-select workspace-project-select" id="workspaceProjectSelect" title="切换项目">
+                  ${renderWorkspaceProjectOptions(project.id)}
+                </select>
+              </div>
+              <p>${escapeHtml(project.customer || "")}${project.customer ? " · " : ""}从需求解析到项目执行的一体化工作台</p>
+            </div>
+          </div>
+          <div class="page-header-side">
+            <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
+          </div>
+        </section>
+        ${renderWorkspaceProgress()}
+      `;
+    }
+
+    function renderWorkspaceTabs(activeTab) {
+      const flags = state.workspaceFlags || {};
+      const hasPlan = Boolean(flags.hasPlan || state.workspace?.requirementTask?.hasPlan || state.activeRequirementTask?.documents?.plan);
+      const modelingLocked = !hasPlan;
+      const computationLocked = !hasPlan || !currentExecutionHasSystem();
+      return `
+        <div class="workspace-tabs">
+          ${workspaceTabDefs.map((tab) => {
+            const disabled = (tab.id === "modeling" && modelingLocked) || (tab.id === "computation" && computationLocked);
+            const title = tab.id === "modeling" && modelingLocked ? "需先完成方案" : (tab.id === "computation" && computationLocked ? "需先完成建模" : "");
+            return `<button class="workspace-tab ${activeTab === tab.id ? "active" : ""}" type="button" data-workspace-tab="${tab.id}" ${disabled ? "disabled" : ""} title="${title}">${tab.label}</button>`;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function describeDeliveryCountdown(dateText) {
+      if (!dateText) {
+        return { text: "未设置交付日期", tone: "" };
+      }
+      const target = new Date(`${dateText}T00:00:00`);
+      if (Number.isNaN(target.getTime())) {
+        return { text: "—", tone: "" };
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const days = Math.round((target - today) / 86400000);
+      if (days > 0) {
+        return { text: `距交付还有 ${days} 天`, tone: days <= 7 ? "warn" : "" };
+      }
+      if (days === 0) {
+        return { text: "今天交付", tone: "warn" };
+      }
+      return { text: `已逾期 ${Math.abs(days)} 天`, tone: "danger" };
+    }
+
+    function renderProjectInfoReadonly(project) {
+      const checklist = project.deliveryChecklist || [];
+      const doneCount = checklist.filter((item) => item.status === "已完成").length;
+      const progress = Math.max(0, Math.min(100, Number(project.progress) || 0));
+      const countdown = describeDeliveryCountdown(project.plannedDeliveryDate);
+      const stats = [
+        { label: "项目金额", value: `${Number(project.amount || 0)} 万元`, sub: "合同金额" },
+        { label: "项目进度", value: `${progress}%`, bar: progress },
+        { label: "计划交付", value: project.plannedDeliveryDate || "—", sub: countdown.text, subTone: countdown.tone },
+        { label: "交付清单", value: `${doneCount}/${checklist.length || 0}`, sub: "已完成项" }
+      ];
+      const items = [
+        { label: "客户名称", value: project.customer },
+        { label: "当前阶段", value: project.currentStage },
+        { label: "项目模板", value: project.template },
+        { label: "项目状态", value: project.status },
+        { label: "打包状态", value: project.packageStatus },
+        { label: "目录路径", value: project.rootDirectory }
+      ];
+      const timeline = project.stageTimeline || [];
+      return `
+        <div class="overview-stats">
+          ${stats.map((stat) => `
+            <div class="overview-stat">
+              <span class="os-label">${escapeHtml(stat.label)}</span>
+              <span class="os-value">${escapeHtml(stat.value)}</span>
+              ${typeof stat.bar === "number" ? `<div class="os-bar"><span style="width:${stat.bar}%"></span></div>` : ""}
+              ${stat.sub ? `<span class="os-sub ${stat.subTone || ""}">${escapeHtml(stat.sub)}</span>` : ""}
+            </div>
+          `).join("")}
+        </div>
+        <div class="info-grid">
+          ${items.map((item) => `
+            <div class="info-item">
+              <span class="info-label">${escapeHtml(item.label)}</span>
+              <span class="info-value">${escapeHtml(item.value || "—")}</span>
+            </div>
+          `).join("")}
+        </div>
+        ${project.description ? `
+          <div class="info-item info-item--full">
+            <span class="info-label">项目说明</span>
+            <span class="info-value">${escapeHtml(project.description)}</span>
+          </div>
+        ` : ""}
+        ${timeline.length ? `
+          <div class="overview-timeline">
+            <span class="info-label">阶段时间线</span>
+            <div class="stage-list">
+              ${timeline.map((stage) => {
+                const stageClass = stage.status === "已完成" ? "stage-chip done" : stage.status === "进行中" ? "stage-chip current" : "stage-chip";
+                return `<div class="${stageClass}"><span>${escapeHtml(stage.name)}</span><span>${escapeHtml(stage.status)}</span></div>`;
+              }).join("")}
+            </div>
+          </div>
+        ` : ""}
+      `;
+    }
+
+    function renderWorkspaceOverview() {
+      const project = state.projectDetail || state.workspace?.project;
+      if (!project) {
+        getRenderRoot().innerHTML = `<div class="empty-state"><h3>项目不存在</h3></div>`;
+        return;
+      }
+      getRenderRoot().innerHTML = `
+        <section class="page-card">
+          <div class="detail-card-head">
+            <h2>项目信息</h2>
+            <div class="info-badges">
+              <span class="${getTagClass(project.status)}">${escapeHtml(project.status)}</span>
+              <span class="${getTagClass(project.packageStatus)}">${escapeHtml(project.packageStatus)}</span>
+            </div>
+          </div>
+          <p class="helper-text">查看项目概况并维护基础字段；交付清单与打包记录在「交付」标签页处理。</p>
+          ${renderProjectInfoReadonly(project)}
+        </section>
+        <section class="page-card">
+          <h2>项目维护</h2>
+          <p class="helper-text">更新阶段、进度、客户信息与目录路径；保存后立即同步到项目列表与阶段进度条。</p>
+          ${renderProjectMaintenanceStack(project)}
+        </section>
+      `;
+      bindProjectDetailEvents();
+    }
+
+    function renderWorkspaceDelivery() {
+      const project = state.projectDetail || state.workspace?.project;
+      if (!project) {
+        getRenderRoot().innerHTML = `<div class="empty-state"><h3>项目不存在</h3></div>`;
+        return;
+      }
+      getRenderRoot().innerHTML = `
+        <section class="page-card">
+          <h2>交付与打包</h2>
+          <p class="helper-text">维护交付清单状态，并登记打包记录。</p>
+          <div class="delivery-grid">
+            ${renderProjectDeliveryStack(project)}
+          </div>
+        </section>
+      `;
+      bindProjectDetailEvents();
+    }
+
+    async function ensureProjectDetailLoaded() {
+      const projectId = state.projectDetail?.id || state.workspace?.project?.id;
+      if (!projectId) {
+        return;
+      }
+      if (state.projectDetail?.deliveryChecklist && state.projectDetail?.packageRecords) {
+        return;
+      }
+      await loadProjectDetailData(projectId);
+    }
+
+    async function renderWorkspaceBody(tab) {
+      const ws = state.workspace || {};
+      if (tab === "plan" || tab === "requirement") {
+        await ensureWorkspaceTaskDetail();
+        state.activeRequirementTask = state.activeRequirementTask || ws.requirementTask;
+        state.executionRequirement = state.activeRequirementTask;
+        const sub = state.planSubTab || "analysis";
+        if (!state.activeRequirementTask?.documents?.[sub]?.content) {
+          await loadPlanDocument(sub);
+        } else {
+          state.requirementActiveTab = sub === "plan" ? "plan" : "analysis";
+        }
+        renderRequirementAnalysis();
+        getRenderRoot().querySelectorAll("[data-plan-sub]").forEach((button) => {
+          button.addEventListener("click", async () => {
+            state.planSubTab = button.dataset.planSub;
+            await loadPlanDocument(state.planSubTab);
+            renderWorkspaceBody("plan");
+          });
+        });
+      } else if (tab === "modeling" || tab === "execution") {
+        await ensureWorkspaceExecution();
+        await ensureWorkspaceTaskDetail();
+        state.executionRequirement = state.activeRequirementTask;
+        if (state.activeExecution?.id) {
+          await refreshFullExecution(state.activeExecution.id);
+        }
+        renderExecutionPage();
+      } else if (tab === "computation") {
+        await ensureWorkspaceExecution();
+        await ensureWorkspaceTaskDetail();
+        state.executionRequirement = state.activeRequirementTask;
+        if (state.activeExecution?.id) {
+          await refreshFullExecution(state.activeExecution.id);
+        }
+        const taskId = state.activeRequirementTask?.id;
+        if (taskId && !getComputationSpec()) {
+          try {
+            const data = await fetchJson(`/api/requirement-tasks/${taskId}/specs?part=computation`);
+            if (data.spec) {
+              state.activeRequirementTask.documents = state.activeRequirementTask.documents || {};
+              state.activeRequirementTask.documents.computationSpec = data.spec;
+            }
+          } catch (error) {}
+        }
+        renderComputationPage();
+      } else if (tab === "delivery") {
+        await ensureProjectDetailLoaded();
+        renderWorkspaceDelivery();
+      } else {
+        await ensureProjectDetailLoaded();
+        renderWorkspaceOverview();
+      }
+    }
+
+    function renderWorkspacePage() {
+      const project = state.projectDetail || state.workspace?.project;
+      if (!project) {
+        mainContentEl.innerHTML = `
+          ${renderPageHeader("项目工作台", "未找到项目，请从项目列表选择有效项目。")}
+          <div class="empty-state"><h3>项目不存在</h3><p>请返回项目列表重新选择。</p></div>
+        `;
+        bindGlobalUi();
+        return;
+      }
+      const tab = state.workspaceTab;
+      mainContentEl.innerHTML = `
+        ${renderWorkspaceHeader(project)}
+        ${renderWorkspaceTabs(tab)}
+        <div id="workspaceBody"></div>
+      `;
+      document.querySelectorAll("[data-workspace-tab]").forEach((button) => {
+        if (button.disabled) {
+          return;
+        }
+        button.addEventListener("click", () => switchWorkspaceTab(button.dataset.workspaceTab));
+      });
+      document.querySelectorAll("[data-workspace-step-tab]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const target = button.dataset.workspaceStepTab;
+          const sub = button.dataset.workspaceStepSub || "";
+          const hasPlan = Boolean(state.workspaceFlags?.hasPlan || state.activeRequirementTask?.documents?.plan);
+          if ((target === "modeling" || target === "computation") && !hasPlan) {
+            showToast("请先完成实施方案", "error");
+            return;
+          }
+          if (sub) state.planSubTab = sub;
+          switchWorkspaceTab(target === "execution" ? "modeling" : target, sub);
+        });
+      });
+      document.getElementById("workspaceProjectSelect")?.addEventListener("change", (event) => {
+        navigateTo("workspace", event.target.value);
+      });
+      bindGlobalUi();
+      renderWorkspaceBody(tab);
+    }
+
+    async function switchWorkspaceTab(tab, planSub) {
+      if (tab === "execution") tab = "modeling";
+      state.workspaceTab = tab;
+      if (planSub) state.planSubTab = planSub;
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("tab", tab);
+        window.history.replaceState({}, "", url.toString());
+      } catch (error) {}
+      renderWorkspacePage();
+    }
+
     function renderCurrentPage() {
       applyPreferences();
+      state.inWorkspace = currentPage === "workspace";
       renderNav();
       if (currentPage === "create") {
-        renderCreatePage();
+        renderProjectsPage();
+        openCreateProjectModal();
       } else if (currentPage === "projects") {
         renderProjectsPage();
-      } else if (currentPage === "detail") {
-        renderProjectDetailPage();
+      } else if (currentPage === "workspace") {
+        renderWorkspacePage();
       } else {
         renderDashboard();
       }
       bindGlobalUi();
     }
 
+    async function resolveLegacyWorkspaceProjectId() {
+      const legacyId = urlParams.get("id") || currentProjectId;
+      if (legacyRoutePage === "requirements") {
+        await loadRequirementTasks();
+        return state.activeRequirementTask?.projectId || legacyId;
+      }
+      if (legacyRoutePage === "execution") {
+        if (legacyId.startsWith("p-")) {
+          return legacyId;
+        }
+        try {
+          const data = await fetchJson(`/api/requirement-tasks/${legacyId}`);
+          return data.task?.projectId || currentProjectId;
+        } catch (error) {
+          return currentProjectId;
+        }
+      }
+      return legacyId;
+    }
+
     async function init() {
       syncSettingsForm();
+      bindCreateProjectForm();
       applyPreferences();
-      await loadDashboardData();
-      await loadProjectsData();
-      if (currentPage === "detail") {
-        await loadProjectDetailData(currentProjectId);
+      let workspaceProjectId = currentProjectId;
+      if (legacyRoutePage) {
+        workspaceProjectId = await resolveLegacyWorkspaceProjectId();
+        replaceUrlWithWorkspace(workspaceProjectId, initialWorkspaceTab);
+      }
+      if (currentPage === "dashboard") {
+        await loadDashboardData();
+      }
+      if (currentPage === "dashboard" || currentPage === "projects" || currentPage === "workspace") {
+        await loadProjectsData();
+      }
+      if (currentPage === "workspace") {
+        await loadWorkspaceData(workspaceProjectId);
+        const normalizedTab = initialWorkspaceTab === "requirement" ? "plan" : (initialWorkspaceTab === "execution" ? "modeling" : initialWorkspaceTab);
+        state.workspaceTab = workspaceTabDefs.some((tab) => tab.id === normalizedTab) ? normalizedTab : "overview";
+        if (state.workspaceTab === "modeling" || state.workspaceTab === "computation") {
+          await ensureWorkspaceExecution();
+        }
       }
       renderCurrentPage();
     }
