@@ -2,6 +2,15 @@
 
 set -euo pipefail
 
+if [[ -f "$HOME/.bashrc" ]]; then
+  set +u
+  set -a
+  # shellcheck source=/dev/null
+  source "$HOME/.bashrc"
+  set +a
+  set -u
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$SCRIPT_DIR"
 FRONTEND_DIR="$PROJECT_DIR/frontend"

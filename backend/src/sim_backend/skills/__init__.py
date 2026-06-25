@@ -76,17 +76,20 @@ def get_skill(skill_id: str) -> Skill:
     return SKILLS[skill_id]
 
 
-def _provider_settings(provider_id: str, model: str) -> dict | None:
+def _provider_settings(provider_id: str, model: str, context: dict | None = None) -> dict | None:
     if provider_id == "http":
         settings = config.get_llm_settings()
     else:
         settings = config.get_cli_settings()
+        overrides = (context or {}).get("_cli_settings") or {}
+        if isinstance(overrides, dict):
+            settings = {**settings, **overrides}
     if model:
         settings = {**settings, "model": model}
     return settings
 
 
-def _resolve_execution(skill: Skill, model_choice: str | None):
+def _resolve_execution(skill: Skill, model_choice: str | None, context: dict | None = None):
     """根据用户所选模型解析出 (执行模块, 设置覆盖)。
 
     传入已知的 model_choice 时，整条流程都改用该 provider/model；否则回退到技能
@@ -99,13 +102,13 @@ def _resolve_execution(skill: Skill, model_choice: str | None):
     module = PROVIDERS.get(provider_id)
     if module is None:
         raise KeyError(f"unknown provider: {provider_id}")
-    return module, _provider_settings(provider_id, model)
+    return module, _provider_settings(provider_id, model, context)
 
 
 def run_skill(skill_id: str, context: dict, model_choice: str | None = None) -> dict:
     """一次性执行技能，返回 ``{"content", "reasoning"}``。"""
     skill = get_skill(skill_id)
-    module, settings = _resolve_execution(skill, model_choice)
+    module, settings = _resolve_execution(skill, model_choice, context)
     messages = skill.build_messages(context)
     content = module.call(messages, settings)
     reasoning = module.consume_last_reasoning()
@@ -115,7 +118,7 @@ def run_skill(skill_id: str, context: dict, model_choice: str | None = None) -> 
 def stream_skill(skill_id: str, context: dict, model_choice: str | None = None):
     """流式执行技能，逐块产出 ``{"type", "text"}`` 增量。"""
     skill = get_skill(skill_id)
-    module, settings = _resolve_execution(skill, model_choice)
+    module, settings = _resolve_execution(skill, model_choice, context)
     messages = skill.build_messages(context)
     yield from module.stream(messages, settings)
 

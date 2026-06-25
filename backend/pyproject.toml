@@ -7,7 +7,9 @@ name = "sim-backend"
 version = "0.1.0"
 description = "计算模拟项目交付管理系统后端"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "python-docx>=1.2.0",
+]
 
 [project.scripts]
 sim-backend = "sim_backend.server:main"

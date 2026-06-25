@@ -74,6 +74,10 @@
         linear-gradient(180deg, var(--bg-canvas) 0%, #07111f 48%, var(--bg-canvas) 100%);
     }
 
+    body.modal-open {
+      overflow: hidden;
+    }
+
     body::before,
     body::after {
       content: "";
@@ -2201,6 +2205,10 @@
       min-height: 420px;
     }
 
+    .computation-detail-panel {
+      min-width: 0;
+    }
+
     .step-timeline { display: grid; gap: 6px; }
 
     .step-item {
@@ -2771,6 +2779,16 @@
       .table-row {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
+
+      .computation-pane {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .computation-detail-panel {
+        min-width: 0;
+        max-height: 620px;
+      }
     }
 
     @media (max-width: 900px) {
@@ -2959,8 +2977,8 @@
             <input id="customer" name="customer" required>
           </div>
           <div class="field-group">
-            <label for="amount">项目金额</label>
-            <input id="amount" name="amount" type="number" min="0" required>
+            <label for="amount">项目金额（万元）</label>
+            <input id="amount" name="amount" type="number" min="0" step="0.01" required>
           </div>
           <div class="field-group">
             <label for="plannedDeliveryDate">计划交付日期</label>
@@ -3225,6 +3243,7 @@
       projectPreviewId: null,
       preferences: initialPreferences
     };
+    let lastFocusedElement = null;
 
     const navGroupEl = document.getElementById("navGroup");
     const mainContentEl = document.getElementById("mainContent");
@@ -3372,12 +3391,93 @@
       document.body.classList.toggle("helpers-hidden", !state.preferences.showHelperText);
     }
 
+    function getOverlayElement(overlay) {
+      return typeof overlay === "string" ? document.getElementById(overlay) : overlay;
+    }
+
+    function getOpenOverlays() {
+      return Array.from(document.querySelectorAll("#settingsPanel:not(.hidden), .modal-overlay:not(.hidden)"));
+    }
+
+    function focusFirstOverlayControl(overlay, focusSelector) {
+      const target = focusSelector
+        ? overlay.querySelector(focusSelector)
+        : overlay.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+      target?.focus();
+    }
+
+    function trapOverlayFocus(event, overlay) {
+      if (event.key !== "Tab") {
+        return;
+      }
+      const focusable = Array.from(overlay.querySelectorAll("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"))
+        .filter((element) => !element.disabled && element.offsetParent !== null);
+      if (!focusable.length) {
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    function handleOverlayKeydown(event) {
+      const overlay = event.currentTarget;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        if (overlay.id === "settingsPanel") {
+          closeSettingsPanel();
+        } else if (overlay.id === "createProjectModal") {
+          closeCreateProjectModal();
+        } else if (overlay.id === "projectPreviewModal") {
+          closeProjectPreview();
+        } else {
+          closeOverlay(overlay);
+        }
+        return;
+      }
+      trapOverlayFocus(event, overlay);
+    }
+
+    function openOverlay(overlay, focusSelector) {
+      const element = getOverlayElement(overlay);
+      if (!element) {
+        return;
+      }
+      lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      element.classList.remove("hidden");
+      document.body.classList.add("modal-open");
+      element.addEventListener("keydown", handleOverlayKeydown);
+      focusFirstOverlayControl(element, focusSelector);
+    }
+
+    function closeOverlay(overlay) {
+      const element = getOverlayElement(overlay);
+      if (!element) {
+        return;
+      }
+      element.classList.add("hidden");
+      element.removeEventListener("keydown", handleOverlayKeydown);
+      if (!getOpenOverlays().length) {
+        document.body.classList.remove("modal-open");
+      }
+      if (lastFocusedElement && document.contains(lastFocusedElement)) {
+        lastFocusedElement.focus();
+      }
+      lastFocusedElement = null;
+    }
+
     function openSettingsPanel() {
-      document.getElementById("settingsPanel")?.classList.remove("hidden");
+      openOverlay("settingsPanel", "#closeSettingsButton");
     }
 
     function closeSettingsPanel() {
-      document.getElementById("settingsPanel")?.classList.add("hidden");
+      closeOverlay("settingsPanel");
     }
 
     function syncSettingsForm() {
@@ -3422,6 +3522,17 @@
 
     async function fetchJson(path) {
       const response = await fetch(`${apiBaseUrl}${path}`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return response.json();
+    }
+
+    async function fetchOptionalJson(path) {
+      const response = await fetch(`${apiBaseUrl}${path}`);
+      if (response.status === 404) {
+        return null;
+      }
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -3495,9 +3606,7 @@
       if (!previewEl) {
         return;
       }
-      if (state.requirementActiveTab === "thinking") {
-        previewEl.innerHTML = renderMarkdownPreview(stream.reasoning || "_小P 正在思考..._");
-      } else if (state.requirementActiveTab === stream.target) {
+      if (state.requirementActiveTab === stream.target) {
         previewEl.innerHTML = renderMarkdownPreview(stream.content || "_小P 正在生成..._");
       } else {
         // 当前查看的不是正在流式生成的文档，保持其已有内容，避免串台。
@@ -3614,7 +3723,7 @@
     }
 
     function closeProjectPreview() {
-      document.getElementById("projectPreviewModal")?.classList.add("hidden");
+      closeOverlay("projectPreviewModal");
     }
 
     function openProjectPreview(projectId) {
@@ -3634,8 +3743,7 @@
       content.querySelector("#openPreviewProjectButton")?.addEventListener("click", () => {
         navigateTo("workspace", project.id, { tab: "overview" });
       });
-      modal.classList.remove("hidden");
-      content.querySelector("#closeProjectPreviewButton")?.focus();
+      openOverlay(modal, "#closeProjectPreviewButton");
     }
 
     function syncProjectInState(project) {
@@ -3716,7 +3824,7 @@
     }
 
     function getRequirementDocument(task) {
-      if (!task || state.requirementActiveTab === "process" || state.requirementActiveTab === "thinking") {
+      if (!task || state.requirementActiveTab === "process") {
         return null;
       }
       if (state.requirementActiveTab === "analysis") {
@@ -3730,10 +3838,7 @@
 
     function getRequirementMarkdown(task) {
       if (!task) {
-        return "# 等待上传需求\n\n请先在左侧上传 PDF / Word / TXT / MD 需求文档。";
-      }
-      if (state.requirementActiveTab === "thinking") {
-        return renderRequirementThinkingMarkdown(task);
+        return "# 等待上传需求\n\n请先在左侧上传 PDF / Word / TXT / MD / 图片需求文档。";
       }
       const activeDocument = getRequirementDocument(task);
       if (activeDocument?.content) {
@@ -3751,7 +3856,7 @@
     function getRequirementExportMarkdown(task) {
       // 导出始终输出该文档的最终版本干净内容：忽略“高亮修改”对比视图与当前选中的历史版本，
       // 不带任何中间修改痕迹（如被划掉的内容）。
-      if (!task || state.requirementActiveTab === "thinking") {
+      if (!task) {
         return getRequirementMarkdown(task);
       }
       const activeDocument = getRequirementDocument(task);
@@ -3836,34 +3941,6 @@
         state.requirementSpecLoading = false;
         renderRequirementAnalysis();
       }
-    }
-
-    function renderRequirementThinkingMarkdown(task) {
-      const steps = task?.steps || [];
-      const documents = task?.documents || {};
-      const analysisReasoning = String(documents.analysis?.reasoning || "").trim();
-      const planReasoning = String(documents.plan?.reasoning || "").trim();
-      const hasReasoning = Boolean(analysisReasoning || planReasoning);
-      return [
-        "# 小P思考过程",
-        "",
-        "> 这里展示模型内部的隐藏推理链路（reasoning），用于说明小P是如何一步步得到结论的。",
-        "",
-        "## 当前技能步骤",
-        "",
-        ...steps.map((step) => `- ${getRequirementStepIcon(step.status)} **${step.label}**：${step.detail}`),
-        "",
-        "## 解析任务 · 推理链路",
-        "",
-        analysisReasoning || "_等待小P解析任务后展示推理链路。_",
-        "",
-        "## 生成方案 · 推理链路",
-        "",
-        planReasoning || "_等待小P生成方案后展示推理链路。_",
-        ...(hasReasoning
-          ? []
-          : ["", "> 注：当前模型未返回隐藏推理内容，仅展示技能步骤进度。"])
-      ].join("\n");
     }
 
     function buildPendingRequirementTask(fileName, fileType) {
@@ -3961,7 +4038,7 @@
 
     function getRequirementStepIcon(status) {
       if (status === "completed") {
-        return "✓";
+        return "完成";
       }
       if (status === "in_progress") {
         return "…";
@@ -4026,12 +4103,28 @@
       return `${progressMessage}${conversation}`;
     }
 
+    function isImageRequirementFile(file) {
+      return Boolean(file?.type?.startsWith("image/")) || /\.(png|jpe?g|webp)$/i.test(file?.name || "");
+    }
+
     async function readRequirementFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(String(reader.result || ""));
         reader.onerror = () => reject(reader.error || new Error("file read failed"));
         reader.readAsText(file);
+      });
+    }
+
+    async function readRequirementFileDataBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = String(reader.result || "");
+          resolve(dataUrl.includes(",") ? dataUrl.split(",").pop() : dataUrl);
+        };
+        reader.onerror = () => reject(reader.error || new Error("file read failed"));
+        reader.readAsDataURL(file);
       });
     }
 
@@ -4089,7 +4182,8 @@
         state.activeRequirementTask = buildPendingRequirementTask(file.name, file.type);
         state.requirementActiveTab = "analysis";
         renderRequirementAnalysis();
-        const content = await readRequirementFile(file);
+        const content = isImageRequirementFile(file) ? "" : await readRequirementFile(file);
+        const fileDataBase64 = await readRequirementFileDataBase64(file);
         if (state.requirementAbortRequested) {
           return;
         }
@@ -4097,6 +4191,7 @@
           fileName: file.name,
           fileType: file.type,
           content,
+          fileDataBase64,
           projectId: state.inWorkspace ? (state.workspace?.project?.id || "") : ""
         });
         if (state.requirementAbortRequested) {
@@ -4220,6 +4315,37 @@
       }
     }
 
+    async function refreshRequirementTaskState() {
+      const taskId = state.activeRequirementTask?.id || state.workspace?.requirementTask?.id;
+      const button = document.getElementById("refreshRequirementButton");
+      if (!taskId) {
+        showToast("暂无可刷新的需求任务，请先上传需求文档", "error");
+        return;
+      }
+      setActionLoading(button, true, "刷新中...");
+      try {
+        const data = await fetchJson(`/api/requirement-tasks/${taskId}`);
+        if (data.task) {
+          state.activeRequirementTask = data.task;
+          state.executionRequirement = data.task;
+          state.requirementTasks = [
+            data.task,
+            ...state.requirementTasks.filter((item) => item.id !== data.task.id)
+          ];
+          if (state.workspace) {
+            state.workspace.requirementTask = state.activeRequirementTask;
+          }
+        }
+        state.requirementEditMode = false;
+        renderRequirementAnalysis();
+        showToast("需求任务已刷新", "success");
+      } catch (error) {
+        showToast(`刷新失败：${error.message}`, "error");
+      } finally {
+        setActionLoading(button, false, "刷新中...");
+      }
+    }
+
     function downloadBlob(blob, fileName) {
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
@@ -4241,7 +4367,7 @@
     async function exportCurrentRequirementDocument() {
       const task = state.activeRequirementTask;
       const markdown = getRequirementExportMarkdown(task);
-      const documentName = state.requirementActiveTab === "analysis" ? "解析结果" : state.requirementActiveTab === "plan" ? "实施方案" : "思考过程";
+      const documentName = state.requirementActiveTab === "analysis" ? "解析结果" : "实施方案";
       const format = document.getElementById("requirementExportFormat")?.value || "md";
 
       if (format === "md") {
@@ -4286,7 +4412,9 @@
 
     function bindGlobalUi() {
       syncSettingsForm();
-      document.getElementById("settingsButton")?.addEventListener("click", openSettingsPanel);
+      document.querySelectorAll("[data-action=\"open-settings\"]").forEach((button) => {
+        button.addEventListener("click", openSettingsPanel);
+      });
       document.getElementById("closeSettingsButton")?.addEventListener("click", closeSettingsPanel);
       document.getElementById("settingsForm")?.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -4414,7 +4542,7 @@
             </div>
           </div>
           <div class="page-header-side">
-            <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
+            <button class="button-secondary" data-action="open-settings" type="button">全局设置</button>
           </div>
         </section>
       `;
@@ -4429,7 +4557,7 @@
             </div>
           </div>
           <div class="page-header-side">
-            <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
+            <button class="button-secondary" data-action="open-settings" type="button">全局设置</button>
           </div>
         </section>
       `;
@@ -4750,12 +4878,11 @@
         rootDirectoryInput.value = "/data/projects/new-project";
         rootDirectoryInput.dataset.locked = "";
       }
-      modal.classList.remove("hidden");
-      document.getElementById("name")?.focus();
+      openOverlay(modal, "#name");
     }
 
     function closeCreateProjectModal() {
-      document.getElementById("createProjectModal")?.classList.add("hidden");
+      closeOverlay("createProjectModal");
     }
 
     function bindCreateProjectForm() {
@@ -4975,7 +5102,7 @@
           const progressValue = Math.max(0, Math.min(100, Number(project.progress) || 0));
           const amountValue = Number(project.amount) || 0;
           return `
-            <div class="table-row ${state.projectPreviewId === project.id ? "project-row-preview-active" : ""}" data-id="${escapeHtml(project.id)}" tabindex="0">
+            <div class="table-row ${state.projectPreviewId === project.id ? "project-row-preview-active" : ""}" data-id="${escapeHtml(project.id)}" tabindex="0" role="button" aria-label="预览项目 ${escapeHtml(project.name)}">
               <div class="project-select-cell">
                 <input
                   class="project-select"
@@ -5032,7 +5159,8 @@
             if (event.target?.closest?.(".project-select, .open-project-button")) {
               return;
             }
-            if (event.key === "Enter") {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
               openProjectPreview(row.dataset.id);
               renderRows();
             }
@@ -5126,8 +5254,8 @@
                   <input id="detailCustomer" name="customer" value="${escapeHtml(project.customer)}" required>
                 </div>
                 <div class="field-group">
-                  <label for="detailAmount">项目金额</label>
-                  <input id="detailAmount" name="amount" type="number" min="0" value="${project.amount}" required>
+                  <label for="detailAmount">项目金额（万元）</label>
+                  <input id="detailAmount" name="amount" type="number" min="0" step="0.01" value="${project.amount}" required>
                 </div>
                 <div class="field-group">
                   <label for="detailStage">当前阶段</label>
@@ -5263,9 +5391,7 @@
       const canHighlightChanges = state.requirementActiveTab === "plan" && Boolean(previousDocumentVersion) && !isEditingDocument;
       const isRequirementMessageProcessing = Boolean(task?.optimizationPending);
       let markdownPreview;
-      if (state.requirementStream && state.requirementActiveTab === "thinking") {
-        markdownPreview = renderMarkdownPreview(state.requirementStream.reasoning || "_小P 正在思考..._");
-      } else if (state.requirementStream && state.requirementActiveTab === state.requirementStream.target) {
+      if (state.requirementStream && state.requirementActiveTab === state.requirementStream.target) {
         markdownPreview = renderMarkdownPreview(state.requirementStream.content || "_小P 正在生成..._");
       } else if (canHighlightChanges && state.requirementHighlightChanges) {
         markdownPreview = renderMarkdownDiffPreview(markdown, previousDocumentVersion.content);
@@ -5276,7 +5402,6 @@
         markdownPreview += renderRequirementSpecBlock(task);
       }
       const tabs = [
-        { id: "thinking", label: "思考过程" },
         { id: "analysis", label: "解析结果" },
         { id: "plan", label: "实施方案" }
       ];
@@ -5296,7 +5421,7 @@
                 <form class="upload-drop" id="requirementUploadForm">
                   <strong>上传需求文档</strong>
                   <div class="requirement-upload-row">
-                    <input id="requirementFileInput" name="requirementFile" type="file" accept=".pdf,.doc,.docx,.txt,.md,text/plain,text/markdown,application/pdf">
+                    <input id="requirementFileInput" name="requirementFile" type="file" accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.webp,text/plain,text/markdown,application/pdf,image/*">
                     <button class="button-primary" type="submit" ${isRequirementProcessing ? "disabled" : ""}>${isRequirementProcessing ? "解析中..." : "开始解析"}</button>
                     ${isRequirementProcessing ? `<button class="button-secondary" type="button" id="requirementAbortButton">终止</button>` : ""}
                   </div>
@@ -5324,9 +5449,10 @@
             <div class="page-header page-header--split">
               <div>
                 <h2>工作区</h2>
-                <p class="helper-text">当前查看：${state.requirementActiveTab === "analysis" ? "解析结果" : state.requirementActiveTab === "plan" ? "实施方案" : "思考过程"}${activeDocument ? ` / ${escapeHtml((activeDocument.versions || []).find((version) => version.id === activeDocument.currentVersionId)?.name || "")}` : ""}</p>
+                <p class="helper-text">当前查看：${state.requirementActiveTab === "analysis" ? "解析结果" : "实施方案"}${activeDocument ? ` / ${escapeHtml((activeDocument.versions || []).find((version) => version.id === activeDocument.currentVersionId)?.name || "")}` : ""}</p>
               </div>
               <div class="status-group">
+                <button class="button-secondary" type="button" id="refreshRequirementButton">刷新</button>
                 ${activeDocument ? `<select class="version-select" id="requirementVersionSelect" ${isEditingDocument ? "disabled" : ""}>${renderRequirementVersionOptions(activeDocument)}</select>` : ""}
                 ${canHighlightChanges ? `<button class="button-secondary" type="button" id="toggleRequirementDiffButton">${state.requirementHighlightChanges ? "正常预览" : "高亮修改"}</button>` : ""}
                 ${isEditingDocument
@@ -5362,6 +5488,7 @@
       document.getElementById("requirementAbortButton")?.addEventListener("click", cancelRequirementProcessing);
       document.getElementById("requirementChatForm")?.addEventListener("submit", sendRequirementMessage);
       document.getElementById("exportRequirementMarkdownButton")?.addEventListener("click", exportCurrentRequirementDocument);
+      document.getElementById("refreshRequirementButton")?.addEventListener("click", refreshRequirementTaskState);
       document.getElementById("editRequirementButton")?.addEventListener("click", () => {
         state.requirementEditMode = true;
         state.requirementHighlightChanges = false;
@@ -5755,7 +5882,7 @@
             <select id="computationDefaultRunnerSelect">${renderRunnerOptions(state.computationDefaultRunner)}</select>
             <button class="button-primary" type="button" id="computationRunAllButton" ${state.computationRunAllRunning ? "disabled" : ""}>${state.computationRunAllRunning ? "运行中..." : "运行全部"}</button>
           </div>
-          <div class="pane-right page-card" style="padding:14px;overflow:auto;">
+          <div class="pane-right page-card computation-detail-panel" style="padding:14px;overflow:auto;">
             <div id="computationStepDetail">${renderComputationStepDetail(spec)}</div>
           </div>
         </div>`;
@@ -5874,6 +6001,10 @@
       molstarViewer = null;
     }
 
+    function clearExecutionViewerEmptyState() {
+      document.getElementById("executionViewerEmptyState")?.remove();
+    }
+
     async function loadStructureAsBallAndStick(viewer, structure) {
       const format = molstarFormat(structure.format);
       const plugin = viewer.plugin;
@@ -5952,6 +6083,7 @@
           if (token !== molstarLoadToken) {
             return;
           }
+          clearExecutionViewerEmptyState();
           try {
             viewer.handleResize?.();
             viewer.plugin?.canvas3d?.requestCameraReset?.();
@@ -5974,7 +6106,7 @@
           </div>
           <div class="page-header-side">
             <button class="button-secondary" type="button" id="backToRequirementsButton">返回需求解析</button>
-            <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
+            <button class="button-secondary" data-action="open-settings" type="button">全局设置</button>
           </div>
         </section>
       `;
@@ -6003,7 +6135,7 @@
               <option value="deepseek" ${state.executionModel === "deepseek" ? "selected" : ""}>deepseek</option>
             </select>
           </div>
-          <button class="button-primary" type="button" id="autoModelingButton" ${canAuto && !autoRunning && !specLoading ? "" : "disabled"}>${autoRunning ? "自动建模中..." : (specLoading ? "规划生成中..." : "🚀 自动建模")}</button>
+          <button class="button-primary" type="button" id="autoModelingButton" ${canAuto && !autoRunning && !specLoading ? "" : "disabled"}>${autoRunning ? "自动建模中..." : (specLoading ? "规划生成中..." : "自动建模")}</button>
           <p class="helper-text">${autoHint}</p>
         </div>`;
 
@@ -6040,7 +6172,7 @@
               </div>` : ""}
               <div class="execution-viewer">
                 <div id="molstarViewer"></div>
-                ${activeStructure?.content ? "" : `<div class="execution-viewer-empty">尚无结构。点击「自动建模」生成结构后在此预览。</div>`}
+                ${activeStructure?.content ? "" : `<div class="execution-viewer-empty" id="executionViewerEmptyState">尚无结构。点击「自动建模」生成结构后在此预览。</div>`}
               </div>
             </div>
           </main>
@@ -6113,10 +6245,10 @@
       if (!molecules.length && !hasSystem) return "";
       let html = `<div class="mol-progress">`;
       molecules.forEach((mol) => {
-        html += `<div class="mol-item done"><span>✓</span> ${escapeHtml(mol.name)}</div>`;
+        html += `<div class="mol-item done"><span>已完成</span> ${escapeHtml(mol.name)}</div>`;
       });
       if (hasSystem) {
-        html += `<div class="mol-item done"><span>✓</span> 完整体系</div>`;
+        html += `<div class="mol-item done"><span>已完成</span> 完整体系</div>`;
       } else if (molecules.length) {
         html += `<div class="mol-item current"><span>→</span> 体系组装</div>`;
       }
@@ -6606,9 +6738,10 @@
       const taskId = state.activeRequirementTask?.id || state.workspace?.requirementTask?.id;
       if (!taskId) return;
       await ensureWorkspaceTaskDetail();
-      const data = await fetchJson(`/api/requirement-tasks/${taskId}/documents?part=${part}`);
+      state.requirementActiveTab = part === "plan" ? "plan" : "analysis";
+      const data = await fetchOptionalJson(`/api/requirement-tasks/${taskId}/documents?part=${part}`);
+      if (!data?.document) return;
       const doc = data.document;
-      if (!doc) return;
       state.activeRequirementTask.documents = state.activeRequirementTask.documents || {};
       state.activeRequirementTask.documents[part] = {
         ...(state.activeRequirementTask.documents[part] || {}),
@@ -6616,11 +6749,6 @@
         currentVersionId: doc.currentVersionId,
         versions: doc.versions
       };
-      if (part === "plan") {
-        state.requirementActiveTab = "plan";
-      } else {
-        state.requirementActiveTab = "analysis";
-      }
     }
 
     async function loadStructureContent(structureId) {
@@ -6673,7 +6801,7 @@
         <div class="workspace-progress">
           ${stages.map((stage, idx) => `
             <button class="wp-step ${stage.state}" type="button" data-workspace-step-tab="${stage.tab}" data-workspace-step-sub="${stage.sub || ""}" title="${escapeHtml(stage.desc)}">
-              <span class="wp-dot">${stage.state === "done" ? "✓" : idx + 1}</span>
+              <span class="wp-dot">${stage.state === "done" ? "已" : idx + 1}</span>
               <span class="wp-label">${escapeHtml(stage.id)}</span>
               <span class="wp-desc">${escapeHtml(stage.desc)}</span>
             </button>
@@ -6697,7 +6825,7 @@
             </div>
           </div>
           <div class="page-header-side">
-            <button class="button-secondary" id="settingsButton" type="button">全局设置</button>
+            <button class="button-secondary" data-action="open-settings" type="button">全局设置</button>
           </div>
         </section>
         ${renderWorkspaceProgress()}

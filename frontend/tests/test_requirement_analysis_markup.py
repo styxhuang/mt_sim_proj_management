@@ -19,19 +19,33 @@ class RequirementAnalysisMarkupTests(unittest.TestCase):
         self.assertIn('id="requirementMarkdownPreview"', INDEX_HTML)
 
     def test_requirement_upload_accepts_markdown_files(self) -> None:
-        self.assertIn('accept=".pdf,.doc,.docx,.txt,.md,text/plain,text/markdown,application/pdf"', INDEX_HTML)
-        self.assertIn("PDF / Word / TXT / MD", INDEX_HTML)
+        self.assertIn('accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.webp,text/plain,text/markdown,application/pdf,image/*"', INDEX_HTML)
+        self.assertIn("PDF / Word / TXT / MD / 图片", INDEX_HTML)
 
-    def test_requirement_analysis_uses_result_and_thinking_tabs(self) -> None:
+    def test_requirement_upload_sends_original_file_base64_for_cursor_path_analysis(self) -> None:
+        self.assertIn("function isImageRequirementFile", INDEX_HTML)
+        self.assertIn("function readRequirementFileDataBase64", INDEX_HTML)
+        self.assertIn("reader.readAsDataURL(file);", INDEX_HTML)
+        self.assertIn("fileDataBase64", INDEX_HTML)
+        self.assertIn("isImageRequirementFile(file) ? \"\" : await readRequirementFile(file)", INDEX_HTML)
+
+    def test_workspace_plan_missing_document_does_not_abort_rendering(self) -> None:
+        self.assertIn("async function fetchOptionalJson", INDEX_HTML)
+        self.assertIn("if (response.status === 404)", INDEX_HTML)
+        self.assertIn("const data = await fetchOptionalJson(`/api/requirement-tasks/${taskId}/documents?part=${part}`);", INDEX_HTML)
+        self.assertIn("state.requirementActiveTab = part === \"plan\" ? \"plan\" : \"analysis\";", INDEX_HTML)
+        self.assertIn("if (!data?.document) return;", INDEX_HTML)
+
+    def test_requirement_analysis_uses_result_tabs_without_thinking_tab(self) -> None:
         self.assertIn("requirement-result-tabs", INDEX_HTML)
         self.assertIn('id: "analysis", label: "解析结果"', INDEX_HTML)
         self.assertIn('id: "plan", label: "实施方案"', INDEX_HTML)
-        self.assertIn('id: "thinking", label: "思考过程"', INDEX_HTML)
-        thinking_index = INDEX_HTML.index('id: "thinking", label: "思考过程"')
         analysis_index = INDEX_HTML.index('id: "analysis", label: "解析结果"')
         plan_index = INDEX_HTML.index('id: "plan", label: "实施方案"')
-        self.assertLess(thinking_index, analysis_index)
-        self.assertLess(thinking_index, plan_index)
+        self.assertLess(analysis_index, plan_index)
+        self.assertNotIn('id: "thinking", label: "思考过程"', INDEX_HTML)
+        self.assertNotIn("renderRequirementThinkingMarkdown", INDEX_HTML)
+        self.assertNotIn("小P思考过程", INDEX_HTML)
         self.assertNotIn('label: "解析结果.md"', INDEX_HTML)
         self.assertNotIn('label: "实施方案.md"', INDEX_HTML)
         self.assertNotIn('id: "process", label: "执行过程"', INDEX_HTML)
@@ -117,11 +131,11 @@ class RequirementAnalysisMarkupTests(unittest.TestCase):
             INDEX_HTML,
         )
         self.assertIn(
-            'else if (state.requirementActiveTab === stream.target)',
+            'if (state.requirementActiveTab === stream.target)',
             INDEX_HTML,
         )
         self.assertIn(
-            'else if (state.requirementStream && state.requirementActiveTab === state.requirementStream.target)',
+            'if (state.requirementStream && state.requirementActiveTab === state.requirementStream.target)',
             INDEX_HTML,
         )
 
@@ -167,13 +181,12 @@ class RequirementAnalysisMarkupTests(unittest.TestCase):
         self.assertIn("终止", INDEX_HTML)
         self.assertIn("state.requirementAbortRequested", INDEX_HTML)
 
-    def test_requirement_thinking_tab_shows_hidden_reasoning_chain(self) -> None:
-        self.assertIn('if (state.requirementActiveTab === "thinking")', INDEX_HTML)
-        self.assertIn("function renderRequirementThinkingMarkdown", INDEX_HTML)
-        self.assertIn("小P思考过程", INDEX_HTML)
-        self.assertIn("documents.analysis?.reasoning", INDEX_HTML)
-        self.assertIn("documents.plan?.reasoning", INDEX_HTML)
-        self.assertNotIn("不展示模型内部隐藏推理链路", INDEX_HTML)
+    def test_requirement_does_not_show_hidden_reasoning_tab(self) -> None:
+        self.assertNotIn('if (state.requirementActiveTab === "thinking")', INDEX_HTML)
+        self.assertNotIn("function renderRequirementThinkingMarkdown", INDEX_HTML)
+        self.assertNotIn("小P思考过程", INDEX_HTML)
+        self.assertNotIn("documents.analysis?.reasoning", INDEX_HTML)
+        self.assertNotIn("documents.plan?.reasoning", INDEX_HTML)
 
     def test_requirement_chat_streams_optimization_live(self) -> None:
         self.assertIn("optimizationPending: true", INDEX_HTML)
@@ -237,6 +250,13 @@ class RequirementAnalysisMarkupTests(unittest.TestCase):
         self.assertIn("saveRequirementEditedVersion", INDEX_HTML)
         self.assertIn("/versions", INDEX_HTML)
         self.assertIn("state.requirementEditMode", INDEX_HTML)
+
+    def test_requirement_workspace_can_refresh_current_task(self) -> None:
+        self.assertIn('id="refreshRequirementButton"', INDEX_HTML)
+        self.assertIn("async function refreshRequirementTaskState()", INDEX_HTML)
+        self.assertIn("fetchJson(`/api/requirement-tasks/${taskId}`)", INDEX_HTML)
+        self.assertIn("state.workspace.requirementTask = state.activeRequirementTask;", INDEX_HTML)
+        self.assertIn('document.getElementById("refreshRequirementButton")?.addEventListener("click", refreshRequirementTaskState);', INDEX_HTML)
 
     def test_requirement_chat_input_fills_available_row_width(self) -> None:
         self.assertIn(".chat-input-row input", INDEX_HTML)
@@ -313,6 +333,12 @@ class ProjectExecutionMarkupTests(unittest.TestCase):
         self.assertIn("getActiveExecutionStructure", INDEX_HTML)
         self.assertIn("state.executionStructureView", INDEX_HTML)
         self.assertIn("完整体系", INDEX_HTML)
+
+    def test_structure_preview_empty_hint_is_removed_after_async_content_load(self) -> None:
+        self.assertIn('id="executionViewerEmptyState"', INDEX_HTML)
+        self.assertIn("function clearExecutionViewerEmptyState", INDEX_HTML)
+        self.assertIn("clearExecutionViewerEmptyState();", INDEX_HTML)
+        self.assertIn("await loadStructureAsBallAndStick(viewer, structure);", INDEX_HTML)
 
     def test_plan_shows_modeling_spec_and_autogenerates(self) -> None:
         # 实施方案页渲染「建模规划」小节，并在方案生成/优化后自动抽取。
@@ -458,6 +484,14 @@ class ProjectWorkspaceMarkupTests(unittest.TestCase):
         self.assertIn("renderComputationRunResult", INDEX_HTML)
         self.assertIn("apiBaseUrl", INDEX_HTML)
         self.assertNotIn("API_BASE", INDEX_HTML)
+
+    def test_computation_pane_has_desktop_split_width_fallback(self) -> None:
+        self.assertIn("@media (max-width: 1180px)", INDEX_HTML)
+        self.assertIn(".computation-pane {", INDEX_HTML)
+        self.assertIn("grid-template-columns: 1fr;", INDEX_HTML)
+        self.assertIn("height: auto;", INDEX_HTML)
+        self.assertIn(".computation-detail-panel {", INDEX_HTML)
+        self.assertIn("min-width: 0;", INDEX_HTML)
 
     def test_computation_refresh_restores_active_step_from_runs(self) -> None:
         self.assertIn("const module = getComputationModule(state.activeExecution);", INDEX_HTML)

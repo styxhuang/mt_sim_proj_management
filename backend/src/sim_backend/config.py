@@ -43,6 +43,9 @@ CURSOR_CLI_COMMAND = os.environ.get("CURSOR_CLI_COMMAND", "cursor-agent").strip(
 CURSOR_CLI_MODEL = os.environ.get("CURSOR_CLI_MODEL", "gpt-5.5-medium").strip()
 CURSOR_CLI_TIMEOUT_SECONDS = int(os.environ.get("CURSOR_CLI_TIMEOUT_SECONDS", "360"))
 CURSOR_LOCAL_RUN_TIMEOUT_SECONDS = int(os.environ.get("CURSOR_LOCAL_RUN_TIMEOUT_SECONDS", "600"))
+CURSOR_CLI_MODE = os.environ.get("CURSOR_CLI_MODE", "ask").strip() or "ask"
+CURSOR_CLI_WORKSPACE = os.environ.get("CURSOR_CLI_WORKSPACE", "").strip()
+CURSOR_CLI_FORCE = os.environ.get("CURSOR_CLI_FORCE", "").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def get_llm_settings() -> dict:
@@ -62,6 +65,9 @@ def get_cli_settings() -> dict:
         "command": str(CURSOR_CLI_COMMAND).strip() or "cursor-agent",
         "model": str(CURSOR_CLI_MODEL).strip(),
         "timeout_seconds": int(CURSOR_CLI_TIMEOUT_SECONDS),
+        "mode": str(CURSOR_CLI_MODE).strip() or "ask",
+        "workspace": str(CURSOR_CLI_WORKSPACE).strip(),
+        "force": bool(CURSOR_CLI_FORCE),
     }
 
 

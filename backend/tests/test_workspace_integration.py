@@ -94,7 +94,7 @@ class WorkspaceIntegrationTests(unittest.TestCase):
             }
         )
 
-        with patch.object(client, "call_llm", return_value="# 需求解析\n内容"):
+        with patch.object(cli_client, "call", return_value="# 需求解析\n内容"):
             requirements.run_next_requirement_step(task["id"])
         self.assertEqual(projects.find_project("p-900")["currentStage"], "需求解析")
 

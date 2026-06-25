@@ -1,13 +1,14 @@
 import json
 import pathlib
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 
 from sim_backend.llm import cli_client, client  # noqa: E402
-from sim_backend import skills  # noqa: E402
+from sim_backend import config, skills  # noqa: E402
 from sim_backend.skills import generate_plan, optimize_plan, analyze_requirement  # noqa: E402
 
 
@@ -69,6 +70,13 @@ class ParseCliStreamTests(unittest.TestCase):
         self.assertIn("生成方案", prompt)
         self.assertLess(prompt.index("你是专家"), prompt.index("生成方案"))
 
+    def test_messages_to_prompt_removes_embedded_null_bytes(self) -> None:
+        prompt = cli_client._messages_to_prompt(
+            [{"role": "user", "content": "需求\x00文本\x00继续"}]
+        )
+        self.assertEqual(prompt, "需求文本继续")
+        self.assertNotIn("\x00", prompt)
+
 
 class CliStreamSubprocessTests(unittest.TestCase):
     def test_stream_yields_deltas_and_records_reasoning(self) -> None:
@@ -101,14 +109,60 @@ class CliStreamSubprocessTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 list(cli_client.stream([{"role": "user", "content": "hi"}]))
 
+    def test_stream_does_not_pass_null_bytes_to_subprocess_args(self) -> None:
+        lines = [_line({"type": "assistant", "timestamp_ms": 1, "message": {"content": [{"type": "text", "text": "ok"}]}})]
+        with patch.object(cli_client.subprocess, "Popen", return_value=FakeProc(lines)) as popen:
+            list(cli_client.stream([{"role": "user", "content": "a\x00b"}]))
+        command = popen.call_args[0][0]
+        self.assertNotIn("\x00", command[-1])
+
+    def test_stream_writes_long_prompt_to_workspace_file(self) -> None:
+        long_prompt = "需求文本" * 20000
+        lines = [_line({"type": "assistant", "timestamp_ms": 1, "message": {"content": [{"type": "text", "text": "ok"}]}})]
+        captured = {}
+
+        with tempfile.TemporaryDirectory() as workspace:
+            def fake_popen(command, **kwargs):
+                prompt_arg = command[-1]
+                captured["prompt_arg"] = prompt_arg
+                self.assertLess(len(prompt_arg), 500)
+                prompt_path = pathlib.Path(workspace) / prompt_arg.split("`")[1]
+                self.assertTrue(prompt_path.exists())
+                self.assertEqual(prompt_path.read_text(encoding="utf-8"), long_prompt)
+                return FakeProc(lines)
+
+            with patch.object(cli_client.subprocess, "Popen", side_effect=fake_popen):
+                list(cli_client.stream([{"role": "user", "content": long_prompt}], {"workspace": workspace}))
+
+        self.assertIn("完整请求已写入", captured["prompt_arg"])
+        self.assertNotIn(long_prompt, captured["prompt_arg"])
+
 
 class ProviderRoutingTests(unittest.TestCase):
+    def test_cli_settings_include_mode_workspace_and_force(self) -> None:
+        original_mode = getattr(config, "CURSOR_CLI_MODE", None)
+        original_workspace = getattr(config, "CURSOR_CLI_WORKSPACE", None)
+        original_force = getattr(config, "CURSOR_CLI_FORCE", None)
+        try:
+            config.CURSOR_CLI_MODE = "agent"
+            config.CURSOR_CLI_WORKSPACE = "/data/projects/p-005"
+            config.CURSOR_CLI_FORCE = True
+            settings = config.get_cli_settings()
+        finally:
+            config.CURSOR_CLI_MODE = original_mode
+            config.CURSOR_CLI_WORKSPACE = original_workspace
+            config.CURSOR_CLI_FORCE = original_force
+
+        self.assertEqual(settings["mode"], "agent")
+        self.assertEqual(settings["workspace"], "/data/projects/p-005")
+        self.assertTrue(settings["force"])
+
     def test_plan_skills_use_cursor_cli_provider(self) -> None:
         self.assertEqual(generate_plan.provider, "cursor_cli")
         self.assertEqual(optimize_plan.provider, "cursor_cli")
-        self.assertEqual(analyze_requirement.provider, "http")
+        self.assertEqual(analyze_requirement.provider, "cursor_cli")
 
-    def test_run_skill_routes_plan_to_cli_and_analysis_to_http(self) -> None:
+    def test_run_skill_routes_plan_and_analysis_to_cli_by_default(self) -> None:
         with patch.object(cli_client, "call", return_value="方案内容") as cli_call, \
                 patch.object(cli_client, "consume_last_reasoning", return_value=""), \
                 patch.object(client, "call_llm") as http_call:
@@ -117,13 +171,28 @@ class ProviderRoutingTests(unittest.TestCase):
         self.assertEqual(cli_call.call_count, 1)
         self.assertEqual(http_call.call_count, 0)
 
-        with patch.object(client, "call", return_value="解析内容") as http_call, \
-                patch.object(client, "consume_last_reasoning", return_value=""), \
-                patch.object(cli_client, "call") as cli_call:
+        with patch.object(cli_client, "call", return_value="解析内容") as cli_call, \
+                patch.object(cli_client, "consume_last_reasoning", return_value=""), \
+                patch.object(client, "call") as http_call:
             result = skills.run_skill("analyze_requirement", {"file_name": "a.pdf", "source_text": "x"})
         self.assertEqual(result["content"], "解析内容")
-        self.assertEqual(http_call.call_count, 1)
-        self.assertEqual(cli_call.call_count, 0)
+        self.assertEqual(cli_call.call_count, 1)
+        self.assertEqual(http_call.call_count, 0)
+
+    def test_run_skill_merges_per_task_cli_settings(self) -> None:
+        with patch.object(cli_client, "call", return_value="解析内容") as cli_call, \
+                patch.object(cli_client, "consume_last_reasoning", return_value=""):
+            skills.run_skill(
+                "analyze_requirement",
+                {
+                    "file_name": "a.docx",
+                    "source_path": "/data/projects/p-005/01-requirement/a.docx",
+                    "_cli_settings": {"workspace": "/data/projects/p-005"},
+                },
+            )
+
+        settings = cli_call.call_args.args[1]
+        self.assertEqual(settings["workspace"], "/data/projects/p-005")
 
     def test_model_choice_overrides_provider_and_model(self) -> None:
         # 选 deepseek：方案技能改走 HTTP。

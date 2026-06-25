@@ -7,9 +7,11 @@
 
 import json
 import re
+import base64
+import binascii
 from datetime import datetime
 
-from . import project_files, projects
+from . import document_reader, project_files, projects
 from .database import (
     deserialize_json,
     get_connection,
@@ -95,10 +97,10 @@ def save_requirement_task(task: dict) -> None:
         connection.execute(
             """
             INSERT OR REPLACE INTO requirement_tasks (
-                id, file_name, file_type, status, source_text, steps,
+                id, file_name, file_type, status, source_text, source_path, steps,
                 conversation, documents, exports, project_id, created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 task["id"],
@@ -106,6 +108,7 @@ def save_requirement_task(task: dict) -> None:
                 task["fileType"],
                 task["status"],
                 task["sourceText"],
+                str(task.get("sourcePath", "")),
                 serialize_json(task["steps"]),
                 serialize_json(task["conversation"]),
                 json.dumps(task["documents"], ensure_ascii=False),
@@ -125,6 +128,7 @@ def database_row_to_requirement_task(row) -> dict:
         "fileType": row["file_type"],
         "status": row["status"],
         "sourceText": row["source_text"],
+        "sourcePath": (row["source_path"] if "source_path" in row.keys() else ""),
         "steps": deserialize_json(row["steps"]),
         "conversation": deserialize_json(row["conversation"]),
         "documents": documents,
@@ -173,7 +177,13 @@ def create_requirement_task(payload: dict) -> dict:
     file_name = str(payload.get("fileName", "")).strip()
     if not file_name:
         raise ValueError("fileName is required")
-    source_text = str(payload.get("content", "")).strip()
+    uploaded_content = _decode_uploaded_file_data(str(payload.get("fileDataBase64", "")))
+    source_text = document_reader.extract_text(
+        file_name,
+        str(payload.get("fileType", "")).strip(),
+        uploaded_content,
+        str(payload.get("content", "")).strip(),
+    )
     now = current_timestamp()
     task = {
         "id": next_requirement_task_id(),
@@ -181,6 +191,7 @@ def create_requirement_task(payload: dict) -> dict:
         "fileType": str(payload.get("fileType", "")).strip() or "application/octet-stream",
         "status": "processing",
         "sourceText": source_text,
+        "sourcePath": "",
         "projectId": str(payload.get("projectId", "")).strip(),
         "steps": build_requirement_steps(),
         "conversation": [
@@ -196,11 +207,43 @@ def create_requirement_task(payload: dict) -> dict:
         "createdAt": now,
         "updatedAt": now,
     }
+    source_path = _save_uploaded_source_file(task, uploaded_content)
+    if source_path:
+        task["sourcePath"] = source_path
     save_requirement_task(task)
     return task
 
 
+def _decode_uploaded_file_data(value: str) -> bytes:
+    raw_value = str(value or "").strip()
+    if not raw_value:
+        return b""
+    if "," in raw_value and raw_value.split(",", 1)[0].startswith("data:"):
+        raw_value = raw_value.split(",", 1)[1]
+    try:
+        return base64.b64decode(raw_value, validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise ValueError("fileDataBase64 is invalid") from exc
+
+
+def _save_uploaded_source_file(task: dict, content: bytes) -> str:
+    if not content:
+        return ""
+    filename = project_files.safe_filename(task.get("fileName", ""), "requirement-upload.bin")
+    filename = f"{task['id']}-{filename}"
+    path = project_files.write_project_binary_file(
+        task,
+        ["01-requirement", "uploads", filename],
+        content,
+    )
+    return str(path)
+
+
 # --- 分步执行（解析 / 生成方案） ------------------------------------------
+
+def _task_cli_settings(task: dict) -> dict:
+    return {"workspace": str(project_files.project_root_for_task(task))}
+
 
 def _plan_next_step(task: dict) -> dict | None:
     documents = task.get("documents", {})
@@ -210,15 +253,21 @@ def _plan_next_step(task: dict) -> dict | None:
             "step_index": 1,
             "context": {
                 "file_name": task["fileName"],
-                "source_text": task["sourceText"],
+                "source_path": task.get("sourcePath", ""),
+                "_cli_settings": _task_cli_settings(task),
             },
             "running_detail": "小P 正在识别目标、约束、交付物和风险",
         }
     if "plan" not in documents:
+        analysis = documents.get("analysis") or {}
         return {
             "skill_id": "generate_plan",
             "step_index": 2,
-            "context": {"source_text": task["sourceText"]},
+            "context": {
+                "analysis_result": str(analysis.get("content", "")).strip(),
+                "source_path": task.get("sourcePath", ""),
+                "_cli_settings": _task_cli_settings(task),
+            },
             "running_detail": "小P 正在生成 Markdown 实施方案",
         }
     return None
@@ -229,6 +278,23 @@ def _mark_step_running(task: dict, plan: dict) -> None:
     step["status"] = "in_progress"
     step["detail"] = plan["running_detail"]
     task["updatedAt"] = current_timestamp()
+
+
+def _mark_step_failed(task: dict, plan: dict, error: Exception) -> None:
+    detail = str(error) or error.__class__.__name__
+    step = task["steps"][plan["step_index"]]
+    step["status"] = "failed"
+    step["detail"] = f"执行失败：{detail}"
+    task["status"] = "failed"
+    task["updatedAt"] = current_timestamp()
+    task["conversation"].append(
+        {
+            "role": "assistant",
+            "content": f"本次{step['label']}失败：{detail}",
+            "createdAt": task["updatedAt"],
+            "usedSkills": [_message_skill(plan["skill_id"])],
+        }
+    )
 
 
 def _apply_step_result(task: dict, skill_id: str, content: str, reasoning: str) -> None:
@@ -353,10 +419,16 @@ def stream_next_requirement_step(task_id: str, model_choice: str | None = None):
     yield {"type": "step", "skill": plan["skill_id"], "task": task}
 
     content_parts: list[str] = []
-    for delta in stream_skill(plan["skill_id"], plan["context"], model_choice):
-        if delta.get("type") == "content":
-            content_parts.append(delta["text"])
-        yield delta
+    try:
+        for delta in stream_skill(plan["skill_id"], plan["context"], model_choice):
+            if delta.get("type") == "content":
+                content_parts.append(delta["text"])
+            yield delta
+    except Exception as error:
+        _mark_step_failed(task, plan, error)
+        save_requirement_task(task)
+        yield {"type": "error", "error": str(error), "message": str(error), "task": task}
+        return
 
     reasoning = consume_last_reasoning(plan["skill_id"], model_choice)
     content = "".join(content_parts).strip()
@@ -716,6 +788,7 @@ def add_requirement_chat_message(task_id: str, payload: dict) -> dict:
         "optimize_plan",
         {
             "source_text": task["sourceText"],
+            "source_path": task.get("sourcePath", ""),
             "current_plan": _current_plan_content(task),
             "note": message,
         },
@@ -741,6 +814,7 @@ def stream_requirement_chat_message(task_id: str, payload: dict):
         "optimize_plan",
         {
             "source_text": task["sourceText"],
+            "source_path": task.get("sourcePath", ""),
             "current_plan": _current_plan_content(task),
             "note": message,
         },

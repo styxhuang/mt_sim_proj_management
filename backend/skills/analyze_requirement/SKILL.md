@@ -1,8 +1,8 @@
 ---
 name: analyze_requirement
 title: 解析任务
-description: 解析客户需求文档，识别目标、背景、约束、交付物和风险。Use when analyzing raw requirement text for a simulation project.
-provider: http
+description: 读取客户需求文档路径，解析文本、图片、扫描件和图示信息，识别目标、背景、约束、交付物和风险。Use when analyzing an uploaded requirement document for a simulation project.
+provider: cursor_cli
 ---
 
 ## System Prompt
@@ -19,7 +19,11 @@ provider: http
 
 文件名：{{file_name}}
 
-请解析下面的需求文档，只输出 Markdown，不要额外说明文字。文档必须且只包含以下一级标题（# 开头），顺序一致：
+原始文件路径：{{source_path_or_empty}}
+
+请读取原始文件路径指向的文档并解析其全部可见内容，包括正文、表格、图片、截图、扫描页、图示标注和图中可见文字。若文档包含图片或扫描内容，请尽可能理解图片表达的体系、参数、流程或实验/模拟要求，并在结果中明确标注“来自图片/图示的信息”。无法读取或无法识别的图片内容，必须在“风险与待确认问题”中说明需要 OCR、人工补充或重新上传清晰文件。
+
+请基于该原始文档生成需求解析结果，只输出 Markdown，不要额外说明文字。文档必须且只包含以下一级标题（# 开头），顺序一致：
 
 # 需求解析结果
 - 用一两句话概括客户到底想要什么、属于哪类计算模拟任务。
@@ -31,6 +35,3 @@ provider: http
 - 推断客户期望的交付物（结构文件、计算数据、关键图表、分析报告等）及形式。
 # 风险与待确认问题
 - 用清单列出歧义点、信息缺口与潜在风险，每条尽量给出建议的澄清问题或默认假设。
-
-需求文档内容：
-{{source_text_or_empty}}

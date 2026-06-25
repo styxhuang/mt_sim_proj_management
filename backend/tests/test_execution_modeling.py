@@ -19,7 +19,7 @@ def _seed_task_with_plan() -> dict:
     task = requirements.create_requirement_task(
         {"fileName": "扩散需求.txt", "fileType": "text/plain", "content": "需要做扩散模拟。"}
     )
-    with patch.object(client, "call_llm", return_value="# 需求解析结果\n\n解析"):
+    with patch.object(cli_client, "call", return_value="# 需求解析结果\n\n解析"):
         requirements.run_next_requirement_step(task["id"])
     with patch.object(cli_client, "call", return_value="# 实施方案\n\n方案"):
         task = requirements.run_next_requirement_step(task["id"])

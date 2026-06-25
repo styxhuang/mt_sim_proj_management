@@ -31,6 +31,12 @@ class ProductUsabilityMarkupTests(unittest.TestCase):
         self.assertIn('class="project-select"', INDEX_HTML)
         self.assertIn("selectedProjectIds", INDEX_HTML)
 
+    def test_project_amount_inputs_accept_decimal_wan_values(self) -> None:
+        self.assertIn('<label for="amount">项目金额（万元）</label>', INDEX_HTML)
+        self.assertIn('<input id="amount" name="amount" type="number" min="0" step="0.01" required>', INDEX_HTML)
+        self.assertIn('<label for="detailAmount">项目金额（万元）</label>', INDEX_HTML)
+        self.assertIn('id="detailAmount" name="amount" type="number" min="0" step="0.01"', INDEX_HTML)
+
     def test_project_list_redesign_regions_exist(self) -> None:
         self.assertIn("function getProjectListSummary", INDEX_HTML)
         self.assertIn('class="project-list-summary"', INDEX_HTML)
@@ -58,7 +64,10 @@ class ProductUsabilityMarkupTests(unittest.TestCase):
         self.assertIn("projectPreviewId", INDEX_HTML)
 
     def test_feedback_and_settings_controls_exist(self) -> None:
-        self.assertIn('id="settingsButton"', INDEX_HTML)
+        self.assertNotIn('id="settingsButton"', INDEX_HTML)
+        self.assertIn('data-action="open-settings"', INDEX_HTML)
+        self.assertIn("bindGlobalUi", INDEX_HTML)
+        self.assertIn('document.querySelectorAll("[data-action=\\"open-settings\\"]")', INDEX_HTML)
         self.assertIn('id="settingsPanel"', INDEX_HTML)
         self.assertIn('id="defaultPageSelect"', INDEX_HTML)
         self.assertIn('id="defaultSortSelect"', INDEX_HTML)
@@ -69,6 +78,17 @@ class ProductUsabilityMarkupTests(unittest.TestCase):
         self.assertIn("function savePreferences", INDEX_HTML)
         self.assertIn("function showToast", INDEX_HTML)
         self.assertIn("localStorage.setItem", INDEX_HTML)
+
+    def test_desktop_modal_and_project_rows_have_keyboard_contracts(self) -> None:
+        self.assertIn("function openOverlay", INDEX_HTML)
+        self.assertIn("function closeOverlay", INDEX_HTML)
+        self.assertIn("function handleOverlayKeydown", INDEX_HTML)
+        self.assertIn('event.key === "Escape"', INDEX_HTML)
+        self.assertIn("lastFocusedElement", INDEX_HTML)
+        self.assertIn('role="button"', INDEX_HTML)
+        self.assertIn('aria-label="预览项目 ${escapeHtml(project.name)}"', INDEX_HTML)
+        self.assertIn('event.key === "Enter" || event.key === " "', INDEX_HTML)
+        self.assertIn('event.preventDefault();', INDEX_HTML)
 
 
 if __name__ == "__main__":

@@ -5,12 +5,11 @@ from .base import load_skill_definition
 
 def _normalize_context(context: dict) -> dict:
     file_name = str(context.get("file_name", ""))
-    source_text = str(context.get("source_text", ""))
+    source_path = str(context.get("source_path", "")).strip()
     return {
         **context,
         "file_name": file_name,
-        "source_text_or_empty": source_text.strip()
-        or "文档没有抽取到可读文本。请在“风险与待确认问题”中说明，并基于文件名给出需要向客户澄清的问题清单。",
+        "source_path_or_empty": source_path or "（未保存原始文件路径）",
     }
 
 

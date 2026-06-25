@@ -53,3 +53,6 @@ provider: cursor_cli
 
 【原始需求（供核对，不要直接抄写）】：
 {{source_text_or_empty}}
+
+【原始文件路径（供必要时回查图片、扫描件或附件，不要直接抄写）】：
+{{source_path_or_empty}}

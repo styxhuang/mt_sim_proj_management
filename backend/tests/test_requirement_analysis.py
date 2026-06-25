@@ -2,12 +2,36 @@ import pathlib
 import sys
 import tempfile
 import unittest
+import base64
+import io
+import zipfile
 from unittest.mock import patch
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 
 from sim_backend import config, projects, requirements  # noqa: E402
 from sim_backend.llm import cli_client, client  # noqa: E402
+
+
+def _docx_bytes(paragraphs: list[str]) -> bytes:
+    body = "".join(
+        "<w:p><w:r><w:t>{}</w:t></w:r></w:p>".format(text)
+        for text in paragraphs
+    )
+    document_xml = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        f"<w:body>{body}</w:body>"
+        "</w:document>"
+    )
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr("word/document.xml", document_xml)
+    return buffer.getvalue()
+
+
+def _doc_bytes(text: str) -> bytes:
+    return b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1" + text.encode("utf-16le")
 
 
 class RequirementAnalysisTests(unittest.TestCase):
@@ -64,6 +88,99 @@ class RequirementAnalysisTests(unittest.TestCase):
         self.assertEqual(task["documents"], {})
         self.assertEqual(call_llm.call_count, 0)
 
+    def test_create_requirement_task_saves_uploaded_binary_and_passes_path_to_steps(self) -> None:
+        payload = {
+            "fileName": "需求截图.png",
+            "fileType": "image/png",
+            "content": "",
+            "fileDataBase64": base64.b64encode(b"\x89PNG\r\nimage-bytes").decode("ascii"),
+            "projectId": "p-test",
+        }
+
+        task = requirements.create_requirement_task(payload)
+
+        source_path = pathlib.Path(task["sourcePath"])
+        self.assertTrue(source_path.exists())
+        self.assertEqual(source_path.read_bytes(), b"\x89PNG\r\nimage-bytes")
+        self.assertIn("01-requirement/uploads", task["sourcePath"])
+        plan = requirements._plan_next_step(task)
+        self.assertEqual(plan["context"]["source_path"], task["sourcePath"])
+
+        reloaded = requirements.find_requirement_task(task["id"])
+        self.assertEqual(reloaded["sourcePath"], task["sourcePath"])
+
+    def test_create_requirement_task_extracts_docx_text_before_running_cli(self) -> None:
+        payload = {
+            "fileName": "拉伸方案 - 更新(2).docx",
+            "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "content": "PK\x03\x04二进制压缩包内容",
+            "fileDataBase64": base64.b64encode(
+                _docx_bytes(["PASC16-PVA 复合体系", "进行拉伸模拟并输出应力应变曲线"])
+            ).decode("ascii"),
+            "projectId": "p-test",
+        }
+
+        task = requirements.create_requirement_task(payload)
+
+        self.assertIn("PASC16-PVA 复合体系", task["sourceText"])
+        self.assertIn("应力应变曲线", task["sourceText"])
+        self.assertNotIn("PK\x03\x04", task["sourceText"])
+
+    def test_create_requirement_task_extracts_doc_text_before_running_cli(self) -> None:
+        payload = {
+            "fileName": "拉伸方案.doc",
+            "fileType": "application/msword",
+            "content": "\ufffd\ufffd\x00\x00二进制内容",
+            "fileDataBase64": base64.b64encode(
+                _doc_bytes("PVA 体系拉伸测试，输出杨氏模量和断裂应变")
+            ).decode("ascii"),
+            "projectId": "p-test",
+        }
+
+        task = requirements.create_requirement_task(payload)
+
+        self.assertIn("PVA 体系拉伸测试", task["sourceText"])
+        self.assertIn("断裂应变", task["sourceText"])
+        self.assertNotIn("\ufffd", task["sourceText"])
+        self.assertNotIn("eHr W o r", task["sourceText"])
+
+    def test_requirement_steps_pass_path_then_analysis_result_to_cursor_cli(self) -> None:
+        task = requirements.create_requirement_task(
+            {
+                "fileName": "客户需求说明.docx",
+                "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "content": "不应该传给 cursor_cli 的抽取正文",
+                "fileDataBase64": base64.b64encode(_docx_bytes(["真实文档正文"])).decode("ascii"),
+                "projectId": "p-test",
+            }
+        )
+
+        analysis_plan = requirements._plan_next_step(task)
+        self.assertEqual(analysis_plan["skill_id"], "analyze_requirement")
+        self.assertIn("source_path", analysis_plan["context"])
+        self.assertNotIn("source_text", analysis_plan["context"])
+        self.assertEqual(
+            analysis_plan["context"]["_cli_settings"]["workspace"],
+            str(self.project_root),
+        )
+
+        task.setdefault("documents", {})["analysis"] = {
+            "content": "# 需求解析结果\n已识别客户要做 PVA 拉伸模拟。",
+            "currentVersionId": "analysis-v1",
+            "versions": [],
+        }
+        plan_plan = requirements._plan_next_step(task)
+        self.assertEqual(plan_plan["skill_id"], "generate_plan")
+        self.assertEqual(
+            plan_plan["context"]["analysis_result"],
+            "# 需求解析结果\n已识别客户要做 PVA 拉伸模拟。",
+        )
+        self.assertNotIn("source_text", plan_plan["context"])
+        self.assertEqual(
+            plan_plan["context"]["_cli_settings"]["workspace"],
+            str(self.project_root),
+        )
+
     def test_run_next_requirement_step_executes_one_llm_skill_at_a_time(self) -> None:
         task = requirements.create_requirement_task(
             {
@@ -73,10 +190,10 @@ class RequirementAnalysisTests(unittest.TestCase):
             }
         )
 
-        with patch.object(client, "call_llm", return_value="# 需求解析结果\n\n真实解析") as call_llm:
+        with patch.object(cli_client, "call", return_value="# 需求解析结果\n\n真实解析") as cli_call:
             after_analysis = requirements.run_next_requirement_step(task["id"])
 
-        self.assertEqual(call_llm.call_count, 1)
+        self.assertEqual(cli_call.call_count, 1)
         self.assertEqual(after_analysis["status"], "processing")
         self.assertEqual(after_analysis["steps"][1]["status"], "completed")
         self.assertEqual(after_analysis["steps"][2]["status"], "pending")
@@ -103,7 +220,7 @@ class RequirementAnalysisTests(unittest.TestCase):
             }
         )
 
-        with patch.object(client, "call_llm", return_value="# 需求解析结果\n\n真实解析"):
+        with patch.object(cli_client, "call", return_value="# 需求解析结果\n\n真实解析"):
             requirements.run_next_requirement_step(task["id"])
         with patch.object(cli_client, "call", return_value="# 实施方案\n\n真实方案"):
             requirements.run_next_requirement_step(task["id"])
@@ -119,7 +236,7 @@ class RequirementAnalysisTests(unittest.TestCase):
                 "content": "需要完成模拟方案。",
             }
         )
-        with patch.object(client, "call_llm", return_value="# 需求解析结果\n\n真实解析"):
+        with patch.object(cli_client, "call", return_value="# 需求解析结果\n\n真实解析"):
             requirements.run_next_requirement_step(task["id"])
         with patch.object(cli_client, "call", return_value="# 实施方案\n\n真实方案"):
             task = requirements.run_next_requirement_step(task["id"])
@@ -175,11 +292,11 @@ class RequirementAnalysisTests(unittest.TestCase):
         self.assertEqual(client.consume_last_llm_reasoning(), "")
 
     def test_analysis_document_stores_reasoning_chain(self) -> None:
-        def fake_call_llm(messages, settings=None):
-            client._LAST_LLM_REASONING = "用户想要可扩展的模拟流程"
+        def fake_cli_call(messages, settings=None):
+            cli_client._LAST_REASONING = "用户想要可扩展的模拟流程"
             return "# 需求解析结果\n\n真实解析"
 
-        with patch.object(client, "call_llm", side_effect=fake_call_llm):
+        with patch.object(cli_client, "call", side_effect=fake_cli_call):
             document = requirements.build_analysis_document("a.pdf", "需求文本")
 
         self.assertEqual(document["reasoning"], "用户想要可扩展的模拟流程")
@@ -194,10 +311,10 @@ class RequirementAnalysisTests(unittest.TestCase):
         )
 
         def fake_analysis(messages, settings=None):
-            client._LAST_LLM_REASONING = "解析阶段的隐藏推理"
+            cli_client._LAST_REASONING = "解析阶段的隐藏推理"
             return "# 需求解析结果\n\n真实解析"
 
-        with patch.object(client, "call_llm", side_effect=fake_analysis):
+        with patch.object(cli_client, "call", side_effect=fake_analysis):
             after_analysis = requirements.run_next_requirement_step(task["id"])
 
         self.assertEqual(after_analysis["documents"]["analysis"]["reasoning"], "解析阶段的隐藏推理")
@@ -222,13 +339,13 @@ class RequirementAnalysisTests(unittest.TestCase):
         )
 
         def fake_stream(messages, settings=None):
-            client._LAST_LLM_REASONING = ""
+            cli_client._LAST_REASONING = ""
             yield {"type": "reasoning", "text": "先看目标。"}
             yield {"type": "content", "text": "# 需求解析结果\n"}
             yield {"type": "content", "text": "真实解析"}
-            client._LAST_LLM_REASONING = "先看目标。"
+            cli_client._LAST_REASONING = "先看目标。"
 
-        with patch.object(client, "stream_chat", side_effect=fake_stream):
+        with patch.object(cli_client, "stream", side_effect=fake_stream):
             events = list(requirements.stream_next_requirement_step(task["id"]))
 
         self.assertEqual(events[0]["type"], "step")
@@ -239,6 +356,24 @@ class RequirementAnalysisTests(unittest.TestCase):
         self.assertIn("# 需求解析结果", done["task"]["documents"]["analysis"]["content"])
         self.assertEqual(done["task"]["documents"]["analysis"]["reasoning"], "先看目标。")
 
+    def test_stream_next_requirement_step_marks_task_failed_when_cli_fails(self) -> None:
+        task = requirements.create_requirement_task(
+            {
+                "fileName": "客户需求说明.pdf",
+                "fileType": "application/pdf",
+                "content": "需要完成材料扩散模拟。",
+            }
+        )
+
+        with patch.object(cli_client, "stream", side_effect=OSError(7, "Argument list too long")):
+            events = list(requirements.stream_next_requirement_step(task["id"]))
+
+        self.assertEqual(events[-1]["type"], "error")
+        failed = requirements.find_requirement_task(task["id"])
+        self.assertEqual(failed["status"], "failed")
+        self.assertEqual(failed["steps"][1]["status"], "failed")
+        self.assertIn("Argument list too long", failed["steps"][1]["detail"])
+
     def test_save_requirement_version_appends_manual_edit(self) -> None:
         task = requirements.create_requirement_task(
             {
@@ -247,7 +382,7 @@ class RequirementAnalysisTests(unittest.TestCase):
                 "content": "需要完成模拟方案。",
             }
         )
-        with patch.object(client, "call_llm", return_value="# 需求解析结果\n\n真实解析"):
+        with patch.object(cli_client, "call", return_value="# 需求解析结果\n\n真实解析"):
             requirements.run_next_requirement_step(task["id"])
         with patch.object(cli_client, "call", return_value="# 实施方案\n\n真实方案"):
             task = requirements.run_next_requirement_step(task["id"])
@@ -280,7 +415,7 @@ class RequirementAnalysisTests(unittest.TestCase):
         task = requirements.create_requirement_task(
             {"fileName": "界面需求.txt", "fileType": "text/plain", "content": "做石墨烯/水固液界面模拟。"}
         )
-        with patch.object(client, "call_llm", return_value="# 解析\n\n内容"):
+        with patch.object(cli_client, "call", return_value="# 解析\n\n内容"):
             requirements.run_next_requirement_step(task["id"])
         with patch.object(cli_client, "call", return_value="# 实施方案\n\n构建石墨烯基底与水相界面。"):
             task = requirements.run_next_requirement_step(task["id"])

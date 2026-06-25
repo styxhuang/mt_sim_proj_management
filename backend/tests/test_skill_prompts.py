@@ -45,39 +45,79 @@ class SkillPromptTests(unittest.TestCase):
         self.assertEqual(discovered["echo_skill"].build_messages({"message": "hi"})[-1]["content"], "hi")
 
     def test_plan_prompt_requires_all_sections_and_guidance(self) -> None:
-        messages = plan._build_messages({"source_text": "做扩散模拟"})
+        messages = plan._build_messages({"analysis_result": "# 需求解析结果\n做扩散模拟"})
         user_content = messages[-1]["content"]
         for section in [
             "# 需求理解",
+            "# 项目目标拆解",
             "# 计算意图",
             "# 需要补充确认的信息",
+            "# 计算架构设计",
             "# 具体方案",
+            "# 验证与质量控制",
+            "# 结果输出设计",
             "# 需求计算风险以及风险控制",
+            "# 项目边界条件",
             "# 交付清单",
+            "# 工作量评估",
+            "# 算力资源评估",
             "# 报价和周期",
+            "# 总结",
         ]:
             self.assertIn(section, user_content)
-        # 富化提示：每个章节都带有具体产出指引，而不仅是标题罗列。
-        self.assertIn("方法层级", user_content)
-        self.assertIn("机时", user_content)
+        # 富化提示：方案应支持售前、评审、报价和合同附件，而不是只列参数。
+        self.assertIn("售前交流", messages[0]["content"])
+        self.assertIn("技术评审", messages[0]["content"])
+        self.assertIn("合同附件", messages[0]["content"])
+        self.assertIn("先讲项目目标与价值，再讲技术实现", messages[0]["content"])
         self.assertIn("不要编造", messages[0]["content"])
-        # 风险对比表、报价表保留；量化/动力学/二者的判断保留。
-        self.assertIn("对比表格", user_content)
+        # 计算类型、模拟尺度、软件体系和资源评估必须明确。
         self.assertIn("分子动力学", user_content)
         self.assertIn("二者都要", user_content)
-        self.assertIn("残余风险", user_content)
-        # 硬性排版规则：只许三处用表格，其余禁止表格、禁止出现竖线。
-        self.assertIn("硬性排版规则", user_content)
-        self.assertIn("不得出现任何 `|` 竖线字符", user_content)
-        self.assertIn("禁止把“客户已明确 / 我的推断”等做成", user_content)
-        # 提供风格示例，引导模型照抄文风而非堆表格。
-        self.assertIn("输出风格示例", user_content)
+        self.assertIn("全原子", user_content)
+        self.assertIn("粗粒化", user_content)
+        self.assertIn("软件选择", user_content)
+        self.assertIn("GROMACS / LAMMPS", user_content)
+        self.assertIn("CPU核时", user_content)
+        self.assertIn("GPU时长", user_content)
+        self.assertIn("预计数据规模", user_content)
+        # 允许指定章节使用表格，但叙述章节禁止表格。
+        self.assertIn("需求理解", user_content)
+        self.assertIn("禁止使用表格", user_content)
+        self.assertIn("| 输出结果 | 方法来源 | 物理意义 | 支撑结论 |", user_content)
+        self.assertIn("| 模块 | 工作内容 | 人工工时 | CPU核时 | GPU时长 |", user_content)
         # 整体定位为可直接交付客户的正式实施方案文档。
-        self.assertIn("可以直接发给客户的正式实施方案文档", messages[0]["content"])
+        self.assertIn("可直接提交客户", messages[0]["content"])
+        # 客户交付稿不应出现内部分析口吻。
+        self.assertIn("禁止出现“客户已明确”", messages[0]["content"])
+        self.assertIn("禁止出现“客户后续”", messages[0]["content"])
+        self.assertIn("禁止出现“我的推断”", messages[0]["content"])
+        self.assertIn("禁止出现“我认为”", messages[0]["content"])
 
     def test_plan_empty_requirement_still_asks_for_missing_info(self) -> None:
-        messages = plan._build_messages({"source_text": ""})
+        messages = plan._build_messages({"analysis_result": ""})
         self.assertIn("需要补充确认的信息", messages[-1]["content"])
+
+    def test_requirement_prompts_use_source_path_then_analysis_result(self) -> None:
+        analysis_messages = analysis._build_messages({
+            "file_name": "需求截图.png",
+            "source_text": "不应该传给 cursor_cli 的抽取正文",
+            "source_path": "/data/projects/p-001/01-requirement/uploads/需求截图.png",
+        })
+        plan_messages = plan._build_messages({
+            "source_text": "不应该作为方案生成依据的原始正文",
+            "analysis_result": "# 需求解析结果\n客户希望做图片中的拉伸模拟。",
+            "source_path": "/data/projects/p-001/01-requirement/uploads/需求截图.png",
+        })
+
+        self.assertIn("原始文件路径", analysis_messages[-1]["content"])
+        self.assertIn("/data/projects/p-001/01-requirement/uploads/需求截图.png", analysis_messages[-1]["content"])
+        self.assertIn("读取原始文件", analysis_messages[-1]["content"])
+        self.assertIn("图片", analysis_messages[-1]["content"])
+        self.assertNotIn("不应该传给 cursor_cli 的抽取正文", analysis_messages[-1]["content"])
+        self.assertIn("需求解析结果", plan_messages[-1]["content"])
+        self.assertIn("客户希望做图片中的拉伸模拟", plan_messages[-1]["content"])
+        self.assertNotIn("不应该作为方案生成依据的原始正文", plan_messages[-1]["content"])
 
     def test_optimize_prompt_revises_existing_plan_not_regenerate(self) -> None:
         messages = plan._build_optimize_messages(
@@ -128,7 +168,7 @@ class SkillPromptTests(unittest.TestCase):
         self.assertIn("PDB 残基名", combined)
 
     def test_analysis_prompt_requires_all_sections(self) -> None:
-        messages = analysis._build_messages({"file_name": "a.pdf", "source_text": "扩散"})
+        messages = analysis._build_messages({"file_name": "a.pdf", "source_path": "/tmp/a.pdf"})
         user_content = messages[-1]["content"]
         for section in [
             "# 需求解析结果",

@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import tempfile
 import threading
+import uuid
 from pathlib import Path
 
 from .. import config
@@ -39,7 +40,7 @@ def _messages_to_prompt(messages: list[dict]) -> str:
     """把 chat messages 合并为单条 prompt（system 在前，作为指令）。"""
     parts: list[str] = []
     for message in messages:
-        content = str(message.get("content", "")).strip()
+        content = str(message.get("content", "")).replace("\x00", "").strip()
         if content:
             parts.append(content)
     return "\n\n".join(parts).strip()
@@ -109,6 +110,14 @@ def _build_command(resolved: dict, workspace: str) -> list[str]:
     return command
 
 
+def _write_prompt_file(workspace: str, prompt: str) -> tuple[Path, str]:
+    prompt_dir = Path(workspace) / ".cursor-agent-prompts"
+    prompt_dir.mkdir(parents=True, exist_ok=True)
+    prompt_path = prompt_dir / f"prompt-{uuid.uuid4().hex}.md"
+    prompt_path.write_text(prompt, encoding="utf-8")
+    return prompt_path, str(prompt_path.relative_to(workspace))
+
+
 def stream(messages: list[dict], settings: dict | None = None):
     """流式调用 CLI，逐块产出增量；结束时把推理链路写入 ``_LAST_REASONING``。"""
     resolved = _resolve_settings(settings)
@@ -120,7 +129,12 @@ def stream(messages: list[dict], settings: dict | None = None):
     else:
         temp_workspace = tempfile.mkdtemp(prefix="sim_cli_")
         workspace = temp_workspace
-    command = _build_command(resolved, workspace) + [prompt]
+    prompt_path, prompt_ref = _write_prompt_file(workspace, prompt)
+    short_prompt = (
+        f"完整请求已写入工作区文件 `{prompt_ref}`。"
+        "请读取该文件，并严格按文件中的 system 与 user 指令生成最终回复。"
+    )
+    command = _build_command(resolved, workspace) + [short_prompt]
 
     reasoning_parts: list[str] = []
     timed_out = {"value": False}
@@ -163,6 +177,12 @@ def stream(messages: list[dict], settings: dict | None = None):
                 pass
         if temp_workspace:
             shutil.rmtree(temp_workspace, ignore_errors=True)
+        else:
+            try:
+                prompt_path.unlink(missing_ok=True)
+                prompt_path.parent.rmdir()
+            except OSError:
+                pass
 
     global _LAST_REASONING
     _LAST_REASONING = "".join(reasoning_parts).strip()

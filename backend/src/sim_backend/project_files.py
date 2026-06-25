@@ -5,6 +5,7 @@
 """
 
 from pathlib import Path
+import re
 
 from . import config, projects
 
@@ -32,4 +33,20 @@ def write_project_file(task: dict | None, parts: list[str], content: str) -> Pat
     directory = ensure_project_dir(task, *parts[:-1])
     path = directory / parts[-1]
     path.write_text(str(content or ""), encoding="utf-8")
+    return path
+
+
+def safe_filename(name: str, fallback: str = "upload.bin") -> str:
+    filename = Path(str(name or "")).name.strip()
+    filename = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", filename)
+    filename = filename.strip(". ")
+    return filename or fallback
+
+
+def write_project_binary_file(task: dict | None, parts: list[str], content: bytes) -> Path:
+    if not parts:
+        raise ValueError("parts is required")
+    directory = ensure_project_dir(task, *parts[:-1])
+    path = directory / safe_filename(parts[-1])
+    path.write_bytes(content)
     return path

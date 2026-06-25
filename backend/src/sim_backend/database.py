@@ -44,6 +44,7 @@ def initialize_database() -> None:
                 file_type TEXT NOT NULL,
                 status TEXT NOT NULL,
                 source_text TEXT NOT NULL,
+                source_path TEXT NOT NULL DEFAULT '',
                 steps TEXT NOT NULL,
                 conversation TEXT NOT NULL,
                 documents TEXT NOT NULL,
@@ -77,6 +78,10 @@ def _migrate_requirement_tasks(connection: sqlite3.Connection) -> None:
     if "project_id" not in columns:
         connection.execute(
             "ALTER TABLE requirement_tasks ADD COLUMN project_id TEXT NOT NULL DEFAULT ''"
+        )
+    if "source_path" not in columns:
+        connection.execute(
+            "ALTER TABLE requirement_tasks ADD COLUMN source_path TEXT NOT NULL DEFAULT ''"
         )
 
 
